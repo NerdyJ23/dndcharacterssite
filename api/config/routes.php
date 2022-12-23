@@ -20,6 +20,11 @@ return static function (RouteBuilder $routes) {
 			$builder->patch('/{id}', 'Users::edit')->setPass(['id']);
 			$builder->get('/{id}', 'Users::get')->setPass(['id']);
 		});
+
+		$builder->scope('/characters', function (RouteBuilder $builder) {
+			// $builder->applyMiddleware('auth');
+			$builder->connect('/', 'Characters::list');
+		});
     });
 
     /*

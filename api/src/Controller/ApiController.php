@@ -19,6 +19,9 @@ class ApiController extends Controller {
         $this->viewBuilder()->setClassName('Json');
 	}
 
+	public function index() {
+		$this->set("index", "yes");
+	}
 	public function beforeFilter(EventInterface $event) {
 		$this->_returnJSON();
 	}
