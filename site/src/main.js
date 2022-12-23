@@ -1,13 +1,31 @@
 import Vue from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import store from './store'
+import VueRouter from 'vue-router';
 
-Vue.config.productionTip = false
+import App from './App.vue'
+
+import Home from './pages/Home';
+import NotFoundPage from './pages/ErrorPages/NotFoundPage';
+import vuetify from './plugins/vuetify'
+import store from './store'
+// import '@babel/polyfill'
+
+Vue.config.productionTip = false;
+Vue.use(VueRouter);
+
+const routes = [
+	{path: '/', component: Home},
+
+	{path: '*', component: NotFoundPage},
+];
+
+const router = new VueRouter({
+	mode: 'history',
+	routes,
+})
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    render: h => h(App),
+    vuetify,
+    store,
+    router
 }).$mount('#app')

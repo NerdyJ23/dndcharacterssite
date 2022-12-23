@@ -1,32 +1,74 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-main>
+		<Navbar @toggleDrawer="toggleDrawer" ref="navbar" @login="showLogin" @logout="logout" />
+		<v-divider></v-divider>
+		<v-card class="d-flex" elevation="0">
+			<NavigationDrawer class="col-2" ref="drawer" :style="`min-height: ${contentHeight}px`" @login="showLogin" @logout="logout"></NavigationDrawer>
+			<v-divider vertical />
+			<router-view style="width:auto" class="pl-10 col-10"></router-view>
+		</v-card>
+		<Login ref="login"/>
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import Navbar from './components/Utility/Nav';
+import NavigationDrawer from './components/Utility/NavigationDrawer';
+import { mapState } from "vuex";
+import Login from './components/Login/LoginDialog';
+
+export default {
+	mounted() {
+		const self = this;
+		this.calcHeight();
+		window.addEventListener('resize', () => {
+			self.calcHeight();
+		})
+		// this.$vuetify.theme.dark = true;
+	},
+	data() {
+		return {
+			contentHeight: 0
+		}
+	},
+  	name: 'App',
+  	components: {
+		Navbar,
+		NavigationDrawer,
+		Login
+  	},
+	methods: {
+		toggleDrawer() {
+			this.$refs.drawer.toggle();
+		},
+		calcHeight() {
+			const self = this;
+			this.$nextTick(() => {
+				self.contentHeight = window.innerHeight - self.$refs.navbar.$el.clientHeight - 4;
+			});
+		},
+		showLogin() {
+			this.$refs.login.show();
+		},
+		logout(){
+			this.$store.dispatch('logout');
+		}
+	},
+	computed: {
+		...mapState(["GenericStore"])
+	}
 }
+</script>
 
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+<style lang="scss">
+.sticky-bar{
+	position: sticky;
+	bottom: 0;
+	opacity: 0.7;
+	&:hover {
+		opacity:1;
+	}
 }
 </style>
