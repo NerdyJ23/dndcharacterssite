@@ -3,6 +3,7 @@
 		<v-card-text>
 			<v-row>
 				<v-col cols="4" class="d-flex align-center my-2">
+					<v-img :src="thumbnail"></v-img>
 					{{ thumbnail }}
 				</v-col>
 
@@ -11,6 +12,7 @@
 						<v-col cols="12"><strong>{{ label }}</strong></v-col>
 					</v-row>
 					<v-row>
+						<v-col cols="12">{{ race }}</v-col>
 						<v-col cols="12">{{ desc }}</v-col>
 					</v-row>
 				</v-col>
@@ -28,6 +30,10 @@ export default {
 			default: "/img/template.jpg"
 		},
 		label: {
+			type: String,
+			required: true
+		},
+		race: {
 			type: String,
 			required: true
 		},
