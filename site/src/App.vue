@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import Navbar from './components/Utility/Nav';
+import Navbar from './components/Utility/Navbar';
 import NavigationDrawer from './components/Utility/NavigationDrawer';
 import { mapState } from "vuex";
 import Login from './components/Login/LoginDialog';
