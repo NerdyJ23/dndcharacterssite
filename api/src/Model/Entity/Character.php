@@ -1,30 +1,29 @@
 <?php
-
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class Character extends Entity {
-	protected $_hidden = ['id'];
-	protected $_virtual = ['full_name', 'encrypted_id', 'url', 'portrait'];
+	protected $_hidden = ['ID', 'User_Access', 'portrait_url'];
+	protected $_virtual = ['Full_Name', 'encrypted_id', 'Url', 'Portrait'];
 	protected $_accessible = [
-		'id' => true, //int
-		'name' => true,
-		'race' => true,
-		'exp' => true,
-		'background' => true,
-		'alignment' => true,
+		'First_Name' => true,
+		'Last_Name' => true,
+		'Race' => true,
+		'Exp' => true,
+		'Background' => true,
+		'Alignment' => true,
 		'portrait_url' => true,
 	];
 
 	protected function _getEncryptedId() {
 		return ((new EncryptionController)->encrypt($this->_fields['id']));
 	}
-	protected function _getFullName() {
-		$str = $this->first_name;
-		if($this->last_name !== null) {
-			$str .= ' ' . $this->last_name;
+	protected function _getFull_Name() {
+		$str = $this->First_Name;
+		if($this->Last_Name !== null) {
+			$str .= ' ' . $this->Last_Name;
 		}
 		return $str;
 	}
