@@ -10,7 +10,6 @@ use Cake\Datasource\ConnectionManager;
 class CharactersTable extends Table {
 	public function initialize(array $config): void {
 		$this->setTable('Characters');
-
 		// $this->hasMany('Items')
 		// 	->setForeignKey('Receipt')
 		// 	->setBindingKey('ID');

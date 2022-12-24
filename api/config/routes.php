@@ -24,7 +24,8 @@ return static function (RouteBuilder $routes) {
 		});
 
 		$builder->scope('/characters', function (RouteBuilder $builder) {
-			// $builder->applyMiddleware('auth');
+			$builder->applyMiddleware('auth');
+			$builder->connect('/list', 'Characters::listPublicCharacters');
 			$builder->connect('/', 'Characters::list');
 		});
     });
