@@ -11,20 +11,20 @@ class UsersTable extends Table {
 	public function initialize(array $config): void {
 
 		$this->setTable('Users');
-		$this->setDisplayField('first_name');
-		$this->setPrimaryKey('id');
+		$this->setDisplayField('First_Name');
+		$this->setPrimaryKey('ID');
 
 		$this->addBehavior('Timestamp', [
 			'events' => [
 				'Model.beforeSave' => [
-					'last_logged_in' => 'always'
+					'Last_Logged_In' => 'always'
 				]
 			]
 		]);
 
-		$this->hasMany('Receipts')
-			->setForeignKey('User')
-			->setBindingKey('id');
+		// $this->hasMany('Receipts')
+		// 	->setForeignKey('User')
+		// 	->setBindingKey('id');
 	}
 
 	public function beforeSave(EventInterface $event, $entity, $options) {

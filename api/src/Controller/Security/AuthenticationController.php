@@ -20,7 +20,7 @@ class AuthenticationController extends Controller {
 	public function validToken($token): bool {
 		$userDB = new UsersController();
 		$query = $userDB->Users->find('all')
-			->where(['Users.token = ' => $token])
+			->where(['Users.Token = ' => $token])
 			->limit(1);
 
 		$data = $query->all()->toArray();
@@ -36,11 +36,11 @@ class AuthenticationController extends Controller {
 		$passwordHash = (new EncryptionController)->hashPassword($password);
 		$userDB = new UsersController();
 		$dbPass = $userDB->Users->find('all')
-			->where(['Users.username = ' => $username])
+			->where(['Users.Username = ' => $username])
 			->limit(1)
 			->all()
 			->toArray();
-		if($passwordHash == $dbPass[0]->password) {
+		if($passwordHash == $dbPass[0]->Password) {
 			return true;
 		}
 		return false;

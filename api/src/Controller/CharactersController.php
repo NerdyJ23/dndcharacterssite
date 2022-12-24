@@ -18,10 +18,12 @@ class CharactersController extends ApiController {
 		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
 		$count = $this->request->getQuery('count') == null ? false : true;
 
+		$user = 1;
+
 		$query = $this->Characters->find('all')
+		->where(['Characters.User_Access =' => $user])
 		->limit($limit)
 		->page($page);
-
 		$data = $query->all()->toArray();
 		$this->set("result", $data);
 	}

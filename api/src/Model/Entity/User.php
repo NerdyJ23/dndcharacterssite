@@ -6,21 +6,23 @@ use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class User extends Entity {
-	protected $_hidden = ['id'];
-	protected $_virtual = ['full_name', 'encrypted_id'];
+	protected $_hidden = ['ID'];
+	protected $_virtual = ['Full_Name', 'encrypted_id'];
 	protected $_accessible = [
-		'id' => true, //int
-		'username' => true, //varchar
-		'password' => true, //varchar hashed
-		'first_name' => true, //varchar
-		'last_name' => true, //varchar nullable
-		'token' => true, //varchar nullable
-		'token_valid_until' => true, //timestamp nullable
-		'last_logged_in' => true //timestamp nullable
+		'ID' => true, //int
+		'Username' => true, //varchar
+		'Password' => true, //varchar hashed
+		'First_Name' => true, //varchar
+		'Last_Name' => true, //varchar nullable
+		'Token' => true, //varchar nullable
+		// 'token_valid_until' => true, //timestamp nullable
+		'Created_At' => true, //timestamp nullable
+		'Last_Logged_In' => true //timestamp nullable
+
 	];
 
 	protected function _getEncryptedId() {
-		return ((new EncryptionController)->encrypt($this->_fields['id']));
+		return ((new EncryptionController)->encrypt($this->_fields['ID']));
 	}
 	protected function _getFullName() {
 		$str = $this->first_name;
