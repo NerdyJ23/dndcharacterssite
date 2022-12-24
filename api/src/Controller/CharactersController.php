@@ -22,6 +22,7 @@ class CharactersController extends ApiController {
 
 		$query = $this->Characters->find('all')
 			->where(['Characters.Visibility = 1'])
+			->contain(['Classes'])
 			->limit($limit)
 			->page($page);
 		$data = $query->all()->toArray();
@@ -50,6 +51,7 @@ class CharactersController extends ApiController {
 		$query = $this->Characters->find('all')
 			->where(['Characters.User_Access =' => $userId,
 			])
+			->contain(['Classes'])
 			->limit($limit)
 			->page($page);
 
@@ -84,7 +86,8 @@ class CharactersController extends ApiController {
 			->where([
 				'Characters.ID =' => $charId,
 				'Visibility = 1'
-			]);
+			])
+			->contain(['Classes']);
 			return $query->all()->toArray();
 		} else {
 			$userDB = new UsersController();
@@ -96,7 +99,8 @@ class CharactersController extends ApiController {
 						['Characters.Visibility = 1'],
 						['Characters.User_Access =' => (new EncryptionController)->decrypt($userId)]
 					]
-			]);
+			])
+			->contain(['Classes']);
 			return $result = $query->all()->toArray();
 		}
 	}
