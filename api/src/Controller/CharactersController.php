@@ -58,7 +58,38 @@ class CharactersController extends ApiController {
 		$this->set("result", $data);
 	}
 
-	public function get($token) {
+	public function get() {
+		$id = $this->request->getParam("character_id");
+		$token = $this->request->getCookie('token');
+		$visibility = 0;
+
+		if ($token == null) {
+			$visibility = 1;
+		} else if (!(new AuthenticationController)->validToken($token)) {
+			$visibility = 1;
+		}
+
+		if ($visibility == 0) {
+			$userDB = new UsersController();
+			$userId = $userDB->get($token);
+
+			$query = $this->Characters->find('all')
+				->where([
+					'Characters.User_Access =' => (new EncryptionController)->decrypt($userId),
+					'Characters.ID =' => (new EncryptionController)->decrypt($id)
+			]);
+			$result = $query->all()->toArray();
+			$this->set("result", $result);
+		} else {
+			$query = $this->Characters->find('all')
+				->where([
+					'Characters.ID =' => (new EncryptionController)->decrypt($id),
+					'Visibility = 1'
+			]);
+			$result = $query->all()->toArray();
+			$this->set("result", $result);
+		}
+		$this->set('id', $id);
 	}
 
 }

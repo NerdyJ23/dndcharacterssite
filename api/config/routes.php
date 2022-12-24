@@ -24,9 +24,17 @@ return static function (RouteBuilder $routes) {
 		});
 
 		$builder->scope('/characters', function (RouteBuilder $builder) {
-			$builder->applyMiddleware('auth');
 			$builder->connect('/list', 'Characters::listPublicCharacters');
+			$builder->applyMiddleware('auth');
 			$builder->connect('/', 'Characters::list');
+		});
+		$builder->resources('Characters', function (RouteBuilder $builder) {
+			$builder->connect('/', 'Characters::get');
+			$builder->resources('Images', function (RouteBuilder $builder) {
+				$builder->get('/', 'Characters::getCharacterImage');
+				$builder->post('/', 'Characters::uploadCharacterImage');
+			});
+			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});
     });
 
