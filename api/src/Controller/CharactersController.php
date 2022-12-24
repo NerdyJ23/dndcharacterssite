@@ -7,7 +7,6 @@ use App\Controller\Security\EncryptionController;
 use App\Controller\Security\AuthenticationController;
 use Cake\Http\Cookie\Cookie;
 use DateTime;
-use SplFileInfo;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 
@@ -115,9 +114,8 @@ class CharactersController extends ApiController {
 			return $this->response->withStatus(404);
 		}
 		$filepath = $this->getFilePath($id);
-		$image = new SplFileInfo($filepath);
-		if ($image->isFile()) {
-			return $this->response->withFile($image);
+		if (is_file($filepath)) {
+			return $this->response->withFile($filepath);
 		} else {
 			return $this->response->withStatus(404);
 		}
@@ -158,7 +156,6 @@ class CharactersController extends ApiController {
 		} catch(exception $e) {
 			return $this->response->withStatus(500);
 		}
-
 		if (is_file($this->getFilePath($id))) {
 			return $this->response->withStatus(204);
 		}
@@ -166,6 +163,6 @@ class CharactersController extends ApiController {
 	}
 
 	private function getFilePath($id) {
-		return RESOURCES . 'portaits' . DS . $id . '.png';
+		return RESOURCES . 'portraits' . DS . $id . '.png';
 	}
 }
