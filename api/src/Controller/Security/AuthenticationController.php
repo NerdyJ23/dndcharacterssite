@@ -18,6 +18,9 @@ class AuthenticationController extends Controller {
 	}
 
 	public function validToken($token): bool {
+		if ($token == null) {
+			return false;
+		}
 		$userDB = new UsersController();
 		$query = $userDB->Users->find('all')
 			->where(['Users.Token = ' => $token])

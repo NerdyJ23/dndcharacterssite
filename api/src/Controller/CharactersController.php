@@ -7,6 +7,9 @@ use App\Controller\Security\EncryptionController;
 use App\Controller\Security\AuthenticationController;
 use Cake\Http\Cookie\Cookie;
 use DateTime;
+use SplFileInfo;
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 
 class CharactersController extends ApiController {
 	public function initialize(): void {
@@ -61,35 +64,68 @@ class CharactersController extends ApiController {
 	public function get() {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
-		$visibility = 0;
 
-		if ($token == null) {
-			$visibility = 1;
-		} else if (!(new AuthenticationController)->validToken($token)) {
-			$visibility = 1;
+		$charId = (new EncryptionController)->decrypt($id);
+		if ($charId == false) {
+			return $this->response->withStatus(404);
 		}
 
-		if ($visibility == 0) {
+		$result = $this->getById($charId, $token);
+		if (sizeOf($result) > 0) {
+			$this->set("result", $result);
+			return;
+		}
+		return $this->response->withStatus(404);
+	}
+
+	private function getById($charId, $token) {
+		$valid = (new AuthenticationController)->validToken($token);
+		if (!$valid) {
+			$query = $this->Characters->find('all')
+			->where([
+				'Characters.ID =' => $charId,
+				'Visibility = 1'
+			]);
+			return $query->all()->toArray();
+		} else {
 			$userDB = new UsersController();
 			$userId = $userDB->get($token);
-
 			$query = $this->Characters->find('all')
 				->where([
-					'Characters.User_Access =' => (new EncryptionController)->decrypt($userId),
-					'Characters.ID =' => (new EncryptionController)->decrypt($id)
+					'Characters.ID =' => $charId,
+					'OR' => [
+						['Characters.Visibility = 1'],
+						['Characters.User_Access =' => (new EncryptionController)->decrypt($userId)]
+					]
 			]);
-			$result = $query->all()->toArray();
-			$this->set("result", $result);
-		} else {
-			$query = $this->Characters->find('all')
-				->where([
-					'Characters.ID =' => (new EncryptionController)->decrypt($id),
-					'Visibility = 1'
-			]);
-			$result = $query->all()->toArray();
-			$this->set("result", $result);
+			return $result = $query->all()->toArray();
 		}
+	}
+	public function getCharacterImage() {
+		$id = $this->request->getParam("character_id");
+		$token = $this->request->getCookie('token');
+
+		$charId = (new EncryptionController)->decrypt($id);
+		if ($charId == false) {
+			return $this->response->withStatus(404);
+		}
+
+		$char = $this->getById($charId, $token);
+		if (sizeOf($char) == 0) {
+			return $this->response->withStatus(404);
+		}
+		$filepath = $_ENV['CHARACTER_PORTRAIT_DIR'] . $id . '.jpg';
+		$image = new SplFileInfo($filepath);
+		if ($image->isFile()) {
+			return $this->response->withFile($image);
+		} else {
+			return $this->response->withStatus(404);
+		}
+
+		$char = $char[0];
 		$this->set('id', $id);
+		$this->set('url', $char->Portrait);
+		return;
 	}
 
 }
