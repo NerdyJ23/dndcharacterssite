@@ -20,6 +20,8 @@ class UsersController extends ApiController {
 	}
 
 	public function create() {
+		$this->response = $this->response->withStatus(403);
+		return;
 		$pass = $this->request->getData('password');
 		$username = $this->request->getData('username');
 		$first_name = $this->request->getData('firstName');
@@ -39,11 +41,11 @@ class UsersController extends ApiController {
 
 	public function get($token) {
 		$query = $this->Users->find('all')
-			->where(['Users.Token IS ' => $token])
+			->where(['Users.Token = ' => $token])
 			->limit(1);
 		$data = $query->all()->toArray();
 		if(sizeof($data) > 0) {
-			return $data[0]->id;
+			return $data[0]->encrypted_id;
 		} else {
 			return -1;
 		}
@@ -53,7 +55,6 @@ class UsersController extends ApiController {
 		$pass = $this->request->getData('password');
 		$username = $this->request->getData('username');
 		$validUser = (new AuthenticationController)->validUser($username, $pass);
-		$this->set('validuser', $validUser);
 		if($validUser == true) {
 			$query = $this->Users->find('all')
 				->where(['Users.Username = ' => $username])
@@ -70,9 +71,10 @@ class UsersController extends ApiController {
 		$decrypted = intval((new EncryptionController)->decrypt($user->encryptedId));
 		$userTable = $this->getTableLocator()->get('Users');
 		$u = $userTable->get($decrypted);
-		$userTable->patchEntity($u, ['Token' => (new AuthenticationController)->generateToken()]);
+		$token = (new AuthenticationController)->generateToken();
+		$userTable->patchEntity($u, ['Token' => $token]);
 
-		$u->token = (new AuthenticationController)->generateToken();
+		$u->token = $token;
 		$u->token_valid_until = $u->setTokenTimeLimit(7);
 		$result = $userTable->saveOrFail($u);
 

@@ -19,9 +19,20 @@ class CharactersController extends ApiController {
 		$count = $this->request->getQuery('count') == null ? false : true;
 
 		$user = 1;
+		$token = $this->request->getCookie('token');
+		if ($token == null && !(new AuthenticationController)->validToken($token)) {
+			return $this->response->withStatus(403);
+		}
 
+		$userDB = new UsersController();
+		$user = $userDB->get($token);
+
+		if ($user == null) {
+			return $this->response->withStatus(403);
+		}
+		$userId = (new EncryptionController)->decrypt($user);
 		$query = $this->Characters->find('all')
-		->where(['Characters.User_Access =' => $user])
+		->where(['Characters.User_Access =' => $userId])
 		->limit($limit)
 		->page($page);
 		$data = $query->all()->toArray();
