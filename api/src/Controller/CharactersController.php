@@ -114,7 +114,7 @@ class CharactersController extends ApiController {
 		if (sizeOf($char) == 0) {
 			return $this->response->withStatus(404);
 		}
-		$filepath = $_ENV['CHARACTER_PORTRAIT_DIR'] . $id . '.jpg';
+		$filepath = $this->getFilePath($id);
 		$image = new SplFileInfo($filepath);
 		if ($image->isFile()) {
 			return $this->response->withFile($image);
@@ -127,5 +127,45 @@ class CharactersController extends ApiController {
 		$this->set('url', $char->Portrait);
 		return;
 	}
+	public function uploadCharacterImage() {
+		$id = $this->request->getParam("character_id");
+		$token = $this->request->getCookie('token');
+		$valid = (new AuthenticationController)->validToken($token);
+		if (!$valid) {
+			return $this->response->withStatus(403);
+		}
 
+		$charId = (new EncryptionController)->decrypt($id);
+		if ($charId == false) {
+			return $this->response->withStatus(404);
+		}
+
+		$userDB = new UsersController();
+		$userId = (new EncryptionController)->decrypt($userDB->get($token));
+		$query = $this->Characters->find('all')
+			->where([
+				'Characters.ID =' => $charId,
+				'Characters.User_Access' => $userId
+			]);
+		$result = $query->all()->toArray();
+
+		if(sizeof($result) == 0) {
+			return $this->response->withStatus(404);
+		}
+		$file = $this->request->getData('image');
+		try {
+			$file->moveTo($this->getFilePath($id));
+		} catch(exception $e) {
+			return $this->response->withStatus(500);
+		}
+
+		if (is_file($this->getFilePath($id))) {
+			return $this->response->withStatus(204);
+		}
+		return $this->response->withStatus(500);
+	}
+
+	private function getFilePath($id) {
+		return RESOURCES . 'portaits' . DS . $id . '.png';
+	}
 }

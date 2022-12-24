@@ -5,8 +5,8 @@ use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class Character extends Entity {
-	protected $_hidden = ['ID', 'User_Access', 'portrait_url'];
-	protected $_virtual = ['Full_Name', 'id', 'Url', 'Portrait'];
+	protected $_hidden = ['ID', 'User_Access'];
+	protected $_virtual = ['Full_Name', 'id'];
 	protected $_accessible = [
 		'First_Name' => true,
 		'Last_Name' => true,
@@ -14,7 +14,6 @@ class Character extends Entity {
 		'Exp' => true,
 		'Background' => true,
 		'Alignment' => true,
-		'portrait_url' => true,
 	];
 
 	protected function _getId() {
@@ -25,14 +24,6 @@ class Character extends Entity {
 		if($this->Last_Name !== null) {
 			$str .= ' ' . $this->Last_Name;
 		}
-		return $str;
-	}
-	protected function _getPortrait() {
-		$str = $this->portrait_url;
-		return $str;
-	}
-	protected function _getUrl() {
-		$str = "/characters/" . $this->id;
 		return $str;
 	}
 }
