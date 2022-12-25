@@ -81,7 +81,7 @@ class CharactersController extends ApiController {
 
 		$result = $this->getById($charId, $token);
 		if (sizeOf($result) > 0) {
-			$this->set("result", $result);
+			$this->set("result", $this->toExtendedSchema($result[0]));
 			return;
 		}
 		return $this->response->withStatus(404);
@@ -109,8 +109,7 @@ class CharactersController extends ApiController {
 					]
 			])
 			->contain(['Classes']);
-			$result = $query->all()->toArray();
-			return $this->toExtendedSchema($result[0]);
+			return $query->all()->toArray();
 		}
 	}
 	public function getCharacterImage() {
