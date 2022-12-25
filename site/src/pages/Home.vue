@@ -1,6 +1,6 @@
 <template>
 	<v-card>
-		<v-card-title>Welcome!</v-card-title>
+		<v-card-title></v-card-title>
 		<v-card-text>
 			<CharacterRecentCreatedPreview />
 		</v-card-text>
@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import "../styles/style.scss";
 import CharacterPreview from "../components/Characters/CharacterPreview";
 import CharacterRecentCreatedPreview from "../components/Characters/CharacterRecentCreatedPreview";
 export default {

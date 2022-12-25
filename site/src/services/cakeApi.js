@@ -11,6 +11,12 @@ export default {
 		});
 		return response;
 	},
+	getCharacter(id) {
+		const response = cakeApi().get(`/characters/${id}`).catch((error) => {
+			return error.response;
+		});
+		return response;
+	},
 	getCharacterList() {
 		const response = cakeApi().get(`/characters`).catch((error) => {
 			return error.response;

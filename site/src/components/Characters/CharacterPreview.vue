@@ -10,7 +10,7 @@
 							<v-skeleton-loader v-else type="image" loading width="100%"></v-skeleton-loader>
 						</v-col>
 					</v-row>
-					<v-row class="text-center">
+					<v-row class="text-center dnd-title dnd-title-bold">
 						<v-col cols="12">
 							{{ label }}
 						</v-col>
@@ -19,7 +19,7 @@
 
 				<v-col cols="8" class="text-center">
 					<v-row>
-						<v-col cols="12">{{ race }}</v-col>
+						<v-col cols="12" >{{ race }}</v-col>
 						<v-col cols="12">{{ desc }}</v-col>
 					</v-row>
 				</v-col>

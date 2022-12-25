@@ -1,0 +1,11 @@
+@font-face {
+	font-family: DndTitle;
+	src: url('../assets/fonts/5e/Mr Eaves Small Caps.woff2');
+}
+.dnd-title {
+	font-family: DnDTitle;
+	font-size: 1.5em;
+	&--bold{
+		font-weight: 800;
+	}
+}

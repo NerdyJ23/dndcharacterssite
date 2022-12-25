@@ -1,17 +1,22 @@
 <template>
-	<v-row v-if="!loading" elevation="0">
-		<v-col xs="12" sm="8" lg="6" v-for="char in characters.list">
-			<CharacterPreview
-				:label="char.Full_Name"
-				:race="char.Race"
-				:desc="char.Background"
-				:id="char.id"
-			/>
-		</v-col>
-		<v-col v-if="characters.list.length == 0" cols="12">
-			No characters? :O
-		</v-col>
-	</v-row>
+	<v-card elevation="0">
+		<v-card-title>Recent Characters</v-card-title>
+		<v-card-text>
+			<v-row v-if="!loading" elevation="0">
+				<v-col xs="12" sm="8" lg="6" v-for="char in characters.list">
+					<CharacterPreview
+						:label="char.full_name"
+						:race="char.race"
+						:desc="char.background"
+						:id="char.id"
+					/>
+				</v-col>
+				<v-col v-if="characters.list.length == 0" cols="12">
+					No characters? :O
+				</v-col>
+			</v-row>
+		</v-card-text>
+	</v-card>
 </template>
 <script>
 import cakeApi from "../../services/cakeApi"
