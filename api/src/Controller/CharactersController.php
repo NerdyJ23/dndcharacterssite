@@ -26,7 +26,11 @@ class CharactersController extends ApiController {
 			->limit($limit)
 			->page($page);
 		$data = $query->all()->toArray();
-		$this->set("result", $data);
+		$resultSet = [];
+		foreach($data as $item) {
+			$resultSet[] = $this->toSummarizedSchema($item);
+		}
+		$this->set("result", $resultSet);
 	}
 
 	public function list() {
@@ -59,7 +63,11 @@ class CharactersController extends ApiController {
 			return $this->set('result', []);
 		}
 		$data = $query->all()->toArray();
-		$this->set("result", $data);
+		$resultSet = [];
+		foreach($data as $item) {
+			$resultSet[] = $this->toSummarizedSchema($item);
+		}
+		$this->set("result", $resultSet);
 	}
 
 	public function get() {
@@ -168,5 +176,15 @@ class CharactersController extends ApiController {
 
 	private function getFilePath($id) {
 		return RESOURCES . 'portraits' . DS . $id . '.png';
+	}
+	private function toSummarizedSchema($character) {
+		return [
+			'id' => $character->id,
+			'full_name' => $character->Full_Name,
+			'classes' => $character->classes,
+			'race' => $character->Race,
+			'background' => $character->Background,
+			'alignment' => $character->Alignment
+		];
 	}
 }
