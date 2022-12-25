@@ -109,7 +109,8 @@ class CharactersController extends ApiController {
 					]
 			])
 			->contain(['Classes']);
-			return $result = $query->all()->toArray();
+			$result = $query->all()->toArray();
+			return $this->toExtendedSchema($result[0]);
 		}
 	}
 	public function getCharacterImage() {
@@ -185,6 +186,20 @@ class CharactersController extends ApiController {
 			'race' => $character->Race,
 			'background' => $character->Background,
 			'alignment' => $character->Alignment
+		];
+	}
+	private function toExtendedSchema($character) {
+		return [
+			'id' => $character->id,
+			'first_name' => $character->First_Name,
+			'last_name' => $character->Last_Name,
+			'full_name' => $character->Full_Name,
+			'race' => $character->Race,
+			'exp' => $character->Exp,
+			'background' => $character->Background,
+			'alignment' => $character->Alignment,
+			'visibility' => $character->Visibility,
+			'classes' => $character->classes,
 		];
 	}
 }
