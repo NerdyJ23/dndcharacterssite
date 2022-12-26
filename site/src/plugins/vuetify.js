@@ -5,4 +5,9 @@ import 'vuetify/dist/vuetify.min.css';
 Vue.use(Vuetify);
 
 export default new Vuetify({
+	theme: {
+		options: {
+			customProperties: true
+		}
+	}
 });

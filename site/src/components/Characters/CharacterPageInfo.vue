@@ -2,7 +2,7 @@
 	<v-container v-if="!loading">
 		<v-row>
 			<v-col cols="3"></v-col>
-			<v-col cols="6">
+			<v-col cols="6" class="dnd-title dnd-title-bold">
 				{{ char.full_name }}
 			</v-col>
 			<v-col cols="3"></v-col>

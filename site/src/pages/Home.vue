@@ -1,5 +1,5 @@
 <template>
-	<v-card>
+	<v-card elevation="0" outlined>
 		<v-card-title></v-card-title>
 		<v-card-text>
 			<CharacterRecentCreatedPreview />

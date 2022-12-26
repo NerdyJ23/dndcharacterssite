@@ -9,6 +9,7 @@
 						:race="char.race"
 						:desc="char.background"
 						:id="char.id"
+						:exp="char.exp"
 					/>
 				</v-col>
 				<v-col v-if="characters.list.length == 0" cols="12">
@@ -21,11 +22,13 @@
 <script>
 import cakeApi from "../../services/cakeApi"
 import CharacterPreview from "./CharacterPreview";
+import ExpBar from "./ExpBar";
 
 export default {
 	name: "CharacterRecentlyCreatedPreview",
 	components: {
-		CharacterPreview
+		CharacterPreview,
+		ExpBar
 	},
 	data() {
 		return {
