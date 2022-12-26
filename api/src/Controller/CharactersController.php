@@ -129,7 +129,7 @@ class CharactersController extends ApiController {
 		if (is_file($filepath)) {
 			return $this->response->withFile($filepath);
 		} else {
-			return $this->response->withStatus(404);
+			return $this->response->withStatus(204);
 		}
 
 		$char = $char[0];
@@ -184,7 +184,8 @@ class CharactersController extends ApiController {
 			'classes' => $character->classes,
 			'race' => $character->Race,
 			'background' => $character->Background,
-			'alignment' => $character->Alignment
+			'alignment' => $character->Alignment,
+			'exp' => $character->Exp
 		];
 	}
 	private function toExtendedSchema($character) {
