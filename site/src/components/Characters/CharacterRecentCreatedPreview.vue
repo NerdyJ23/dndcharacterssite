@@ -16,18 +16,25 @@
 					No characters? :O
 				</v-col>
 			</v-row>
+			<v-row v-else>
+				<v-col xs="12" sm="8" lg="6" v-for="a in 4">
+					<CharacterPreviewSkeleton />
+				</v-col>
+			</v-row>
 		</v-card-text>
 	</v-card>
 </template>
 <script>
 import cakeApi from "../../services/cakeApi"
 import CharacterPreview from "./CharacterPreview";
+import CharacterPreviewSkeleton from "./CharacterPreviewSkeleton";
 import ExpBar from "./ExpBar";
 
 export default {
 	name: "CharacterRecentlyCreatedPreview",
 	components: {
 		CharacterPreview,
+		CharacterPreviewSkeleton,
 		ExpBar
 	},
 	data() {
