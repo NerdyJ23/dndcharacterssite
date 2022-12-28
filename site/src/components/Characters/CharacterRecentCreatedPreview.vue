@@ -27,7 +27,7 @@
 <script>
 import cakeApi from "../../services/cakeApi"
 import CharacterPreview from "./CharacterPreview";
-import CharacterPreviewSkeleton from "./CharacterPreviewSkeleton";
+import CharacterPreviewSkeleton from "../Characters/Skeletons/CharacterPreviewSkeleton";
 import ExpBar from "./ExpBar";
 
 export default {
