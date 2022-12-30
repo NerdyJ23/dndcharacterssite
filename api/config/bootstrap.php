@@ -190,7 +190,7 @@ ServerRequest::addDetector('tablet', function ($request) {
 if(env("DEBUG") == "true") {
     header('Access-Control-Allow-Origin: http://localhost:1234');
 } else {
-    header('Access-Control-Allow-Origin: https://budget.jessprogramming.com');
+    header('Access-Control-Allow-Origin: https://dnd.jessprogramming.com');
 }
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE, OPTIONS');
