@@ -1,13 +1,10 @@
 <template>
-	<v-card outlined>
-		<v-card-title>{{ stat }}</v-card-title>
-		<v-card-text>
-			{{ value }}
-		</v-card-text>
-		<v-card-actions>
-			{{ prefix }} {{ modifier }}
-		</v-card-actions>
-	</v-card>
+	<div class="stat-box d-flex flex-column pb-4">
+		<span class="stat-box-title">{{ label }}</span>
+		<span class="stat-box-value">{{ value }}</span>
+		<span v-if="$vuetify.breakpoint.sm"> {{ prefix }} {{ modifier }}</span>
+		<span v-else class="stat-box-modifier" style="display:block">{{ prefix }} {{ modifier }}</span>
+	</div>
 </template>
 <script>
 export default {
@@ -31,7 +28,45 @@ export default {
 				return;
 			}
 			return '+';
+		},
+		label() {
+			if (this.$vuetify.breakpoint.sm) {
+				return this.stat.substr(0,3);
+			}
+			return this.stat;
 		}
 	}
 }
 </script>
+<style lang="scss" scoped>
+	.stat-box {
+		text-align: center;
+		position: relative;
+		border-radius: 10px !important;
+		border: 3px solid var(--v-secondary-base);
+		background-color: white;
+		// border-image: url('~@/assets/images/stat-box/border.svg') 120 stretch;
+
+		&-title {
+			margin-bottom: 2px;
+			border-bottom: 1px solid var(--v-secondary-base);
+			margin-top: 0;
+		}
+
+		&-value {
+			margin: 5px 0 5px 0;
+		}
+
+		&-modifier {
+			position: absolute;
+			top: 80%;
+			left: 12px;
+			right: 12px;
+			margin-left: auto;
+			margin-right: auto;
+			background-color: white;
+			border: 2px solid var(--v-secondary-base);
+			border-radius: 50%;
+		}
+	}
+</style>
