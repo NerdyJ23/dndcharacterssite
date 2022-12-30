@@ -3,7 +3,7 @@
 		<v-row>
 			<v-col cols="2">
 				<CharacterPageStats v-if="loading" :loading="loading"/>
-				<CharacterPageStats v-else :loading="loading"/>
+				<CharacterPageStats v-else :loading="loading" :stats="char.stats"/>
 			</v-col>
 			<v-col cols="10">
 				<CharacterPageInfo v-if="loading" :loading="loading"/>

@@ -1,22 +1,18 @@
 <template>
 	<v-card outlined color="grey lighten-3">
-		<template v-if="!loading">
-			<CharacterStatBox class="mb-8 mt-4 mx-4" stat="Strength" :value="12" />
-			<CharacterStatBox class="mb-8 mx-4" stat="Dexterity" :value="1222" />
-			<CharacterStatBox class="mb-8 mx-4" stat="Strength" :value="13" />
-			<CharacterStatBox class="mb-8 mx-4" stat="Strength" :value="111" />
-			<CharacterStatBox class="mb-8 mx-4" stat="Strength" :value="11" />
-			<CharacterStatBox class="mb-6 mx-4" stat="Strength" :value="1" />
-		</template>
-
-		<template v-else>
-			<CharacterStatBoxSkeleton class="mb-6 mt-4 mx-4"/>
-			<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
-			<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
-			<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
-			<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
-			<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
-		</template>
+		<v-card-text class="mb-4">
+			<template v-if="!loading">
+				<CharacterStatBox v-for="stat in stats" class="mb-6 mx-4" :stat="stat.Name" :value="stat.Value" />
+			</template>
+			<template v-else>
+				<CharacterStatBoxSkeleton class="mb-6 mt-4 mx-4"/>
+				<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
+				<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
+				<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
+				<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
+				<CharacterStatBoxSkeleton class="mb-6 mx-4"/>
+			</template>
+		</v-card-text>
 	</v-card>
 </template>
 
@@ -34,6 +30,10 @@ export default {
 			type: Boolean,
 			required: false,
 			default: true
+		},
+		stats: {
+			type: Object,
+			required: true
 		}
 	}
 }
