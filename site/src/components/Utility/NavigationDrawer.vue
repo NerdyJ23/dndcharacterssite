@@ -9,7 +9,7 @@
 				<v-list-item-icon>
 					<v-icon>mdi-home</v-icon>
 				</v-list-item-icon>
-				<v-list-item-content v-if="!$vuetify.breakpoint.xs">
+				<v-list-item-content v-if="!$vuetify.breakpoint.sm">
 					Home
 				</v-list-item-content>
 			</v-list-item>
@@ -18,7 +18,7 @@
 					<v-list-item-icon>
 						<v-icon>mdi-receipt-text</v-icon>
 					</v-list-item-icon>
-					<v-list-item-content v-if="!$vuetify.breakpoint.xs">
+					<v-list-item-content v-if="!$vuetify.breakpoint.sm">
 						Receipts
 					</v-list-item-content>
 				</v-list-item>
@@ -26,7 +26,7 @@
 					<v-list-item-icon>
 						<v-icon>mdi-chart-line-variant</v-icon>
 					</v-list-item-icon>
-					<v-list-item-content v-if="!$vuetify.breakpoint.xs">
+					<v-list-item-content v-if="!$vuetify.breakpoint.sm">
 						Graphs
 					</v-list-item-content>
 				</v-list-item>
