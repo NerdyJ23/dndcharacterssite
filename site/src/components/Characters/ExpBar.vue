@@ -1,15 +1,7 @@
 <template>
-	<v-card class="mx-4 rounded-lg">
-		<div class="exp">
-
-			<div class="exp-background text-center rounded-l-lg" :style="`width: ${width}%;z-index: 2`">&nbsp;</div>
-			<div class="exp-text text-center" style="z-index: 1">
-				<span class="text-center" style="width:inherit; color:black;">
-					{{ exp }} / {{ nextLevel }}
-				</span>
-			</div>
-		</div>
-	</v-card>
+	<v-progress-linear class="rounded-lg" height="25" :value=" (exp / nextLevel) * 100">
+		{{ exp }} / {{ nextLevel }}
+	</v-progress-linear>
 </template>
 <script>
 export default {
@@ -63,25 +55,3 @@ export default {
 
 }
 </script>
-<style lang="scss" scoped>
-.exp {
-	position: relative;
-	&-background {
-		border: 2px solid var(--v-primary-darken2);
-		position: relative;
-		top: 0;
-		left: 0;
-		background-color: var(--v-primary-base);
-		height: 100%;
-		padding: 0;
-		margin: 0;
-	}
-	&-text {
-		display:block;
-		position: absolute;
-		top: 0;
-		width:100%;
-		color: white;
-	}
-}
-</style>
