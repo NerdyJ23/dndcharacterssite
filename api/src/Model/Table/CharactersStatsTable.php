@@ -7,17 +7,12 @@ use Cake\Event\EventInterface;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 
-class CharactersTable extends Table {
+class CharactersStatsTable extends Table {
 	public function initialize(array $config): void {
-		$this->setTable('Characters');
-
-		$this->hasMany('Classes', ['className' => 'CharactersClasses'])
-		->setForeignKey('Char_ID')
-		->setBindingKey('ID');
-
-		$this->hasMany('Stats', ['className' => 'CharactersStats'])
-		->setForeignKey('Char_ID')
-		->setBindingKey('ID');
+		// $this->setDisplayField('Class');
+		$this->setTable('Characters_Stats');
+		$this->setEntityClass('CharacterStat');
+		$this->belongsTo('Characters', ['foreignKey' => 'ID']);
 	}
 
 	public function beforeSave(EventInterface $event, $entity, $options) {
