@@ -4,9 +4,9 @@
 		<Navbar @toggleDrawer="toggleDrawer" ref="navbar" @login="showLogin" @logout="logout" />
 		<v-divider></v-divider>
 		<v-card class="d-flex" elevation="0">
-			<NavigationDrawer class="col-2" ref="drawer" :style="`min-height: ${contentHeight}px`" @login="showLogin" @logout="logout"></NavigationDrawer>
+			<NavigationDrawer :class="`${$vuetify.breakpoint.sm ? 'col-1' : 'col-2'}`" ref="drawer" :style="`min-height: ${contentHeight}px`" @login="showLogin" @logout="logout"></NavigationDrawer>
 			<v-divider vertical />
-			<router-view style="width:auto" class="pl-10 col-10"></router-view>
+			<router-view style="width:auto" class="pl-10" :class="`${$vuetify.breakpoint.sm ? 'col-11' : 'col-10'}`"></router-view>
 		</v-card>
 		<Login ref="login"/>
     </v-main>
