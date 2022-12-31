@@ -2,13 +2,8 @@
 	<v-card outlined :to="`/characters/${id}`">
 		<v-card-text>
 			<v-row>
-				<v-col cols="4" class="d-flex justify-center align-center">
-					<v-img v-if="!loading && (img != null)"
-						:src="img"
-						height="100%"
-					></v-img>
-					<v-icon size="600%" v-else-if="!loading">mdi-account-circle</v-icon>
-					<v-skeleton-loader v-else type="image" loading width="100%"></v-skeleton-loader>
+				<v-col cols="4">
+					<CharacterPortrait :id="id" />
 				</v-col>
 
 				<v-col cols="8" class="text-center">
@@ -27,12 +22,13 @@
 </template>
 <script>
 import ExpBar from "./ExpBar";
-import { mapGetters } from "vuex";
+import CharacterPortrait from "./CharacterPortrait.vue";
 
 export default {
 	name: "CharacterPreview",
 	components: {
-		ExpBar
+		ExpBar,
+		CharacterPortrait
 	},
 	props: {
 		label: {
@@ -57,25 +53,6 @@ export default {
 			required: false,
 			default: 0
 		}
-	},
-	data() {
-		return {
-			loading: true,
-			img: null,
-		}
-	},
-	mounted() {
-		this.loadProfile();
-	},
-	methods: {
-		async loadProfile() {
-			await this.$store.dispatch('loadImage', this.id).then((item) => {
-				this.img = item;
-			});
-			this.loading = false;
-		}
-	},
-	computed: {
 	}
 }
 </script>
