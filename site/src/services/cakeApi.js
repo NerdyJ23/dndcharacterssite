@@ -6,11 +6,21 @@ export default {
 		formData.append('username', username);
 		formData.append('password', password);
 
-		const response = cakeApi().post(`/login`, formData).catch((error) => {
+		const response = cakeApi().post(`/login`, formData, {
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;
 	},
+	getUserDetails() {
+		const response = cakeApi().get(`/user`).catch((error) => {
+			return error.response;
+		});
+		return response;
+	},
+
+
 	getCharacter(id) {
 		const response = cakeApi().get(`/characters/${id}`).catch((error) => {
 			return error.response;

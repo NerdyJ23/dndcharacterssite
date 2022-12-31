@@ -6,7 +6,6 @@ function cakeApi() {
     const cakeApi = axios.create({
         baseURL: cakeApiUrl,
         headers: {
-            'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE',
             'Accept': 'application/json',
             'Content-Type': 'application/json',

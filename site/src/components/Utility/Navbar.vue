@@ -8,7 +8,7 @@
 		<v-spacer></v-spacer>
 		<div v-if="GenericStore.validSession">
 			<v-btn to="/receipt" plain>My Characters</v-btn>
-			<v-btn to="/profile" plain>Profile (change to use their username and have a profile icon here)</v-btn>
+			<v-btn to="/profile" plain>{{ UserStore.name }}</v-btn>
 			<v-btn plain @click="$emit('logout')">Logout</v-btn>
 		</div>
 		<div v-else>
@@ -19,12 +19,14 @@
 </template>
 
 <script>
+
 import { mapState } from "vuex";
 
 export default {
 	name: "Navbar",
 	computed: {
-		...mapState(["GenericStore"])
+		...mapState(["GenericStore"]),
+		...mapState(["UserStore"])
 	}
 }
 </script>
