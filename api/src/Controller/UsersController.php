@@ -86,15 +86,16 @@ class UsersController extends ApiController {
 				$u->token,
 				[
 					'expires' => new DateTime('+ 7 days'),
-					'httpOnly' => false,
+					'httpOnly' => true,
 					'secure' => true,
 					'domain' => 'dnd.jessprogramming.com'
 			]);
-			// $cookie = $cookie
-			// 	->withSameSite('None')
+			$cookie = $cookie
+				->withSameSite('None');
 			// 	->withSecure(true);
 			$this->response = $this->response->withCookie($cookie);
 			// $response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
+			// $response = $response->withHeader('Access-Control-Allow-Origin', 'http://localhost:1234');
 			$this->response = $this->response->withStatus(200, 'Logged in successfully');
 		} else {
 			$this->response = $this->response->withStatus(400);
