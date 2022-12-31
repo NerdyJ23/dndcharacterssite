@@ -17,10 +17,10 @@ return static function (RouteBuilder $routes) {
 		$builder->scope('/user', function (RouteBuilder $builder) {
 			$builder->applyMiddleware('auth');
 			$builder->post('/', 'Users::create');
-			$builder->get('/', 'Users::list');
+			$builder->get('/', 'Users::get');
 
-			$builder->patch('/{id}', 'Users::edit')->setPass(['id']);
-			$builder->get('/{id}', 'Users::get')->setPass(['id']);
+			// $builder->patch('/{id}', 'Users::edit')->setPass(['id']);
+			// $builder->get('/{id}', 'Users::get')->setPass(['id']);
 		});
 
 		$builder->scope('/characters', function (RouteBuilder $builder) {

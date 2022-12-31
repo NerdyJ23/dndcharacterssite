@@ -95,7 +95,7 @@ class CharactersController extends ApiController {
 				'Characters.ID =' => $charId,
 				'Visibility = 1'
 			])
-			->contain(['Classes', 'Stats']);
+			->contain(['Classes', 'Stats', 'Health']);
 			return $query->all()->toArray();
 		} else {
 			$userDB = new UsersController();
@@ -108,7 +108,7 @@ class CharactersController extends ApiController {
 						['Characters.User_Access =' => (new EncryptionController)->decrypt($userId)]
 					]
 			])
-			->contain(['Classes', 'Stats']);
+			->contain(['Classes', 'Stats', 'Health']);
 			return $query->all()->toArray();
 		}
 	}
@@ -200,7 +200,8 @@ class CharactersController extends ApiController {
 			'alignment' => $character->Alignment,
 			'visibility' => $character->Visibility,
 			'classes' => $character->classes,
-			'stats' => $character->stats
+			'stats' => $character->stats,
+			'health' => $character->health
 		];
 	}
 }

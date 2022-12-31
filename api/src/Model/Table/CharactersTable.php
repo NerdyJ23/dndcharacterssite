@@ -18,6 +18,10 @@ class CharactersTable extends Table {
 		$this->hasMany('Stats', ['className' => 'CharactersStats'])
 		->setForeignKey('Char_ID')
 		->setBindingKey('ID');
+
+		$this->hasOne('Health', ['className' => 'CharactersHealth'])
+		->setForeignKey('Char_ID')
+		->setBindingKey('ID');
 	}
 
 	public function beforeSave(EventInterface $event, $entity, $options) {

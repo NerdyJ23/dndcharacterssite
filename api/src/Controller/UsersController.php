@@ -39,15 +39,23 @@ class UsersController extends ApiController {
 		$this->set('result', $result);
 	}
 
-	public function get($token) {
-		$query = $this->Users->find('all')
-			->where(['Users.Token = ' => $token])
-			->limit(1);
-		$data = $query->all()->toArray();
-		if(sizeof($data) > 0) {
-			return $data[0]->encrypted_id;
+	public function get() {
+		$token = $this->request->getCookie('token');
+		$valid = (new AuthenticationController)->validToken($token);
+		if ($valid == true) {
+			$query = $this->Users->find('all')
+				->where(['Users.Token = ' => $token])
+				->limit(1);
+			$data = $query->all()->toArray();
+			if(sizeof($data) > 0) {
+				$this->set('user', $this->toExtendedSchema($data[0]));
+				return;
+			} else {
+				$this->set('user', null);
+				return;
+			}
 		} else {
-			return -1;
+			$this->response = $this->response->withStatus(403);
 		}
 	}
 
@@ -102,5 +110,11 @@ class UsersController extends ApiController {
 		}
 	}
 
-
+	private function toExtendedSchema($user) {
+		return [
+			'username' => $user->Username,
+			'first_name' => $user->First_Name,
+			'last_name' => $user->Last_Name
+		];
+	}
 }
