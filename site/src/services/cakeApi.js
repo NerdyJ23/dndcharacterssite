@@ -14,7 +14,9 @@ export default {
 		return response;
 	},
 	getUserDetails() {
-		const response = cakeApi().get(`/user`).catch((error) => {
+		const response = cakeApi().get(`/user`, {
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;

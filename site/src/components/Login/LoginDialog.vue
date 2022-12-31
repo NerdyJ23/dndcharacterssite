@@ -92,8 +92,7 @@ export default {
 		async login() {
 			this.isLoading(true);
 			const response = await cakeApi.login(this.username, this.password);
-			console.log(response);
-			console.log(`response status is success? ${response.status <= 300}`);
+
 			if (response.status <= 300) {
 				this.$refs.status.setStatus('Success');
 				this.$refs.status.setStatusMessage('Success! Redirecting...');
