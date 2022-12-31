@@ -150,28 +150,39 @@ class CharactersController extends ApiController {
 			return $this->response->withStatus(404);
 		}
 
-		$userDB = new UsersController();
-		$userId = (new EncryptionController)->decrypt($userDB->get($token));
-		$query = $this->Characters->find('all')
-			->where([
-				'Characters.ID =' => $charId,
-				'Characters.User_Access' => $userId
-			]);
-		$result = $query->all()->toArray();
+		$userDB = $this->getTableLocator()->get('Users');
+		$userQuery = $userDB->find('all')
+			->where(['Users.Token' => $token]);
+		$user = $userQuery->all()->toArray();
 
-		if(sizeof($result) == 0) {
-			return $this->response->withStatus(404);
+		if (sizeOf($user) == 0) {
+			return $this->response->withStatus(403, 'Token Mismatch');
 		}
-		$file = $this->request->getData('image');
-		try {
-			$file->moveTo($this->getFilePath($id));
-		} catch(exception $e) {
+
+		$userId = (new EncryptionController)->decrypt($user[0]->encrypted_id);
+		if ($userId != false) {
+			$query = $this->Characters->find('all')
+				->where([
+					'Characters.ID =' => $charId,
+					'Characters.User_Access' => $userId
+				]);
+			$result = $query->all()->toArray();
+
+			if(sizeof($result) == 0) {
+				return $this->response->withStatus(404);
+			}
+			$file = $this->request->getData('image');
+			try {
+				$file->moveTo($this->getFilePath($id));
+			} catch(exception $e) {
+				return $this->response->withStatus(500);
+			}
+			if (is_file($this->getFilePath($id))) {
+				return $this->response->withStatus(204);
+			}
 			return $this->response->withStatus(500);
 		}
-		if (is_file($this->getFilePath($id))) {
-			return $this->response->withStatus(204);
-		}
-		return $this->response->withStatus(500);
+		return $this->response->withStatus(403, 'Token mismatch');
 	}
 
 	private function getFilePath($id) {
