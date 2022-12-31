@@ -31,8 +31,15 @@
 					</v-card>
 				</v-col>
 			</v-row>
-			<HpBar :health="char.health" class="my-2"/>
-			<ExpBar :exp="char.exp"/>
+			<br />
+			<div>
+				<span class="font-weight-bold">Hp:</span>
+				<HpBar :health="char.health" class="my-2"/>
+			</div>
+			<div>
+				<span class="font-weight-bold">Exp:</span>
+				<ExpBar :exp="char.exp"/>
+			</div>
 		</v-card-text>
 	</v-card>
 </template>
