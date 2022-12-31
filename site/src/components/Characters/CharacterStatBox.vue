@@ -59,7 +59,7 @@ export default {
 
 		&-modifier {
 			position: absolute;
-			top: 80%;
+			top: 85%;
 			left: 12px;
 			right: 12px;
 			margin-left: auto;

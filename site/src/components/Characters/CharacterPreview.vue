@@ -26,8 +26,9 @@
 	</v-card>
 </template>
 <script>
-import cakeApi from '../../services/cakeApi';
 import ExpBar from "./ExpBar";
+import { mapGetters } from "vuex";
+
 export default {
 	name: "CharacterPreview",
 	components: {
@@ -68,16 +69,13 @@ export default {
 	},
 	methods: {
 		async loadProfile() {
-			const response = await cakeApi.getPortrait(this.id);
-			if (response.status <= 300) {
-				if(response.status !== 204) {
-					this.img = window.URL.createObjectURL(new Blob([response.data]));
-				}
-			} else if (response >= 500) {
-				console.error("error contacting profile image service");
-			}
+			await this.$store.dispatch('loadImage', this.id).then((item) => {
+				this.img = item;
+			});
 			this.loading = false;
 		}
+	},
+	computed: {
 	}
 }
 </script>

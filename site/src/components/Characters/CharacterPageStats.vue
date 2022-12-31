@@ -32,8 +32,11 @@ export default {
 			default: true
 		},
 		stats: {
-			type: Object,
-			required: true
+			type: Array,
+			required: false,
+			default: () => {
+				return [];
+			}
 		}
 	}
 }

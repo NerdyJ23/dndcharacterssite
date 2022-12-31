@@ -8,7 +8,7 @@
 			<v-col cols="10">
 				<CharacterPageInfo v-if="loading" :loading="loading"/>
 				<CharacterPageInfo v-else
-					:full_name="char.full_name"
+					:char="char"
 					:loading="loading"
 				/>
 			</v-col>
