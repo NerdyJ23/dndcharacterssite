@@ -92,7 +92,7 @@ class CharactersController extends ApiController {
 		return $this->response(StatusCodes::NOT_FOUND);
 	}
 
-	private function getById($charId, $token) {
+	public function getById($charId, $token) {
 		$valid = (new AuthenticationController)->validToken($token);
 		if (!$valid) {
 			$query = $this->Characters->find('all')

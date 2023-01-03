@@ -129,6 +129,7 @@ class CharactersClassesController extends ApiController {
 			return;
 		}
 
+
 		$char = $this->_getCharacter($this->decrypt($charId));
 		if ($char == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
@@ -138,6 +139,10 @@ class CharactersClassesController extends ApiController {
 		$user = $userDB->getByToken($token);
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
+
+		if ($user->ID != $char->User_Access) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
 		$class = $this->CharactersClasses->find('all')
@@ -191,6 +196,10 @@ class CharactersClassesController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
+		if ($user->ID != $char->User_Access) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
+		}
+
 		$class = $this->CharactersClasses->find('all')
 		->where([
 			'ID' => $this->decrypt($classId),
@@ -203,6 +212,10 @@ class CharactersClassesController extends ApiController {
 		$class = $class->all()->toArray();
 		if (sizeOf($class) == 0) {
 			return $this->response(StatusCodes::NOT_FOUND);
+		} else if ($this->_classCount($char->ID) == 1) {
+			$this->set("errorMessage", "Character must have at least one (1) class");
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
 		}
 
 		$result = $this->CharactersClasses->delete($class[0]);
@@ -211,16 +224,28 @@ class CharactersClassesController extends ApiController {
 		}
 		return $this->response(StatusCodes::SERVER_ERROR);
 	}
+
 	private function _getCharacter($id) {
 		$charDB = $this->getTableLocator()->get('Characters');
-		$charQuery = $charDB->find('all')
-			->where(['Characters.ID' => $id]);
+		$query = $charDB->find('all')
+		->where(['Characters.ID =' => $id]);
 
-		if ($charQuery == null) {
+		if ($query == null) {
 			return null;
 		}
 
-		$char = $charQuery->all()->toArray();
+		$char = $query->all()->toArray();
 		return sizeOf($char) == 0 ? null : $char[0];
+	}
+
+	private function _classCount($charId): int {
+		$query = $this->CharactersClasses->find('all')
+		->where(['Char_ID' => $charId]);
+
+		if ($query == null) {
+			return 0;
+		}
+
+		return sizeOf($query->all()->toArray());
 	}
 }
