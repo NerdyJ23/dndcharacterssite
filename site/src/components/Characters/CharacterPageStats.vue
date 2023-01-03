@@ -1,8 +1,15 @@
 <template>
 	<v-card outlined color="grey lighten-3">
 		<v-card-text class="mb-4">
-			<template v-if="!loading">
-				<CharacterStatBox v-for="stat in stats" class="mb-6 mx-4" :stat="stat.Name" :value="stat.Value" />
+			<template v-if="!loading" v-for="stat in stats">
+				<v-row>
+					<v-col>
+						<CharacterStatBox class="mb-6 mx-4" :stat="stat.Name" :value="stat.Value" />
+					</v-col>
+					<v-col v-for="skill in skills">
+						<CharacterSkillItem v-if="skill.stat == stat.Name" :label="stat.Name" :statValue="stat.Value" id="1"/>
+					</v-col>
+				</v-row>
 			</template>
 			<template v-else>
 				<CharacterStatBoxSkeleton class="mb-6 mt-4 mx-4"/>
@@ -19,11 +26,13 @@
 <script>
 import CharacterStatBox from './CharacterStatBox';
 import CharacterStatBoxSkeleton from './Skeletons/CharacterStatBoxSkeleton';
+import CharacterSkillItem from './CharacterSkillItem.vue';
 export default {
 	name: "CharacterPageStats",
 	components: {
 		CharacterStatBox,
-		CharacterStatBoxSkeleton
+		CharacterStatBoxSkeleton,
+		CharacterSkillItem
 	},
 	props: {
 		loading: {
