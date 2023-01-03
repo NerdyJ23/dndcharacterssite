@@ -16,7 +16,6 @@ class CharactersController extends ApiController {
 	public function listPublicCharacters() {
 		$limit = $this->request->getQuery('limit') == null ? 200 : $this->request->getQuery('limit');
 		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
-		$count = $this->request->getQuery('count') == null ? false : true;
 
 		$query = $this->Characters->find('all')
 			->where(['Characters.Visibility = 1'])
@@ -29,43 +28,51 @@ class CharactersController extends ApiController {
 			$resultSet[] = $this->toSummarizedSchema($item);
 		}
 		$this->set("result", $resultSet);
+		$this->set("count", sizeOf($resultSet));
+		$this->set("page", $page);
+		$this->set("limit", $limit);
 	}
 
 	public function list() {
 		$limit = $this->request->getQuery('limit') == null ? 200 : $this->request->getQuery('limit');
 		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
-		$count = $this->request->getQuery('count') == null ? false : true;
 
 		$token = $this->request->getCookie('token');
 		if ($token == null) {
-			return $this->listPublicCharacters($limit, $page, $count);
+			return $this->listPublicCharacters($limit, $page);
 		} else if (!(new AuthenticationController)->validToken($token)) {
-			return $this->listPublicCharacters($limit, $page, $count);
+			return $this->listPublicCharacters($limit, $page);
 		}
 
 		$userDB = new UsersController();
-		$user = $userDB->get($token);
-		if ($user == null || $user == -1) { //display only the public characters
-			return $this->listPublicCharacters($limit, $page, $count);
+		$user = $userDB->getByToken($token);
+
+		if ($user == null) { //display only the public characters
+			$this->response = $this->response(StatusCodes::TOKEN_MISMATCH);
+			return $this->listPublicCharacters($limit, $page);
 		}
 
-		$userId = $this->decrypt($user);
 		$query = $this->Characters->find('all')
-			->where(['Characters.User_Access =' => $userId,
-			])
+			->where(['Characters.User_Access =' => $user->ID])
 			->contain(['Classes'])
 			->limit($limit)
 			->page($page);
 
-		if ($query == null) {
-			return $this->set('result', []);
+			if ($query == null) {
+			$this->set('result', []);
+			return;
 		}
+
 		$data = $query->all()->toArray();
 		$resultSet = [];
 		foreach($data as $item) {
 			$resultSet[] = $this->toSummarizedSchema($item);
 		}
+
 		$this->set("result", $resultSet);
+		$this->set("count", sizeOf($resultSet));
+		$this->set("page", $page);
+		$this->set("limit", $limit);
 	}
 
 	public function get() {
@@ -96,7 +103,6 @@ class CharactersController extends ApiController {
 			->contain(['Classes', 'Stats', 'Health']);
 			return $query->all()->toArray();
 		} else {
-			$userDB = new UsersController();
 			$userDB = $this->getTableLocator()->get('Users');
 			$userQuery = $userDB->find('all')
 			->where(['Users.Token' => $token]);

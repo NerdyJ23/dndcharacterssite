@@ -59,6 +59,28 @@ class UsersController extends ApiController {
 		}
 	}
 
+	public function getByToken($token) {
+		if ($token == null) {
+			return null;
+		}
+		$valid = (new AuthenticationController)->validToken($token);
+
+		if (!$valid) {
+			return null;
+		}
+
+		$query = $this->Users->find('all')
+			->where(['Users.Token = ' => $token])
+			->limit(1);
+
+		if ($query == null) {
+			return null;
+		}
+
+		$data = $query->all()->toArray();
+		return sizeOf($data) == 0 ? null : $data[0];
+
+	}
 	public function login() {
 		$pass = $this->request->getData('password');
 		$username = $this->request->getData('username');

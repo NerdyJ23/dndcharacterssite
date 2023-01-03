@@ -9,6 +9,10 @@ class CharactersClassesController extends ApiController {
 	}
 
 	public function list() {
+		$limit = $this->request->getQuery('limit') == null ? 200 : $this->request->getQuery('limit');
+		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
+		$count = $this->request->getQuery('count') == null ? false : true;
+
 		$token = $this->request->getCookie('token');
 		$id = $this->request->getParam("character_id");
 		$charId = $this->decrypt($id);
@@ -26,7 +30,8 @@ class CharactersClassesController extends ApiController {
 			}
 
 			//Get user
-			$user = $this->_getUser($token);
+			$userDB = new UsersController();
+			$user = $userDB->getByToken($token);
 
 			if ($user == null) {
 				return $this->response(StatusCodes::TOKEN_MISMATCH);
@@ -78,7 +83,8 @@ class CharactersClassesController extends ApiController {
 		}
 
 		//Only owner can edit
-		$user = $this->_getUser($token);
+		$userDB = new UsersController();
+		$user = $userDB->getByToken($token);
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
@@ -128,14 +134,17 @@ class CharactersClassesController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$user = $this->_getUser($token);
+		$userDB = new UsersController();
+		$user = $userDB->getByToken($token);
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
 
 		$class = $this->CharactersClasses->find('all')
-		->where(['ID' => $this->decrypt($classId)]);
-
+		->where([
+			'ID' => $this->decrypt($classId),
+			'Char_ID' => $this->decrypt($charId)
+		]);
 		if ($class == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
@@ -162,6 +171,46 @@ class CharactersClassesController extends ApiController {
 		return $this->response(StatusCodes::SERVER_ERROR);
 	}
 
+	public function delete() {
+		$charId = $this->request->getParam("character_id");
+		$classId = $this->request->getParam("class_id");
+		$token = $this->request->getCookie('token');
+
+		if ($token == null) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
+		}
+
+		$userDB = new UsersController();
+		$user = $userDB->getByToken($token);
+		if ($user == null) {
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
+
+		$char = $this->_getCharacter($this->decrypt($charId));
+		if ($char == null) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		$class = $this->CharactersClasses->find('all')
+		->where([
+			'ID' => $this->decrypt($classId),
+			'Char_ID' => $this->decrypt($charId)
+		]);
+		if ($class == null) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		$class = $class->all()->toArray();
+		if (sizeOf($class) == 0) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		$result = $this->CharactersClasses->delete($class[0]);
+		if ($result != false) {
+			return $this->response(StatusCodes::NO_CONTENT);
+		}
+		return $this->response(StatusCodes::SERVER_ERROR);
+	}
 	private function _getCharacter($id) {
 		$charDB = $this->getTableLocator()->get('Characters');
 		$charQuery = $charDB->find('all')
@@ -173,17 +222,5 @@ class CharactersClassesController extends ApiController {
 
 		$char = $charQuery->all()->toArray();
 		return sizeOf($char) == 0 ? null : $char[0];
-	}
-
-	private function _getUser($token) {
-		$userDB = $this->getTableLocator()->get('Users');
-		$userQuery = $userDB->find('all')
-			->where(['Users.Token' => $token]);
-		if ($userQuery == null) {
-			return null;
-		}
-
-		$user = $userQuery->all()->toArray();
-		return sizeOf($user) == 0 ? null : $user[0];
 	}
 }

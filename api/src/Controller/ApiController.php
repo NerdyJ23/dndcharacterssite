@@ -48,6 +48,7 @@ class ApiController extends Controller {
 			return match($enum) {
 				StatusCodes::SUCCESS => $response->withStatus(200),
 				StatusCodes::CREATED => $response->withStatus(201),
+				StatusCodes::NO_CONTENT => $response->withStatus(204),
 
 				StatusCodes::USER_ERROR => $response->withStatus(400),
 				StatusCodes::TOKEN_MISMATCH => $response->withStatus(403, 'Token Mismatch. Clear cookies and try again'),

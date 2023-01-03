@@ -11,4 +11,8 @@ class CharactersStatsController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
 	}
+
+	public function list() {
+
+	}
 }
