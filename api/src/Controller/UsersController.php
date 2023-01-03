@@ -1,13 +1,14 @@
 <?php
 namespace App\Controller;
 
+use DateTime;
 use Cake\Controller\Controller;
-use Cake\View\JsonView;
+use Cake\Http\Cookie\Cookie;
+use Cake\I18n\FrozenTime;
+
 use App\Controller\Security\EncryptionController;
 use App\Controller\Security\AuthenticationController;
-use Cake\Http\Cookie\Cookie;
-use DateTime;
-use Cake\I18n\FrozenTime;
+use App\Controller\Component\Enum\StatusCodes;
 
 
 class UsersController extends ApiController {
@@ -20,8 +21,8 @@ class UsersController extends ApiController {
 	}
 
 	public function create() {
-		$this->response = $this->response->withStatus(403);
-		return;
+		return $this->response(StatusCodes::ACCESS_DENIED);
+
 		$pass = $this->request->getData('password');
 		$username = $this->request->getData('username');
 		$first_name = $this->request->getData('firstName');
@@ -51,11 +52,10 @@ class UsersController extends ApiController {
 				$this->set('user', $this->toExtendedSchema($data[0]));
 				return;
 			} else {
-				$this->set('user', null);
 				return;
 			}
 		} else {
-			$this->response = $this->response->withStatus(403);
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 	}
 
@@ -69,7 +69,7 @@ class UsersController extends ApiController {
 				->limit(1);
 			$data = $query->all()->toArray();
 
-			$this->_loginAuth($data[0]);
+			return $this->_loginAuth($data[0]);
 		} else {
 			$this->response = $this->response->withStatus(403, 'Login failed. Check credentials are correct');
 		}
@@ -105,8 +105,9 @@ class UsersController extends ApiController {
 			// $response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 			// $response = $response->withHeader('Access-Control-Allow-Origin', 'http://localhost:1234');
 			$this->response = $this->response->withStatus(200, 'Logged in successfully');
+			return;
 		} else {
-			$this->response = $this->response->withStatus(400);
+			return $this->response(StatusCodes::USER_ERROR);
 		}
 	}
 

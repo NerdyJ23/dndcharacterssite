@@ -50,9 +50,11 @@ class ApiController extends Controller {
 				StatusCodes::CREATED => $response->withStatus(201),
 
 				StatusCodes::USER_ERROR => $response->withStatus(400),
-				StatusCodes::TOKEN_MISMATCH => $response->withStatus(403, 'Token Mismatch'),
+				StatusCodes::TOKEN_MISMATCH => $response->withStatus(403, 'Token Mismatch. Clear cookies and try again'),
 				StatusCodes::ACCESS_DENIED => $response->withStatus(403),
 				StatusCodes::NOT_FOUND => $response->withStatus(404),
+
+				StatusCodes::SERVER_ERROR => $response->withStatus(500),
 			};
 		} catch (any $err) {
 			return $response->withStatus(500);

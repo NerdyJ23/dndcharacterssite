@@ -2,13 +2,11 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
-use Cake\View\JsonView;
-use App\Controller\Security\EncryptionController;
-use App\Controller\Security\AuthenticationController;
-use Cake\Http\Cookie\Cookie;
-use DateTime;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
+
+use App\Controller\Security\AuthenticationController;
+use App\Controller\Component\Enum\StatusCodes;
 
 class CharactersController extends ApiController {
 	public function initialize(): void {
@@ -51,7 +49,7 @@ class CharactersController extends ApiController {
 			return $this->listPublicCharacters($limit, $page, $count);
 		}
 
-		$userId = (new EncryptionController)->decrypt($user);
+		$userId = $this->decrypt($user);
 		$query = $this->Characters->find('all')
 			->where(['Characters.User_Access =' => $userId,
 			])
@@ -74,9 +72,9 @@ class CharactersController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$charId = (new EncryptionController)->decrypt($id);
+		$charId = $this->decrypt($id);
 		if ($charId == false) {
-			return $this->response->withStatus(404);
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		$result = $this->getById($charId, $token);
@@ -84,7 +82,7 @@ class CharactersController extends ApiController {
 			$this->set("result", $this->toExtendedSchema($result[0]));
 			return;
 		}
-		return $this->response->withStatus(404);
+		return $this->response(StatusCodes::NOT_FOUND);
 	}
 
 	private function getById($charId, $token) {
@@ -105,10 +103,10 @@ class CharactersController extends ApiController {
 			$user = $userQuery->all()->toArray();
 
 			if (sizeOf($user) == 0) {
-				return $this->response->withStatus(403, 'Token Mismatch');
+				return $this->response(StatusCodes::TOKEN_MISMATCH);
 			}
 
-			$userId = (new EncryptionController)->decrypt($user[0]->encrypted_id);
+			$userId = $this->decrypt($user[0]->encrypted_id);
 			$query = $this->Characters->find('all')
 				->where([
 					'Characters.ID =' => $charId,
@@ -125,20 +123,20 @@ class CharactersController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$charId = (new EncryptionController)->decrypt($id);
+		$charId = $this->decrypt($id);
 		if ($charId == false) {
-			return $this->response->withStatus(404);
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		$char = $this->getById($charId, $token);
 		if (sizeOf($char) == 0) {
-			return $this->response->withStatus(404);
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 		$filepath = $this->getFilePath($id);
 		if (is_file($filepath)) {
 			return $this->response->withFile($filepath);
 		} else {
-			return $this->response->withStatus(204);
+			return $this->response(StatusCodes::NO_CONTENT);
 		}
 
 		$char = $char[0];
@@ -151,12 +149,12 @@ class CharactersController extends ApiController {
 		$token = $this->request->getCookie('token');
 		$valid = (new AuthenticationController)->validToken($token);
 		if (!$valid) {
-			return $this->response->withStatus(403);
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
-		$charId = (new EncryptionController)->decrypt($id);
+		$charId = $this->decrypt($id);
 		if ($charId == false) {
-			return $this->response->withStatus(404);
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		$userDB = $this->getTableLocator()->get('Users');
@@ -165,10 +163,10 @@ class CharactersController extends ApiController {
 		$user = $userQuery->all()->toArray();
 
 		if (sizeOf($user) == 0) {
-			return $this->response->withStatus(403, 'Token Mismatch');
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
 
-		$userId = (new EncryptionController)->decrypt($user[0]->encrypted_id);
+		$userId = $this->decrypt($user[0]->encrypted_id);
 		if ($userId != false) {
 			$query = $this->Characters->find('all')
 				->where([
@@ -178,20 +176,20 @@ class CharactersController extends ApiController {
 			$result = $query->all()->toArray();
 
 			if(sizeof($result) == 0) {
-				return $this->response->withStatus(404);
+				return $this->response(StatusCodes::NOT_FOUND);
 			}
 			$file = $this->request->getData('image');
 			try {
 				$file->moveTo($this->getFilePath($id));
 			} catch(exception $e) {
-				return $this->response->withStatus(500);
+				return $this->response(StatusCodes::SERVER_ERROR);
 			}
 			if (is_file($this->getFilePath($id))) {
-				return $this->response->withStatus(204);
+				return $this->response(StatusCodes::NO_CONTENT);
 			}
-			return $this->response->withStatus(500);
+			return $this->response(StatusCodes::SERVER_ERROR);
 		}
-		return $this->response->withStatus(403, 'Token mismatch');
+		return $this->response(StatusCodes::TOKEN_MISMATCH);
 	}
 
 	private function getFilePath($id) {

@@ -130,7 +130,7 @@ class CharactersClassesController extends ApiController {
 
 		$user = $this->_getUser($token);
 		if ($user == null) {
-
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
 	}
 
