@@ -103,22 +103,18 @@ class CharactersController extends ApiController {
 			->contain(['Classes', 'Stats', 'Health']);
 			return $query->all()->toArray();
 		} else {
-			$userDB = $this->getTableLocator()->get('Users');
-			$userQuery = $userDB->find('all')
-			->where(['Users.Token' => $token]);
-			$user = $userQuery->all()->toArray();
-
-			if (sizeOf($user) == 0) {
+			$userDB = new UsersController();
+			$user = $userDB->getByToken($token);
+			if ($user == null) {
 				return $this->response(StatusCodes::TOKEN_MISMATCH);
 			}
 
-			$userId = $this->decrypt($user[0]->encrypted_id);
 			$query = $this->Characters->find('all')
 				->where([
 					'Characters.ID =' => $charId,
 					'OR' => [
 						['Characters.Visibility = 1'],
-						['Characters.User_Access =' => $userId]
+						['Characters.User_Access =' => $user->ID]
 					]
 			])
 			->contain(['Classes', 'Stats', 'Health']);
@@ -163,21 +159,17 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$userDB = $this->getTableLocator()->get('Users');
-		$userQuery = $userDB->find('all')
-			->where(['Users.Token' => $token]);
-		$user = $userQuery->all()->toArray();
-
-		if (sizeOf($user) == 0) {
+		$userDB = new UsersController();
+		$user = $userDB->getByToken($token);
+		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
 
-		$userId = $this->decrypt($user[0]->encrypted_id);
 		if ($userId != false) {
 			$query = $this->Characters->find('all')
 				->where([
 					'Characters.ID =' => $charId,
-					'Characters.User_Access' => $userId
+					'Characters.User_Access' => $user->ID
 				]);
 			$result = $query->all()->toArray();
 
