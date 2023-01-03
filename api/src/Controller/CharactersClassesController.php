@@ -103,7 +103,8 @@ class CharactersClassesController extends ApiController {
 	public function update() {
 		$name = $this->request->getData("class");
 		$level = $this->request->getData("level");
-		$id = $this->request->getParam("character_id");
+		$charId = $this->request->getParam("character_id");
+		$classId = $this->request->getParam("class_id");
 		$token = $this->request->getCookie('token');
 
 		if ($token == null) {
@@ -111,7 +112,7 @@ class CharactersClassesController extends ApiController {
 		}
 
 		if ($name == null && $level == null) {
-			return $this->response(StatusCodes::SUCCESS);
+			return $this->response(StatusCodes::USER_ERROR);
 		} else if ($level != null && !is_numeric($level)) {
 			$this->set("errorMessage", 'Class level must be an integer');
 			$this->response = $this->response(StatusCodes::USER_ERROR);
@@ -122,8 +123,7 @@ class CharactersClassesController extends ApiController {
 			return;
 		}
 
-		$charId = $this->decrypt($id);
-		$char = $this->_getCharacter($charId);
+		$char = $this->_getCharacter($this->decrypt($charId));
 		if ($char == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
@@ -132,6 +132,34 @@ class CharactersClassesController extends ApiController {
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
+
+		$class = $this->CharactersClasses->find('all')
+		->where(['ID' => $this->decrypt($classId)]);
+
+		if ($class == null) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		$class = $class->all()->toArray();
+		if (sizeOf($class) == 0) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		if ($name != null) {
+			$class[0]->Class = $name;
+		}
+
+		if ($level != null) {
+			$class[0]->Level = $level;
+		}
+		$result = $this->CharactersClasses->save($class[0]);
+
+		if ($result !== false) {
+			$this->set("result", $result);
+			$this->response = $this->response(StatusCodes::SUCCESS);
+			return;
+		}
+		return $this->response(StatusCodes::SERVER_ERROR);
 	}
 
 	private function _getCharacter($id) {
