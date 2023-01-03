@@ -41,6 +41,11 @@ return static function (RouteBuilder $routes) {
 				$builder->post('/', 'CharactersClasses::create');
 			});
 
+			$builder->resources('Classes', function (RouteBuilder $builder) {
+				$builder->patch('/', 'CharactersClasses::update');
+				$builder->delete('/', 'CharactersClasses::delete');
+			});
+
 			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});
     });

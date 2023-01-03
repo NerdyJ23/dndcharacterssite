@@ -1,11 +1,7 @@
 <?php
 namespace App\Controller;
-
 use Cake\Controller\Controller;
-use Cake\View\JsonView;
-use App\Controller\Security\EncryptionController;
-use App\Controller\Security\AuthenticationController;
-use Cake\Http\Cookie\Cookie;
+use App\Controller\Component\Enum\StatusCodes;
 
 class CharactersClassesController extends ApiController {
 	public function initialize(): void {
@@ -15,29 +11,29 @@ class CharactersClassesController extends ApiController {
 	public function list() {
 		$token = $this->request->getCookie('token');
 		$id = $this->request->getParam("character_id");
-		$charId = (new EncryptionController)->decrypt($id);
+		$charId = $this->decrypt($id);
 
 		//Get Character, check if visible to all
 		$char = $this->_getCharacter($charId);
 		if ($char == null) {
-			return $this->response->withStatus(404);
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		//If private character check auth
 		if ($char->Visibility == 0) {
 			if ($token == null) {
-				return $this->response->withStatus(404);
+				return $this->response(StatusCodes::NOT_FOUND);
 			}
 
 			//Get user
 			$user = $this->_getUser($token);
 
 			if ($user == null) {
-				return $this->response->withStatus(403, 'Token Mismatch');
+				return $this->response(StatusCodes::TOKEN_MISMATCH);
 			}
 
 			if ($user->ID != $char->User_Access) {
-				return $this->response->withStatus(403);
+				return $this->response(StatusCodes::ACCESS_DENIED);
 			}
 		}
 
@@ -60,27 +56,34 @@ class CharactersClassesController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 		if ($token == null) {
-			return $this->response->withStatus(403);
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
-		if ($name == null) {
-			return $this->response->withStatus(400, 'Class name is required');
+		if ($name == null || trim($name) == "") {
+			$this->set("errorMessage", 'Class name is required and cannot be blank');
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
 		}
 
 		if (!is_numeric($level)) {
-			return $this->response->withStatus(400, 'Class level must be an integer');
+			$this->set("errorMessage", 'Class level must be an integer and cannot be blank');
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
 		}
 
-		$charId = (new EncryptionController)->decrypt($id);
+		$charId = $this->decrypt($id);
 		$char = $this->_getCharacter($charId);
 		if ($char == null) {
-			return $this->response->withStatus(404);
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		//Only owner can edit
 		$user = $this->_getUser($token);
+		if ($user == null) {
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
 		if ($user->ID != $char->User_Access) {
-			return $this->response->withStatus(403);
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
 		$class = $this->fetchTable('CharactersClasses')->newEntity([
@@ -92,8 +95,42 @@ class CharactersClassesController extends ApiController {
 		$result = $this->fetchTable('CharactersClasses')->save($class);
 		if ($result) {
 			$this->set("result", $result);
-			$this->response = $this->response->withStatus(201);
+			$this->response = $this->response(StatusCodes::CREATED);
 			return;
+		}
+	}
+
+	public function update() {
+		$name = $this->request->getData("class");
+		$level = $this->request->getData("level");
+		$id = $this->request->getParam("character_id");
+		$token = $this->request->getCookie('token');
+
+		if ($token == null) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
+		}
+
+		if ($name == null && $level == null) {
+			return $this->response(StatusCodes::SUCCESS);
+		} else if ($level != null && !is_numeric($level)) {
+			$this->set("errorMessage", 'Class level must be an integer');
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
+		} else if ($name != null && trim($name) == "") {
+			$this->set("errorMessage", 'Class name cannot be blank');
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
+		}
+
+		$charId = $this->decrypt($id);
+		$char = $this->_getCharacter($charId);
+		if ($char == null) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		$user = $this->_getUser($token);
+		if ($user == null) {
+
 		}
 	}
 

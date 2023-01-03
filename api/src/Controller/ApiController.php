@@ -3,6 +3,11 @@
 namespace App\Controller;
 
 use Cake\Controller\Controller;
+use Cake\Http\Response;
+
+use App\Controller\Security\EncryptionController;
+use App\Controller\Component\Enum\StatusCodes;
+
 use Cake\Event\EventInterface;
 
 use Cake\Utility\Security;
@@ -10,7 +15,6 @@ use Cake\View\JsonView;
 use Cake\Auth\WeakPasswordHasher;
 
 class ApiController extends Controller {
-
 	public function initialize(): void {
 		parent::initialize();
 		$this->loadComponent('RequestHandler');
@@ -34,13 +38,26 @@ class ApiController extends Controller {
 
 	}
 
-	protected function _isPushingData() {
-		return ($this->request->is('post') || $this->request->is('patch'));
+	protected function decrypt($id) {
+		return (new EncryptionController)->decrypt($id);
 	}
 
-	protected function _isListingData() {
-		return ($this->request->is('get') || $this->request->is('list'));
-	}
+    protected function response($enum) {
+        $response = new Response();
+		try {
+			return match($enum) {
+				StatusCodes::SUCCESS => $response->withStatus(200),
+				StatusCodes::CREATED => $response->withStatus(201),
+
+				StatusCodes::USER_ERROR => $response->withStatus(400),
+				StatusCodes::TOKEN_MISMATCH => $response->withStatus(403, 'Token Mismatch'),
+				StatusCodes::ACCESS_DENIED => $response->withStatus(403),
+				StatusCodes::NOT_FOUND => $response->withStatus(404),
+			};
+		} catch (any $err) {
+			return $response->withStatus(500);
+		}
+    }
 }
 
 ?>
