@@ -48,7 +48,12 @@ return static function (RouteBuilder $routes) {
 
 			$builder->scope('/stats', function (RouteBuilder $builder) {
 				$builder->get('/', 'CharactersStats::list');
-				// $builder->post('/', 'CharactersStats::create');
+				$builder->post('/', 'CharactersStats::create');
+			});
+
+			$builder->resources('Stats', function (RouteBuilder $builder) {
+				$builder->patch('/', 'CharactersStats::update');
+				$builder->delete('/', 'CharactersStats::delete');
 			});
 			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});

@@ -94,7 +94,7 @@ class CharactersClassesController extends ApiController {
 
 		$class = $this->fetchTable('CharactersClasses')->newEntity([
 			'Char_ID' => $charId,
-			'Class' => $name,
+			'Class' => trim($name),
 			'Level' => $level
 		]);
 
@@ -104,6 +104,8 @@ class CharactersClassesController extends ApiController {
 			$this->response = $this->response(StatusCodes::CREATED);
 			return;
 		}
+
+		return $this->response(StatusCodes::SERVER_ERROR);
 	}
 
 	public function update() {
@@ -160,7 +162,7 @@ class CharactersClassesController extends ApiController {
 		}
 
 		if ($name != null) {
-			$class[0]->Class = $name;
+			$class[0]->Class = trim($name);
 		}
 
 		if ($level != null) {
