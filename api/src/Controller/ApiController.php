@@ -8,10 +8,8 @@ use Cake\Event\EventInterface;
 use Cake\Utility\Security;
 use Cake\View\JsonView;
 use Cake\Auth\WeakPasswordHasher;
-use App\Controller\Component\Enum\Success;
 
 class ApiController extends Controller {
-	public $success = Success::NONE;
 
 	public function initialize(): void {
 		parent::initialize();
@@ -22,6 +20,7 @@ class ApiController extends Controller {
 	public function index() {
 		$this->set("index", "yes");
 	}
+
 	public function beforeFilter(EventInterface $event) {
 		$this->_returnJSON();
 	}
@@ -41,25 +40,6 @@ class ApiController extends Controller {
 
 	protected function _isListingData() {
 		return ($this->request->is('get') || $this->request->is('list'));
-	}
-
-	public function setSuccess($result) {
-
-		if($this->getSuccess() === Success::NONE) {
-			$this->success = $result ? Success::SUCCESS : Success:: FAIL;
-		} else if ($this->getSuccess() === Success::PARTIAL) {
-
-		} else {
-			if ($this->getSuccess() === Success::SUCCESS) {
-				$this->success = $result ? $this->getSuccess() : Success::FAIL;
-			} else if ($this->getSuccess() === Success::FAIL) {
-				$this->success = $result ? Success::PARTIAL : $this->getSuccess();
-			}
-		}
-	}
-
-	public function getSuccess(): Success {
-		return $this->success;
 	}
 }
 
