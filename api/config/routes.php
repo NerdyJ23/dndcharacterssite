@@ -30,10 +30,17 @@ return static function (RouteBuilder $routes) {
 		});
 		$builder->resources('Characters', function (RouteBuilder $builder) {
 			$builder->connect('/', 'Characters::get');
+
 			$builder->scope('/image', function (RouteBuilder $builder) {
 				$builder->get('/', 'Characters::getCharacterImage');
 				$builder->post('/', 'Characters::uploadCharacterImage');
 			});
+
+			$builder->scope('/classes', function (RouteBuilder $builder) {
+				$builder->get('/', 'CharactersClasses::list');
+				$builder->post('/', 'CharactersClasses::create');
+			});
+
 			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});
     });

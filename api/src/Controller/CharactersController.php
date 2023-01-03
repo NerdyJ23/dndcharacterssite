@@ -99,13 +99,22 @@ class CharactersController extends ApiController {
 			return $query->all()->toArray();
 		} else {
 			$userDB = new UsersController();
-			$userId = $userDB->get($token);
+			$userDB = $this->getTableLocator()->get('Users');
+			$userQuery = $userDB->find('all')
+			->where(['Users.Token' => $token]);
+			$user = $userQuery->all()->toArray();
+
+			if (sizeOf($user) == 0) {
+				return $this->response->withStatus(403, 'Token Mismatch');
+			}
+
+			$userId = (new EncryptionController)->decrypt($user[0]->encrypted_id);
 			$query = $this->Characters->find('all')
 				->where([
 					'Characters.ID =' => $charId,
 					'OR' => [
 						['Characters.Visibility = 1'],
-						['Characters.User_Access =' => (new EncryptionController)->decrypt($userId)]
+						['Characters.User_Access =' => $userId]
 					]
 			])
 			->contain(['Classes', 'Stats', 'Health']);
@@ -212,7 +221,8 @@ class CharactersController extends ApiController {
 			'visibility' => $character->Visibility,
 			'classes' => $character->classes,
 			'stats' => $character->stats,
-			'health' => $character->health
+			'health' => $character->health,
+			'skills' => $character->skills
 		];
 	}
 }

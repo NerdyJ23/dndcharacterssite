@@ -7,7 +7,7 @@ use App\Controller\Security\EncryptionController;
 
 class CharacterClass extends Entity {
 	protected $_hidden = ['ID', 'Char_ID'];
-	// protected $_virtual = ['characterId', 'id'];
+	protected $_virtual = ['id'];
 	protected $_accessible = [
 		'ID' => true, //int
 		'Char_ID' => true, //varchar
