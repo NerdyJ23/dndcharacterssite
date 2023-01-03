@@ -25,7 +25,7 @@
 	</v-card>
 </template>
 <script>
-import cakeApi from "../../services/cakeApi"
+import characterApi from "../../services/characterApi"
 import CharacterPreview from "./CharacterPreview";
 import CharacterPreviewSkeleton from "../Characters/Skeletons/CharacterPreviewSkeleton";
 import ExpBar from "./ExpBar";
@@ -50,7 +50,7 @@ export default {
 	},
 	methods: {
 		async load() {
-			const response = await cakeApi.getPublicCharacterList();
+			const response = await characterApi.getPublicCharacterList();
 			//Load most recent public characters from api
 			if (response.status <= 300) {
 				this.characters.list = response.data.result;

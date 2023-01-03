@@ -1,11 +1,11 @@
 <template>
 	<v-container fluid>
 		<v-row>
-			<v-col cols="2">
+			<v-col cols="3">
 				<CharacterPageStats v-if="loading" :loading="loading"/>
 				<CharacterPageStats v-else :loading="loading" :stats="char.stats"/>
 			</v-col>
-			<v-col cols="10">
+			<v-col>
 				<CharacterPageInfo v-if="loading" :loading="loading"/>
 				<CharacterPageInfo v-else
 					:char="char"
@@ -16,10 +16,11 @@
 	</v-container>
 </template>
 <script>
-import cakeApi from "../services/cakeApi";
+import characterApi from "../services/characterApi";
 
 import CharacterPageInfo from "../components/Characters/CharacterPageInfo";
 import CharacterPageStats from "../components/Characters/CharacterPageStats";
+
 export default {
 	name: "CharacterPage",
 	components: {
@@ -37,7 +38,7 @@ export default {
 	},
 	methods: {
 		async load() {
-			const response = await cakeApi.getCharacter(this.$route.params.id);
+			const response = await characterApi.getCharacter(this.$route.params.id);
 			console.log(response.data);
 			if (response.status <= 300) {
 				this.char = response.data.result;

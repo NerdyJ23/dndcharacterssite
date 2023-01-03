@@ -17,7 +17,6 @@ const actions = {
 		if (response.status <= 300) {
 			state.user = response.data.user;
 		}
-
 	}
 }
   export default {

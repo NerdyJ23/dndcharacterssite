@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import cakeApi from "../services/cakeApi";
+import characterApi from "../services/characterApi";
 const state = {
 	api: 'https://dnd.jessprogramming.com:8080',
 	site: 'http://localhost',
@@ -24,7 +24,7 @@ const actions = {
 	},
 
 	async loadImage({commit, state}, id) {
-		const response = await cakeApi.getPortrait(id);
+		const response = await characterApi.getPortrait(id);
 		if (response.status <= 300 && response.status != 204) {
 			return window.URL.createObjectURL(new Blob([response.data]));
 		} else {
