@@ -24,8 +24,8 @@ export default {
 			return Math.floor((this.value - 10) / 2);
 		},
 		prefix() {
-			if (0 >= this.modifier) {
-				return;
+			if (0 > this.modifier) {
+				return '-';
 			}
 			return '+';
 		},
@@ -62,6 +62,8 @@ export default {
 			top: 85%;
 			left: 12px;
 			right: 12px;
+			max-width:48px;
+			overflow: ellipsis;
 			margin-left: auto;
 			margin-right: auto;
 			background-color: white;
