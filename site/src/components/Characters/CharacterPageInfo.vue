@@ -1,6 +1,6 @@
 <template>
-	<v-card style="width:100%">
-		<v-card-text>
+	<v-card style="width:100%" class="fill-height">
+		<v-card-text class="fill-height">
 			<v-row>
 				<v-col cols="3">
 					<CharacterPortrait :id="char.id" :name="char.full_name"/>
