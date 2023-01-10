@@ -5,7 +5,7 @@
 			<v-card-text>
 				<v-row>
 					<template v-if="!loading">
-						<v-col v-for="char in publicCharacters" xs="12" sm="8" lg="4">
+						<v-col v-for="char in publicCharacters" xs="12" sm="8" lg="4" :key="char.id">
 							<CharacterPreview
 								class="fill-height"
 								:label="char.full_name"
@@ -17,7 +17,7 @@
 						</v-col>
 					</template>
 					<template v-else>
-						<v-col v-for="item in 4">
+						<v-col v-for="item in 4" :key="item">
 							<CharacterPreviewSkeleton xs="12" sm="8" lg="4" />
 						</v-col>
 					</template>
@@ -29,7 +29,7 @@
 			<v-card-text>
 				<v-row>
 					<template v-if="!loading">
-						<v-col v-for="char in privateCharacters" xs="12" sm="8" lg="4">
+						<v-col v-for="char in privateCharacters" xs="12" sm="8" lg="4" :key="char.id">
 							<CharacterPreview
 								class="fill-height"
 								:label="char.full_name"
@@ -41,7 +41,7 @@
 						</v-col>
 					</template>
 					<template v-else>
-						<v-col v-for="item in 4">
+						<v-col v-for="item in 4" :key="item">
 							<CharacterPreviewSkeleton xs="12" sm="8" lg="4" />
 						</v-col>
 					</template>
