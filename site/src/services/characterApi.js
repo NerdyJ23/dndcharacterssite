@@ -12,7 +12,9 @@ export default {
 	},
 
 	getCharacterList() {
-		const response = cakeApi().get(`/characters`).catch((error) => {
+		const response = cakeApi().get(`/characters`, {
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;

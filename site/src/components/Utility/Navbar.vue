@@ -7,7 +7,7 @@
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
 		<div v-if="GenericStore.validSession">
-			<v-btn to="/receipt" plain>My Characters</v-btn>
+			<v-btn to="/characters" plain>My Characters</v-btn>
 			<v-menu open-on-hover offset-y bottom>
 				<template v-slot:activator="{on, attrs}">
 					<v-btn plain v-bind="attrs" v-on="on">

@@ -6,6 +6,9 @@ import App from './App.vue'
 import Home from './pages/Home';
 import NotFoundPage from './pages/ErrorPages/NotFoundPage';
 import CharacterPage from './pages/CharacterPage';
+import MyCharactersPage from './pages/MyCharactersPage';
+
+
 import vuetify from './plugins/vuetify'
 import store from './store'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -21,6 +24,7 @@ Vue.use(VueRouter);
 const routes = [
 	{path: '/', component: Home},
 	{path: '/characters/:id', component: CharacterPage},
+	{path: '/characters', component: MyCharactersPage},
 	{path: '*', component: NotFoundPage},
 ];
 
