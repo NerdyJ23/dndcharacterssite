@@ -2,8 +2,8 @@
 	<div class="stat-box d-flex flex-column pb-4">
 		<span class="stat-box-title">{{ label }}</span>
 		<span class="stat-box-value">{{ value }}</span>
-		<span v-if="$vuetify.breakpoint.sm"> {{ prefix }} {{ modifier }}</span>
-		<span v-else class="stat-box-modifier" style="display:block">{{ prefix }} {{ modifier }}</span>
+		<!-- <span v-if="$vuetify.breakpoint.sm"> {{ prefix }} {{ modifier }}</span> -->
+		<span class="stat-box-modifier" style="display:block">{{ prefix }} {{ modifier }}</span>
 	</div>
 </template>
 <script>
@@ -49,8 +49,10 @@ export default {
 
 		&-title {
 			margin-bottom: 2px;
+			word-break: break-word;
 			border-bottom: 1px solid var(--v-secondary-base);
 			margin-top: 0;
+			overflow-x: ellipsis;
 		}
 
 		&-value {
