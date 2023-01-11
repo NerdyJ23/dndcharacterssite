@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid>
+	<v-container v-if="!editing" fluid>
 		<v-row>
 			<v-col cols="3">
 				<CharacterPageStats v-if="loading" :loading="loading"/>
@@ -14,23 +14,28 @@
 			</v-col>
 		</v-row>
 	</v-container>
+
+	<CharacterEditPage :char="char" v-else />
 </template>
 <script>
 import characterApi from "../services/characterApi";
 
 import CharacterPageInfo from "../components/Characters/CharacterPageInfo";
 import CharacterPageStats from "../components/Characters/CharacterPageStats";
+import CharacterEditPage from "./CharacterEditPage.vue";
 
 export default {
 	name: "CharacterPage",
 	components: {
-		CharacterPageInfo,
-		CharacterPageStats
-	},
+    CharacterPageInfo,
+    CharacterPageStats,
+    CharacterEditPage
+},
 	data() {
 		return {
 			loading: true,
 			char: null,
+			editing: true,
 		}
 	},
 	mounted() {
