@@ -2,6 +2,7 @@
 namespace App\Schema\Character;
 
 use App\Model\Entity\Character;
+use App\Schema\AbstractSchema;
 use App\Schema\Character\CharacterHealthSchema;
 use App\Schema\Character\CharacterBackgroundSchema;
 use App\Schema\Character\CharacterClassSchema;
@@ -13,9 +14,9 @@ class CharacterSchema {
 		return [
 			'id' => $character->id,
 			'full_name' => $character->Full_Name,
-			'classes' => CharacterClassSchema::schema($character->classes),
+			'classes' => AbstractSchema::schema($character->classes, 'CharacterClass'),
 			'race' => $character->Race,
-			'background' => CharacterBackgroundSchema::schema($character->background),
+			'background' => AbstractSchema::schema($character->background, 'CharacterBackground'),
 			'alignment' => $character->Alignment,
 			'exp' => $character->Exp,
 			'public' => $character->Visibility == 1,
@@ -23,21 +24,15 @@ class CharacterSchema {
 	}
 
 	static function toExtendedSchema(Character $character): array {
-		return [
-			'id' => $character->id,
+		$result = CharacterSchema::toSummarizedSchema($character);
+		$result += [
 			'first_name' => $character->First_Name,
 			'last_name' => $character->Last_Name,
-			'full_name' => $character->Full_Name,
-			'race' => $character->Race,
-			'exp' => $character->Exp,
-			'background' => CharacterBackgroundSchema::schema($character->background),
-			'alignment' => $character->Alignment,
-			'public' => $character->Visibility == 1,
-			'classes' => CharacterClassSchema::toListSchema($character->classes),
-			'stats' => CharacterStatSchema::toListSchema($character->stats),
-			'health' => CharacterHealthSchema::toSummarizedSchema($character->health),
-			'skills' => CharacterSkillSchema::toListSchema($character->skills)
+			'stats' => AbstractSchema::schema($character->stats, 'CharacterStat'),
+			'health' => AbstractSchema::schema($character->health, 'CharacterHealth'),
+			'skills' => AbstractSchema::schema($character->skills, 'CharacterSkill')
 		];
+		return $result;
 	}
 }
 

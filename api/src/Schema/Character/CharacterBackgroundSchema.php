@@ -1,23 +1,8 @@
 <?php
 namespace App\Schema\Character;
-use App\Model\Entity\CharacterBackground;
 use App\Schema\SchemaInterface;
 
 class CharacterBackgroundSchema implements SchemaInterface {
-	static function schema($background): mixed {
-		if ($background instanceof CharacterBackground) {
-			return CharacterBackgroundSchema::toExtendedSchema($background);
-		} else if (is_array($background)) {
-			$result = [];
-			foreach ($background as $b) {
-				if ($b instanceof CharacterBackground) {
-					$result[] = CharacterBackgroundSchema::toSummarizedSchema($b);
-				}
-			}
-			return $result;
-		}
-		return null;
-	}
 	static function toSummarizedSchema($background): mixed {
 		return CharacterBackgroundSchema::toExtendedSchema($background);
 	}

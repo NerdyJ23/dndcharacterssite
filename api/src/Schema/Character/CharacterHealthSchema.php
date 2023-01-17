@@ -1,13 +1,14 @@
 <?php
 namespace App\Schema\Character;
 use App\Model\Entity\CharacterHealth;
+use App\Schema\SchemaInterface;
 
-class CharacterHealthSchema {
-	static function toSummarizedSchema(CharacterHealth $health): array {
+class CharacterHealthSchema implements SchemaInterface {
+	static function toSummarizedSchema($health) {
 		return CharacterHealthSchema::toExtendedSchema($health);
 	}
 
-	static function toExtendedSchema(CharacterHealth $health): array {
+	static function toExtendedSchema($health) {
 		return [
 			'id' => $health->id,
 			'current_health' => $health->Current_Health,
