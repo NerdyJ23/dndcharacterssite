@@ -9,6 +9,7 @@ class Character extends Entity {
 	protected $_virtual = ['Full_Name', 'id'];
 	protected $_accessible = [
 		'First_Name' => true,
+		'Nickname' => true,
 		'Last_Name' => true,
 		'Race' => true,
 		'Exp' => true,
@@ -22,6 +23,10 @@ class Character extends Entity {
 	}
 	protected function _getFull_Name() {
 		$str = $this->First_Name;
+		if($this->Nickname !== null) {
+			$str .= ' "' . $this->Nickname . '"';
+		}
+
 		if($this->Last_Name !== null) {
 			$str .= ' ' . $this->Last_Name;
 		}

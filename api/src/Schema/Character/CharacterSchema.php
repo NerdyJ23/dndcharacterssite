@@ -21,6 +21,7 @@ class CharacterSchema implements SchemaInterface{
 		$result = CharacterSchema::toSummarizedSchema($character);
 		$result += [
 			'first_name' => $character->First_Name,
+			'nickname' => $character->Nickname,
 			'last_name' => $character->Last_Name,
 			'stats' => AbstractSchema::schema($character->stats, 'CharacterStat'),
 			'health' => AbstractSchema::schema($character->health, 'CharacterHealth'),
