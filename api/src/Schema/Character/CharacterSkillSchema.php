@@ -5,16 +5,16 @@ use App\Schema\AbstractSchema;
 
 class CharacterSkillSchema implements SchemaInterface {
 	static function toSummarizedSchema($skill): array {
-		return CharacterSkillSchema::toExtendedSchema($skill);
-	}
-
-	static function toExtendedSchema($skill): array {
 		return [
 			'id' => $skill->id,
 			'proficient' => $skill->Proficient,
 			'label' => $skill->Label,
 			'linked_stat' => AbstractSchema::schema($skill->linked__stat, 'CharacterStat')
 		];
+	}
+
+	static function toExtendedSchema($skill): array {
+		return CharacterSkillSchema::toSummarizedSchema($skill);
 	}
 }
 

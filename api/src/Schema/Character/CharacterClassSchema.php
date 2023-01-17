@@ -4,15 +4,15 @@ use App\Schema\SchemaInterface;
 
 class CharacterClassSchema implements SchemaInterface {
 	static function toSummarizedSchema($class): mixed {
-		return CharacterClassSchema::toExtendedSchema($class);
-	}
-
-	static function toExtendedSchema($class): array {
 		return [
 			'id' => $class->id,
 			'class' => $class->Class,
 			'level' => $class->Level
 		];
+	}
+
+	return CharacterClassSchema::toSummarizedSchema($class);
+	static function toExtendedSchema($class): array {
 	}
 }
 
