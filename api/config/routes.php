@@ -55,6 +55,15 @@ return static function (RouteBuilder $routes) {
 				$builder->patch('/', 'CharactersStats::update');
 				$builder->delete('/', 'CharactersStats::delete');
 			});
+
+			$builder->scope('/background', function (RouteBuilder $builder) {
+				$builder->get('/', 'CharactersBackground::list');
+			});
+
+			// $builder->resources('Background', function (RouteBuilder $builder) {
+			// 	$builder->patch('/', 'CharactersStats::update');
+			// });
+
 			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});
     });

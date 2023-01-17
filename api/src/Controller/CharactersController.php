@@ -9,6 +9,8 @@ use App\Controller\Security\AuthenticationController;
 use App\Controller\Component\Enum\StatusCodes;
 use App\Controller\Component\Pagination;
 
+use App\Schema\Character\CharacterSchema;
+
 class CharactersController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
@@ -24,10 +26,10 @@ class CharactersController extends ApiController {
 			->contain(['Classes'])
 			->limit($limit)
 			->page($page);
-		$data = $query->all()->toArray();
+		$data = $query->all();
 		$resultSet = [];
 		foreach($data as $item) {
-			$resultSet[] = $this->toSummarizedSchema($item);
+			$resultSet[] = CharacterSchema::toSummarizedSchema($item);
 		}
 		$this->set("result", $resultSet);
 		$this->set("count", sizeOf($resultSet));
@@ -68,7 +70,7 @@ class CharactersController extends ApiController {
 		$data = $query->all()->toArray();
 		$resultSet = [];
 		foreach($data as $item) {
-			$resultSet[] = $this->toSummarizedSchema($item);
+			$resultSet[] = CharacterSchema::toSummarizedSchema($item);
 		}
 
 		$this->set("result", $resultSet);
@@ -88,7 +90,7 @@ class CharactersController extends ApiController {
 
 		$result = $this->getById($charId, $token);
 		if (sizeOf($result) > 0) {
-			$this->set("result", $this->toExtendedSchema($result[0]));
+			$this->set("result", CharacterSchema::toExtendedSchema($result[0]));
 			return;
 		}
 		return $this->response(StatusCodes::NOT_FOUND);
@@ -102,7 +104,7 @@ class CharactersController extends ApiController {
 				'Characters.ID =' => $charId,
 				'Visibility = 1'
 			])
-			->contain(['Classes', 'Stats', 'Health']);
+			->contain(['Classes', 'Stats', 'Health', 'Background']);
 			return $query->all()->toArray();
 		} else {
 			$userDB = new UsersController();
@@ -119,7 +121,7 @@ class CharactersController extends ApiController {
 						['Characters.User_Access =' => $user->ID]
 					]
 			])
-			->contain(['Classes', 'Stats', 'Health']);
+			->contain(['Classes', 'Stats', 'Health', 'Background']);
 			return $query->all()->toArray();
 		}
 	}
@@ -194,34 +196,5 @@ class CharactersController extends ApiController {
 
 	private function getFilePath($id) {
 		return RESOURCES . 'portraits' . DS . $id . '.png';
-	}
-	private function toSummarizedSchema($character) {
-		return [
-			'id' => $character->id,
-			'full_name' => $character->Full_Name,
-			'classes' => $character->classes,
-			'race' => $character->Race,
-			'background' => $character->Background,
-			'alignment' => $character->Alignment,
-			'exp' => $character->Exp,
-			'visibility' => $character->Visibility,
-		];
-	}
-	private function toExtendedSchema($character) {
-		return [
-			'id' => $character->id,
-			'first_name' => $character->First_Name,
-			'last_name' => $character->Last_Name,
-			'full_name' => $character->Full_Name,
-			'race' => $character->Race,
-			'exp' => $character->Exp,
-			'background' => $character->Background,
-			'alignment' => $character->Alignment,
-			'visibility' => $character->Visibility,
-			'classes' => $character->classes,
-			'stats' => $character->stats,
-			'health' => $character->health,
-			'skills' => $character->skills
-		];
 	}
 }
