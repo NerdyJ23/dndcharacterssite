@@ -1,28 +1,20 @@
 <?php
 namespace App\Schema\Character;
-use App\Model\Entity\CharacterStat;
 
-class CharacterStatSchema {
-	static function toSummarizedSchema(CharacterStat $stat): array {
+use App\Schema\SchemaInterface;
+use App\Schema\AbstractSchema;
+
+class CharacterStatSchema implements SchemaInterface {
+	static function toSummarizedSchema($stat): array {
 		return CharacterStatSchema::toExtendedSchema($stat);
 	}
 
-	static function toExtendedSchema(CharacterStat $stat): array {
+	static function toExtendedSchema($stat): array {
 		return [
 			'id' => $stat->id,
 			'name' => $stat->Name,
 			'value' => $stat->Value
 		];
-	}
-
-	static function toListSchema(array $stats) {
-		$result = [];
-		foreach ($stats as $stat) {
-			if ($stat instanceof CharacterStat) {
-				$result[] = CharacterStatSchema::toExtendedSchema($stat);
-			}
-		}
-		return $result;
 	}
 }
 

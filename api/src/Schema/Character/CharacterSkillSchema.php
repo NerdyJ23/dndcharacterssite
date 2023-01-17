@@ -1,30 +1,20 @@
 <?php
 namespace App\Schema\Character;
-use App\Model\Entity\CharacterSkill;
-use App\Schema\Character\CharacterStatSchema;
+use App\Schema\SchemaInterface;
+use App\Schema\AbstractSchema;
 
-class CharacterSkillSchema {
-	static function toSummarizedSchema(CharacterSkill $skill): array {
+class CharacterSkillSchema implements SchemaInterface {
+	static function toSummarizedSchema($skill): array {
 		return CharacterSkillSchema::toExtendedSchema($skill);
 	}
 
-	static function toExtendedSchema(CharacterSkill $skill): array {
+	static function toExtendedSchema($skill): array {
 		return [
 			'id' => $skill->id,
 			'proficient' => $skill->Proficient,
 			'label' => $skill->Label,
-			'linked_stat' => CharacterStatSchema::toSummarizedSchema($skill->linked__stat)
+			'linked_stat' => AbstractSchema::schema($skill->linked__stat, 'CharacterStat')
 		];
-	}
-
-	static function toListSchema(array $skills) {
-		$result = [];
-		foreach ($skills as $skill) {
-			if ($skill instanceof CharacterSkill) {
-				$result[] = CharacterSkillSchema::toExtendedSchema($skill);
-			}
-		}
-		return $result;
 	}
 }
 

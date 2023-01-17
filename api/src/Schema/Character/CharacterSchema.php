@@ -1,16 +1,10 @@
 <?php
 namespace App\Schema\Character;
 
-use App\Model\Entity\Character;
 use App\Schema\AbstractSchema;
-use App\Schema\Character\CharacterHealthSchema;
-use App\Schema\Character\CharacterBackgroundSchema;
-use App\Schema\Character\CharacterClassSchema;
-use App\Schema\Character\CharacterStatSchema;
-use App\Schema\Character\CharacterSkillSchema;
-
-class CharacterSchema {
-	static function toSummarizedSchema(Character $character): array {
+use App\Schema\SchemaInterface;
+class CharacterSchema implements SchemaInterface{
+	static function toSummarizedSchema($character): array {
 		return [
 			'id' => $character->id,
 			'full_name' => $character->Full_Name,
@@ -23,7 +17,7 @@ class CharacterSchema {
 		];
 	}
 
-	static function toExtendedSchema(Character $character): array {
+	static function toExtendedSchema($character): array {
 		$result = CharacterSchema::toSummarizedSchema($character);
 		$result += [
 			'first_name' => $character->First_Name,
