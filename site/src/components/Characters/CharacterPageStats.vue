@@ -4,10 +4,10 @@
 			<template v-if="!loading" v-for="stat in stats">
 				<v-row>
 					<v-col>
-						<CharacterStatBox class="mx-8" :stat="stat.Name" :value="stat.Value" :key="stat.Name"/>
+						<CharacterStatBox class="mx-6" :stat="stat.name" :value="stat.value" :key="stat.name"/>
 					</v-col>
-					<v-col v-for="skill in skills" :key="skill.Name">
-						<CharacterSkillItem v-if="skill.stat == stat.Name" :label="stat.Name" :statValue="stat.Value" id="1"/>
+					<v-col v-for="skill in skills" :key="skill.name">
+						<CharacterSkillItem v-if="skill.stat == stat.name" :label="stat.name" :statValue="stat.value" id="1"/>
 					</v-col>
 				</v-row>
 			</template>

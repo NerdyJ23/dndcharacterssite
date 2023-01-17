@@ -40,21 +40,21 @@
 				<template>
 					<v-col>
 						<v-text-field
-							v-model="char.health.Max_Health"
+							v-model="char.health.max_health"
 							label="Max Health"
 							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
 						<v-text-field
-							v-model="char.health.Current_Health"
+							v-model="char.health.current_health"
 							label="Current Health"
 							type="number"
 						></v-text-field>
 					</v-col>
 					<v-col>
 						<v-text-field
-						v-model="char.health.Temporary_Health"
+						v-model="char.health.temporary_health"
 						label="Temporary Health"
 						type="number"
 						></v-text-field>
@@ -83,9 +83,9 @@ export default {
 	mounted() {
 		if (this.char.health == null) {
 			this.char.health = {
-				Max_Health: 0,
-				Current_Health: 0,
-				Temporary_Health: 0,
+				max_health: 0,
+				current_health: 0,
+				temporary_health: 0,
 			}
 		}
 	}

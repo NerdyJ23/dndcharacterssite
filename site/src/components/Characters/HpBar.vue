@@ -1,6 +1,6 @@
 <template>
-	<v-progress-linear class="rounded-lg" height="25" color="error" :value="(health.Current_Health / health.Max_Health) * 100">
-		{{ health.Current_Health }} / {{ health.Max_Health }} &nbsp; <span v-if="health.Temporary_Health > 0">( +{{ health.Temporary_Health }})</span>
+	<v-progress-linear class="rounded-lg" height="25" color="error" :value="(health.current_health / health.max_health) * 100">
+		{{ health.current_health }} / {{ health.max_health }} &nbsp; <span v-if="health.temporary_health > 0">( +{{ health.temporary_health }})</span>
 	</v-progress-linear>
 </template>
 <script>

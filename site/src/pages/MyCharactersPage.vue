@@ -88,10 +88,10 @@ export default {
 	},
 	computed: {
 		publicCharacters() {
-			return this.characters.list.filter(char => char.visibility == 1);
+			return this.characters.list.filter(char => char.public);
 		},
 		privateCharacters() {
-			return this.characters.list.filter(char => char.visibility == 0);
+			return this.characters.list.filter(char => !char.public);
 		}
 	}
 }

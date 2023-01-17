@@ -4,7 +4,7 @@
 			<v-row v-for="stat in stats" :key="stat.id">
 				<v-col>
 					<v-text-field
-						v-model="stat.Name"
+						v-model="stat.name"
 						label="Name"
 						required
 						dense
@@ -12,7 +12,7 @@
 				</v-col>
 				<v-col>
 					<v-text-field
-						v-model="stat.Value"
+						v-model="stat.value"
 						label="Label"
 						type="number"
 						hide-spin-buttons
