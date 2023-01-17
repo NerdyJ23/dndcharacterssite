@@ -2,6 +2,7 @@
 namespace App\Controller;
 use Cake\Controller\Controller;
 use App\Controller\Component\Enum\StatusCodes;
+use App\Controller\Component\Pagination;
 
 class CharactersClassesController extends ApiController {
 	public function initialize(): void {
@@ -9,9 +10,9 @@ class CharactersClassesController extends ApiController {
 	}
 
 	public function list() {
-		$limit = $this->request->getQuery('limit') == null ? 200 : $this->request->getQuery('limit');
-		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
-		$count = $this->request->getQuery('count') == null ? false : true;
+		$pagination = new Pagination($this->request);
+		$limit = $pagination->getLimit();
+		$page = $pagination->getPage();
 
 		$token = $this->request->getCookie('token');
 		$id = $this->request->getParam("character_id");
@@ -43,7 +44,9 @@ class CharactersClassesController extends ApiController {
 		}
 
 		$query = $this->CharactersClasses->find('all')
-			->where(['CharactersClasses.Char_ID' => $char->ID]);
+			->where(['CharactersClasses.Char_ID' => $char->ID])
+			->limit($limit)
+			->page($page);
 
 		$data = $query->all()->toArray();
 
