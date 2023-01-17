@@ -5,9 +5,7 @@ use App\Schema\SchemaInterface;
 
 class CharacterBackgroundSchema implements SchemaInterface {
 	static function schema($background): mixed {
-		if ($background == null) {
-			return null;
-		} else if ($background instanceof CharacterBackground) {
+		if ($background instanceof CharacterBackground) {
 			return CharacterBackgroundSchema::toExtendedSchema($background);
 		} else if (is_array($background)) {
 			$result = [];
@@ -18,7 +16,7 @@ class CharacterBackgroundSchema implements SchemaInterface {
 			}
 			return $result;
 		}
-		return [];
+		return null;
 	}
 	static function toSummarizedSchema($background): mixed {
 		return CharacterBackgroundSchema::toExtendedSchema($background);
