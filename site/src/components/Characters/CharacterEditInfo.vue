@@ -11,6 +11,12 @@
 				</v-col>
 				<v-col>
 					<v-text-field
+						v-model="char.nickname"
+						label="Nickname"
+					></v-text-field>
+				</v-col>
+				<v-col>
+					<v-text-field
 						v-model="char.last_name"
 						label="Last Name(s)"
 					></v-text-field>

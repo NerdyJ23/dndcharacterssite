@@ -1,6 +1,6 @@
 <template>
 	<v-card style="width:100%" class="fill-height">
-		<v-card-text class="fill-height">
+		<v-card-text v-if="char !== undefined && char !== null" class="fill-height">
 			<v-row>
 				<v-col cols="3">
 					<CharacterPortrait :id="char.id" :name="char.full_name"/>
@@ -8,9 +8,11 @@
 				<v-col cols="7">
 					<v-card outlined style="height:100%">
 						<v-card-title class="dnd-title">
-							{{ char.full_name }}
+							<div class="d-flex flex-row">
+								<span>{{ char.full_name }}</span>
+							</div>
 						</v-card-title>
-						<v-card-text  class="d-flex flex-column">
+						<v-card-text class="d-flex flex-column">
 							<span>
 								<span class="font-weight-bold">Class: </span>
 								<template v-for="a in char.classes">
@@ -18,15 +20,16 @@
 								</template>
 							</span>
 							<span>
-								<span class="font-weight-bold">Alignment: </span>{{ char.alignment }}
-							</span>
-							<span>
-								<span class="font-weight-bold">Background: </span> {{ char.background }}
-							</span>
-							<span>
 								<span class="font-weight-bold">Race: </span>
 								{{ char.race }}
 							</span>
+							<span>
+								<span class="font-weight-bold">Alignment: </span>{{ char.alignment }}
+							</span>
+							<span>
+								<span class="font-weight-bold">Background: </span> {{ char.background.name }}
+							</span>
+							<span class="font-italic">"{{ char.background.description }}"</span>
 						</v-card-text>
 					</v-card>
 				</v-col>
