@@ -7,6 +7,7 @@ use Cake\Filesystem\File;
 
 use App\Controller\Security\AuthenticationController;
 use App\Controller\Component\Enum\StatusCodes;
+use App\Controller\Component\Pagination;
 
 class CharactersController extends ApiController {
 	public function initialize(): void {
@@ -14,8 +15,9 @@ class CharactersController extends ApiController {
 	}
 
 	public function listPublicCharacters() {
-		$limit = $this->request->getQuery('limit') == null ? 200 : $this->request->getQuery('limit');
-		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
+		$pagination = new Pagination($this->request);
+		$limit = $pagination->getLimit();
+		$page = $pagination->getPage();
 
 		$query = $this->Characters->find('all')
 			->where(['Characters.Visibility = 1'])
@@ -201,7 +203,8 @@ class CharactersController extends ApiController {
 			'race' => $character->Race,
 			'background' => $character->Background,
 			'alignment' => $character->Alignment,
-			'exp' => $character->Exp
+			'exp' => $character->Exp,
+			'visibility' => $character->Visibility,
 		];
 	}
 	private function toExtendedSchema($character) {
