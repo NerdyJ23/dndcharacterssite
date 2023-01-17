@@ -13,7 +13,7 @@ class CharacterSchema {
 		return [
 			'id' => $character->id,
 			'full_name' => $character->Full_Name,
-			'classes' => CharacterClassSchema::toListSchema($character->classes),
+			'classes' => CharacterClassSchema::schema($character->classes),
 			'race' => $character->Race,
 			'background' => CharacterBackgroundSchema::schema($character->background),
 			'alignment' => $character->Alignment,
