@@ -11,8 +11,8 @@ class CharacterClassSchema implements SchemaInterface {
 		];
 	}
 
-	return CharacterClassSchema::toSummarizedSchema($class);
 	static function toExtendedSchema($class): array {
+		return CharacterClassSchema::toSummarizedSchema($class);
 	}
 }
 
