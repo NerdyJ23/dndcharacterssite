@@ -6,6 +6,7 @@ use App\Schema\Character\CharacterHealthSchema;
 use App\Schema\Character\CharacterBackgroundSchema;
 use App\Schema\Character\CharacterClassSchema;
 use App\Schema\Character\CharacterStatSchema;
+use App\Schema\Character\CharacterSkillSchema;
 
 class CharacterSchema {
 	static function toSummarizedSchema(Character $character): array {
@@ -35,7 +36,7 @@ class CharacterSchema {
 			'classes' => CharacterClassSchema::toListSchema($character->classes),
 			'stats' => CharacterStatSchema::toListSchema($character->stats),
 			'health' => CharacterHealthSchema::toSummarizedSchema($character->health),
-			'skills' => $character->skills
+			'skills' => CharacterSkillSchema::toListSchema($character->skills)
 		];
 	}
 }

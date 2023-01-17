@@ -1,7 +1,5 @@
 <?php
 namespace App\Schema\Character;
-
-use App\Schema\AbstractSchema;
 use App\Model\Entity\CharacterStat;
 
 class CharacterStatSchema {

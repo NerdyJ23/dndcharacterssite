@@ -26,6 +26,10 @@ class CharactersTable extends Table {
 		$this->hasOne('Background', ['className' => 'CharactersBackgrounds'])
 		->setForeignKey('Char_ID')
 		->setBindingKey('ID');
+
+		$this->hasMany('Skills', ['className' => 'CharactersSkills'])
+		->setForeignKey('Char_ID')
+		->setBindingKey('ID');
 	}
 
 	public function beforeSave(EventInterface $event, $entity, $options) {
