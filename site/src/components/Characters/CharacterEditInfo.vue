@@ -35,11 +35,22 @@
 						label="Alignment"
 					></v-text-field>
 				</v-col>
+			</v-row>
+			<v-row>
 				<v-col>
 					<v-text-field
-						v-model="char.background"
-						label="Background"
-					></v-text-field>
+							v-model="char.background.name"
+							label="Background Name"
+						></v-text-field>
+				</v-col>
+				<v-col>
+					<v-textarea
+							v-model="char.background.description"
+							label="Background Description"
+							rows="1"
+							counter="200"
+							auto-grow
+						></v-textarea>
 				</v-col>
 			</v-row>
 			<v-row>
@@ -83,7 +94,7 @@ export default {
 	props: {
 		char: {
 			type: Object,
-			required: false
+			required: true
 		}
 	},
 	mounted() {

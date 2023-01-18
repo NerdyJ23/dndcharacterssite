@@ -1,6 +1,6 @@
 <template>
 	<v-card class="dnd-edit-character">
-		<v-card-title>Edit Character</v-card-title>
+		<v-card-title>{{ state }} Character</v-card-title>
 		<v-card-text>
 			<v-row>
 				<v-col>
@@ -55,7 +55,33 @@ export default {
 	props: {
 		char: {
 			type: Object,
-			required: true
+			required: false,
+			default: () => {
+				return {
+					first_name: "",
+					nickname: "",
+					last_name: "",
+
+					race: "",
+					alignment: "",
+					exp: 0,
+					background: {
+						name: "",
+						description: ""
+					},
+
+					health: {
+						max_health: 0,
+						current_health: 0,
+						temporary_health: 0
+					}
+				}
+			}
+		},
+		state: {
+			type: String,
+			required: false,
+			default: "Edit"
 		}
 	},
 	data() {

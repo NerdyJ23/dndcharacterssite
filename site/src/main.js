@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import NotFoundPage from './pages/ErrorPages/NotFoundPage';
 import CharacterPage from './pages/CharacterPage';
 import MyCharactersPage from './pages/MyCharactersPage';
-
+import CharacterCreatePage from './pages/CharacterCreatePage';
 
 import vuetify from './plugins/vuetify'
 import store from './store'
@@ -23,6 +23,7 @@ Vue.use(VueRouter);
 
 const routes = [
 	{path: '/', component: Home},
+	{path: '/characters/create', component: CharacterCreatePage},
 	{path: '/characters/:id', component: CharacterPage},
 	{path: '/characters', component: MyCharactersPage},
 	{path: '*', component: NotFoundPage},
