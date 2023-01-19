@@ -4,8 +4,7 @@
 	</v-progress-linear>
 </template>
 <script>
-import characterApi from '@/services/characterApi';
-import {mapState} from 'vuex';
+import { mapState, mapGetters} from 'vuex';
 
 export default {
 	name: "ExpBar",
@@ -18,16 +17,14 @@ export default {
 	},
 	computed: {
 		...mapState(["CharacterStore"]),
-		nextLevel() {
-			for(let level of this.CharacterStore.expBreakpoints) {
-				if (this.exp < level) {
-					return level;
-				}
-			}
-			return '∞';
-		},
+		...mapGetters({
+			getNextLevel: "nextLevel"
+		}),
 		width() {
 			return (this.exp / this.nextLevel) * 100;
+		},
+		nextLevel() {
+			return this.getNextLevel(this.exp);
 		}
 	}
 

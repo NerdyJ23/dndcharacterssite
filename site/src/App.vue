@@ -65,7 +65,7 @@ export default {
 
 <style lang="scss">
 .sticky-bar{
-	position: sticky;
+	position: sticky !important;
 	bottom: 0;
 	opacity: 0.7;
 	&:hover {

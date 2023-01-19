@@ -81,6 +81,7 @@
 					<v-text-field
 						v-model="char.exp"
 						label="Experience Points"
+						:messages="`${nextLevel - char.exp} exp away from next level`"
 						type="number"
 					></v-text-field>
 				</v-col>
@@ -89,12 +90,18 @@
 	</v-container>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 export default {
 	name: "CharacterEditInfo",
 	props: {
 		char: {
 			type: Object,
 			required: true
+		}
+	},
+	data() {
+		return {
+			valid: false
 		}
 	},
 	mounted() {
@@ -104,6 +111,14 @@ export default {
 				current_health: 0,
 				temporary_health: 0,
 			}
+		}
+	},
+	computed: {
+		...mapGetters({
+			getNextLevel: "nextLevel"
+		}),
+		nextLevel() {
+			return this.getNextLevel(this.char.exp);
 		}
 	}
 }

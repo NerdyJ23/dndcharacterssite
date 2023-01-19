@@ -39,6 +39,19 @@
 					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" />
 				</v-col>
 			</v-row>
+			<v-row class="sticky-bar">
+				<v-col cols="1"></v-col>
+				<v-col class="d-flex justify-center">
+					<v-card elevation="0" :color="dirty ? 'yellow' : ''">
+						<v-card-text v-if="dirty">
+							Warning: You have unsaved changes
+						</v-card-text>
+						<v-card-actions>
+							<v-btn class="mx-auto" @click="save" color="primary">Save</v-btn>
+						</v-card-actions>
+					</v-card>
+				</v-col>
+			</v-row>
 		</v-card-text>
 	</v-card>
 </template>
@@ -92,7 +105,21 @@ export default {
 				stats: 1,
 				classes: 2,
 				inventory: 3
-			}
+			},
+			dirty: false,
+		}
+	},
+	methods: {
+		save() {
+
+		}
+	},
+	watch: {
+		char: {
+			handler() {
+				this.dirty = true;
+			},
+			deep: true
 		}
 	}
 }

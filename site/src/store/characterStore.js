@@ -31,10 +31,23 @@ const actions = {
 		} else {
 			return null;
 		}
-	}
+	},
 }
 
+const getters = {
+	nextLevel() {
+		return (exp) => {
+			for(let level of state.expBreakpoints) {
+				if (exp < level) {
+					return level;
+				}
+			}
+			return '∞';
+		}
+	},
+}
 export default {
 	state,
 	actions,
+	getters
 }
