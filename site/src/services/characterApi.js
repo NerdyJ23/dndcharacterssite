@@ -30,5 +30,13 @@ export default {
 			return error.response;
 		});
 		return response;
+	},
+	createCharacter(char) {
+		const response = cakeApi().post(`/characters`, {
+			withCredentials: true
+		}, char).catch((error) => {
+			return error.response;
+		});
+		return response;
 	}
 }

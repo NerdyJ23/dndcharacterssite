@@ -56,6 +56,8 @@
 	</v-card>
 </template>
 <script>
+import characterApi from '@/services/characterApi';
+
 import CharacterEditStats from '@/components/Characters/CharacterEditStats.vue';
 import CharacterEditInfo from '@/components/Characters/CharacterEditInfo.vue';
 
@@ -110,8 +112,14 @@ export default {
 		}
 	},
 	methods: {
-		save() {
+		async save() {
+			const response = await characterApi.createCharacter(this.char);
+			console.log(response);
+			if (response.status === 201) {
 
+			} else {
+				console.error("fucak");
+			}
 		}
 	},
 	watch: {
