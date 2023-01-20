@@ -188,7 +188,11 @@ ServerRequest::addDetector('tablet', function ($request) {
 });
 
 if(env("DEBUG") == "true") {
-    header('Access-Control-Allow-Origin: http://localhost:1234');
+	if(env("SECURE") == "true") {
+		header('Access-Control-Allow-Origin: https://localhost:1234');
+	} else {
+		header('Access-Control-Allow-Origin: http://localhost:1234');
+	}
 } else {
     header('Access-Control-Allow-Origin: https://dnd.jessprogramming.com');
 }
