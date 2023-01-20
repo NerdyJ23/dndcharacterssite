@@ -79,6 +79,47 @@ class CharactersController extends ApiController {
 		$this->set("limit", $limit);
 	}
 
+	public function create() {
+		$req = $this->request;
+
+		if (!(new AuthenticationController)->validToken($req->getCookie('token'))) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
+		}
+		$user = (new UsersController)->getByToken($req->getCookie('token'));
+		if ($user == null) {
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
+		if ($req->getData('first_name') == null) {
+			$this->set('errorMessage', 'Character requires a first name');
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
+		}
+
+		if ($req->getData('race') == null) {
+			$this->set('errorMessage', 'Character requires a race');
+			$this->response = $this->response(StatusCodes::USER_ERROR);
+			return;
+		}
+
+		$char = $this->fetchTable('Characters')->newEntity([
+			'First_Name' => $req->getData('first_name'),
+			'Nickname' => $req->getData('nickname'),
+			'Last_Name' => $req->getData('last_name'),
+			'Race' => $req->getData('race'),
+			'Exp' => $req->getData('exp'),
+			'Alignment' => $req->getData('alignment'),
+			'User_Access' => $user->ID,
+			'Visibility' => $req->getData('public') == null ? false : $req->getData('public')
+		]);
+		$result = $this->getTableLocator()->get('Characters')->save($char);
+
+		if ($result != false) {
+			return $this->response(StatusCodes::CREATED);
+		} else {
+			return $this->response(StatusCodes::SERVER_ERROR);
+		}
+	}
+
 	public function get() {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');

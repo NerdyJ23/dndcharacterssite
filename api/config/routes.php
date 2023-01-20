@@ -26,7 +26,10 @@ return static function (RouteBuilder $routes) {
 		$builder->scope('/characters', function (RouteBuilder $builder) {
 			$builder->connect('/list', 'Characters::listPublicCharacters');
 			$builder->applyMiddleware('auth');
-			$builder->connect('/', 'Characters::list');
+			$builder->get('/', 'Characters::list');
+			$builder->post('/', 'Characters::create');
+			$builder->patch('/', 'Characters::update');
+			$builder->delete('/', 'Characters::archive');
 		});
 		$builder->resources('Characters', function (RouteBuilder $builder) {
 			$builder->connect('/', 'Characters::get');

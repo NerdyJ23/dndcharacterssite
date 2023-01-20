@@ -13,9 +13,9 @@ class Character extends Entity {
 		'Last_Name' => true,
 		'Race' => true,
 		'Exp' => true,
-		'Background' => true,
 		'Alignment' => true,
-		'Visibility' => true
+		'Visibility' => true,
+		'User_Access' => true
 	];
 
 	protected function _getId() {
