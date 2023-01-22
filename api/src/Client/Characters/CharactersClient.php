@@ -6,9 +6,39 @@ use App\Client\Characters\CharactersBackgroundClient;
 use App\Client\Characters\CharactersHealthClient;
 use App\Client\Characters\CharactersStatsClient;
 use App\Client\Characters\CharactersClassesClient;
+use App\Client\Security\AuthClient;
+use App\Client\Users\UserClient;
+use App\Controller\Component\Pagination;
 
 class CharactersClient extends AbstractClient {
-	public function create(object $char): string {
+	const TABLE = "Characters";
+
+	static function listPublic(Pagination $pagination): array {
+		return parent::fetchTable('Characters')->find('all')
+		->where(['Characters.Visibility = 1'])
+		->contain(['Classes'])
+		->limit($pagination->getLimit())
+		->page($pagination->getPage())
+		->all()
+		->toArray();
+	}
+
+	static function list(Pagination $pagination, string $token):array {
+		$user = UserClient::getByToken($token);
+		if ($user == null) {
+			return UserClient::listPublic($pagination);
+		}
+
+		return parent::fetchTable('Characters')->find('all')
+		->where(['Characters.User_Access' => $user->ID])
+		->contain(['Classes'])
+		->limit($pagination->getLimit())
+		->page($pagination->getPage())
+		->all()
+		->toArray();
+	}
+
+	static function create(object $char): string {
 		$charItem = parent::fetchTable('Characters')->newEntity([
 			'First_Name' => $char->first_name,
 			'Race' => $char->race,
@@ -72,5 +102,52 @@ class CharactersClient extends AbstractClient {
 			return $result->id;
 		}
 		return "";
+	}
+
+	static function get(int $id, string $token) {
+		$valid = AuthClient::validToken($token);
+		if (!$valid) {
+			$query = parent::fetchTable(CharactersClient::TABLE)->find('all')
+			->where([
+				'Characters.ID =' => $id,
+				'Visibility = 1'
+			])
+			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat']);
+			$result = $query->all()->toArray();
+			return sizeOf($result) == 0 ? null : $result[0];
+		} else {
+			$user = UserClient::getByToken($token);
+			if ($user == null) {
+				return StatusCodes::TOKEN_MISMATCH;
+			}
+
+			$query = parent::fetchTable(CharactersClient::TABLE)->find('all')
+				->where([
+					'Characters.ID =' => $id,
+					'OR' => [
+						['Characters.Visibility = 1'],
+						['Characters.User_Access =' => $user->ID]
+					]
+			])
+			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat']);
+			$result = $query->all()->toArray();
+			return sizeOf($result) == 0 ? null : $result[0];
+		}
+	}
+
+	static function uploadImage($file, $charId):bool {
+		if ($file == null) {
+			return false;
+		}
+		try {
+			$file->moveTo(CharactersClient::getFilePath($charId));
+		} catch(exception $e) {
+			return false;
+		}
+		return true;
+	}
+
+	static function getFilePath($id) {
+		return RESOURCES . 'portraits' . DS . $id . '.png';
 	}
 }

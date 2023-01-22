@@ -5,13 +5,13 @@ use Cake\Controller\Controller;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 
-use App\Controller\Security\AuthenticationController;
 use App\Controller\Component\Enum\StatusCodes;
 use App\Controller\Component\Pagination;
 
 use App\Client\Characters\CharactersClient;
-
-use App\Schema\Character\CharacterSchema;
+use App\Client\Users\UserClient;
+use App\Client\Security\AuthClient;
+use App\Schema\AbstractSchema;
 
 class CharactersController extends ApiController {
 	public function initialize(): void {
@@ -20,74 +20,40 @@ class CharactersController extends ApiController {
 
 	public function listPublicCharacters() {
 		$pagination = new Pagination($this->request);
-		$limit = $pagination->getLimit();
-		$page = $pagination->getPage();
+		$result = CharactersClient::listPublic($pagination);
+		$resultSet = AbstractSchema::schema($result, "Character");
 
-		$query = $this->Characters->find('all')
-			->where(['Characters.Visibility = 1'])
-			->contain(['Classes'])
-			->limit($limit)
-			->page($page);
-		$data = $query->all();
-		$resultSet = [];
-		foreach($data as $item) {
-			$resultSet[] = CharacterSchema::toSummarizedSchema($item);
-		}
 		$this->set("result", $resultSet);
 		$this->set("count", sizeOf($resultSet));
-		$this->set("page", $page);
-		$this->set("limit", $limit);
+		$this->set("page", $pagination->getPage());
+		$this->set("limit", $pagination->getLimit());
+		$this->response = $this->response(StatusCodes::SUCCESS);
+		return;
 	}
 
 	public function list() {
-		$limit = $this->request->getQuery('limit') == null ? 200 : $this->request->getQuery('limit');
-		$page = $this->request->getQuery('page') == null ? 1 : $this->request->getQuery('page');
-
+		$pagination = new Pagination($this->request);
 		$token = $this->request->getCookie('token');
-		if ($token == null) {
-			return $this->listPublicCharacters($limit, $page);
-		} else if (!(new AuthenticationController)->validToken($token)) {
-			return $this->listPublicCharacters($limit, $page);
+
+		if ($token == null || !AuthClient::validToken($token)) {
+			AbstractSchema::schema(CharactersClient::listPublic($pagination), "Character");
 		}
-
-		$userDB = new UsersController();
-		$user = $userDB->getByToken($token);
-
-		if ($user == null) { //display only the public characters
-			$this->response = $this->response(StatusCodes::TOKEN_MISMATCH);
-			return $this->listPublicCharacters($limit, $page);
-		}
-
-		$query = $this->Characters->find('all')
-			->where(['Characters.User_Access =' => $user->ID])
-			->contain(['Classes'])
-			->limit($limit)
-			->page($page);
-
-			if ($query == null) {
-			$this->set('result', []);
-			return;
-		}
-
-		$data = $query->all()->toArray();
-		$resultSet = [];
-		foreach($data as $item) {
-			$resultSet[] = CharacterSchema::toSummarizedSchema($item);
-		}
+		$result = CharactersClient::list($pagination, $token);
+		$resultSet = AbstractSchema::schema($result, "Character");
 
 		$this->set("result", $resultSet);
 		$this->set("count", sizeOf($resultSet));
-		$this->set("page", $page);
-		$this->set("limit", $limit);
+		$this->set("page", $pagination->getPage());
+		$this->set("limit", $pagination->getLimit());
 	}
 
 	public function create() {
 		$req = $this->request;
 
-		if (!(new AuthenticationController)->validToken($req->getCookie('token'))) {
+		if (!AuthClient::validToken($req->getCookie('token'))) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
-		$user = (new UsersController)->getByToken($req->getCookie('token'));
+		$user = UserClient::getByToken($req->getCookie('token'));
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
@@ -117,7 +83,7 @@ class CharactersController extends ApiController {
 			'class' => $req->getData('class'),
 			'health' => $req->getData('health')
 		];
-		$result = (new CharactersClient)->create($char);
+		$result = CharactersClient::create($char);
 
 		if ($result != "") {
 			$this->response(StatusCodes::CREATED);
@@ -138,43 +104,14 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$result = $this->getById($charId, $token);
+		$result = (new CharactersClient)->get($charId, $token);
 		if (sizeOf($result) > 0) {
-			$this->set("result", CharacterSchema::toExtendedSchema($result[0]));
+			$this->set("result", AbstractSchema::schema($result[0], "Character"));
 			return;
 		}
 		return $this->response(StatusCodes::NOT_FOUND);
 	}
 
-	public function getById($charId, $token) {
-		$valid = (new AuthenticationController)->validToken($token);
-		if (!$valid) {
-			$query = $this->Characters->find('all')
-			->where([
-				'Characters.ID =' => $charId,
-				'Visibility = 1'
-			])
-			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat']);
-			return $query->all()->toArray();
-		} else {
-			$userDB = new UsersController();
-			$user = $userDB->getByToken($token);
-			if ($user == null) {
-				return $this->response(StatusCodes::TOKEN_MISMATCH);
-			}
-
-			$query = $this->Characters->find('all')
-				->where([
-					'Characters.ID =' => $charId,
-					'OR' => [
-						['Characters.Visibility = 1'],
-						['Characters.User_Access =' => $user->ID]
-					]
-			])
-			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat']);
-			return $query->all()->toArray();
-		}
-	}
 	public function getCharacterImage() {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
@@ -184,26 +121,22 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$char = $this->getById($charId, $token);
-		if (sizeOf($char) == 0) {
+		$char = CharactersClient::get($charId, $token);
+		if ($char == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-		$filepath = $this->getFilePath($id);
+		$filepath = CharactersClient::getFilePath($charId);
 		if (is_file($filepath)) {
 			return $this->response->withFile($filepath);
 		} else {
 			return $this->response(StatusCodes::NO_CONTENT);
 		}
-
-		$char = $char[0];
-		$this->set('id', $id);
-		$this->set('url', $char->Portrait);
-		return;
 	}
+
 	public function uploadCharacterImage() {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
-		$valid = (new AuthenticationController)->validToken($token);
+		$valid = AuthClient::validToken($token);
 		if (!$valid) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
@@ -213,38 +146,24 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$userDB = new UsersController();
-		$user = $userDB->getByToken($token);
+		$user = UserClient::getByToken($token);
 		if ($user == null) {
-			return $this->response(StatusCodes::TOKEN_MISMATCH);
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
-		if ($userId != false) {
-			$query = $this->Characters->find('all')
-				->where([
-					'Characters.ID =' => $charId,
-					'Characters.User_Access' => $user->ID
-				]);
-			$result = $query->all()->toArray();
+		if(CharactersClient::get($charId, $token) == null) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
 
-			if(sizeof($result) == 0) {
-				return $this->response(StatusCodes::NOT_FOUND);
-			}
-			$file = $this->request->getData('image');
-			try {
-				$file->moveTo($this->getFilePath($id));
-			} catch(exception $e) {
-				return $this->response(StatusCodes::SERVER_ERROR);
-			}
-			if (is_file($this->getFilePath($id))) {
+		$file = $this->request->getData('image');
+		if (CharactersClient::uploadImage($file, $charId)) {
+			if (is_file(CharactersClient::getFilePath($charId))) {
 				return $this->response(StatusCodes::NO_CONTENT);
 			}
 			return $this->response(StatusCodes::SERVER_ERROR);
+		} else {
+			return $this->response(StatusCodes::SERVER_ERROR);
 		}
 		return $this->response(StatusCodes::TOKEN_MISMATCH);
-	}
-
-	private function getFilePath($id) {
-		return RESOURCES . 'portraits' . DS . $id . '.png';
 	}
 }

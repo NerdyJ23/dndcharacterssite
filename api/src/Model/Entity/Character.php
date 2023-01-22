@@ -5,7 +5,7 @@ use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
 
 class Character extends Entity {
-	protected $_hidden = ['ID', 'User_Access'];
+	protected $_hidden = ['ID', 'User_Access', 'Background'];
 	protected $_virtual = ['Full_Name', 'id'];
 	protected $_accessible = [
 		'First_Name' => true,
