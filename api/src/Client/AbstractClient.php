@@ -2,18 +2,18 @@
 namespace App\Client;
 
 use Cake\ORM\TableRegistry;
-use App\Controller\Security\EncryptionController;
+use App\Client\Security\EncryptionClient;
 
 class AbstractClient {
-	public function fetchTable(string $table) {
+	static function fetchTable(string $table) {
 		return TableRegistry::getTableLocator()->get($table);
 	}
 
 	public function decrypt(string $id):int {
-		return (new EncryptionController)->decrypt($id);
+		return EncryptionClient::decrypt($id);
 	}
 
 	public function encrypt(int $id):string {
-		return (new EncryptionController)->encrypt($id);
+		return EncryptionClient::encrypt($id);
 	}
 }
