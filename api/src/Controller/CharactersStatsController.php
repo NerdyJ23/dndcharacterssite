@@ -5,6 +5,10 @@ use Cake\Controller\Controller;
 use App\Controller\Component\Enum\StatusCodes;
 use App\Controller\Component\Pagination;
 
+use App\Client\Characters\CharactersStatsClient;
+
+use App\Schema\AbstractSchema;
+
 class CharactersStatsController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
@@ -20,20 +24,17 @@ class CharactersStatsController extends ApiController {
 
 		$charDB = new CharactersController();
 		$char = $charDB->getById($this->decrypt($id), $token);
+
 		if (sizeOf($char) == 0) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-		$query = $this->CharactersStats->find('all')
-		->where(['Char_ID' => $char[0]->ID])
-		->limit($limit)
-		->page($page);
 
 		if ($query == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		$result = $query->all()->toArray();
-		$this->set("result", sizeOf($result) == 0 ? [] : $result);
+		$this->set("result", sizeOf($result) == 0 ? [] : AbstractSchema::schema($result, "CharacterStat"));
 		$this->set("page", $page);
 		$this->set("limit", $limit);
 		$this->set("count", sizeOf($result));
@@ -91,20 +92,6 @@ class CharactersStatsController extends ApiController {
 			return;
 		}
 		return $this->response(StatusCodes::SERVER_ERROR);
-	}
-
-	public function createByCharId(int $charId, object $stat) {
-		$statItem = $this->fetchTable('CharactersStats')->newEntity([
-			'Char_ID' => $charId,
-			'Name' => $stat->name,
-			'Value' => $stat->value
-		]);
-		$result = $this->fetchTable('CharactersStats')->save($statItem);
-
-		if ($result != false) {
-			return $result->id;
-		}
-		return "";
 	}
 
 	public function update() {
@@ -213,6 +200,7 @@ class CharactersStatsController extends ApiController {
 		}
 		return $this->response(StatusCodes::SERVER_ERROR);
 	}
+
 	private function _getCharacter($id) {
 		$charDB = $this->getTableLocator()->get('Characters');
 		$query = $charDB->find('all')
