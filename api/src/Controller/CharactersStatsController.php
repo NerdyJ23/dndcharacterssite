@@ -93,6 +93,20 @@ class CharactersStatsController extends ApiController {
 		return $this->response(StatusCodes::SERVER_ERROR);
 	}
 
+	public function createByCharId(int $charId, object $stat) {
+		$statItem = $this->fetchTable('CharactersStats')->newEntity([
+			'Char_ID' => $charId,
+			'Name' => $stat->name,
+			'Value' => $stat->value
+		]);
+		$result = $this->fetchTable('CharactersStats')->save($statItem);
+
+		if ($result != false) {
+			return $result->id;
+		}
+		return "";
+	}
+
 	public function update() {
 		$name = $this->request->getData("stat");
 		$value = $this->request->getData("value");

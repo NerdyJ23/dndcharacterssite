@@ -9,6 +9,8 @@ use App\Controller\Security\AuthenticationController;
 use App\Controller\Component\Enum\StatusCodes;
 use App\Controller\Component\Pagination;
 
+use App\Client\Characters\CharactersClient;
+
 use App\Schema\Character\CharacterSchema;
 
 class CharactersController extends ApiController {
@@ -100,23 +102,30 @@ class CharactersController extends ApiController {
 			$this->response = $this->response(StatusCodes::USER_ERROR);
 			return;
 		}
+		$char = (object)[
+			'first_name' => $req->getData('first_name'),
+			'nickname' => $req->getData('nickname'),
+			'last_name' => $req->getData('last_name'),
+			'race' => $req->getData('race'),
+			'exp' => $req->getData('exp'),
+			'alignment' => $req->getData('alignment'),
+			'user_access' => $user->ID,
 
-		$char = $this->fetchTable('Characters')->newEntity([
-			'First_Name' => $req->getData('first_name'),
-			'Nickname' => $req->getData('nickname'),
-			'Last_Name' => $req->getData('last_name'),
-			'Race' => $req->getData('race'),
-			'Exp' => $req->getData('exp'),
-			'Alignment' => $req->getData('alignment'),
-			'User_Access' => $user->ID,
-			'Visibility' => $req->getData('public') == null ? false : $req->getData('public')
-		]);
-		$result = $this->getTableLocator()->get('Characters')->save($char);
+			'public' => $req->getData('public'),
+			'stats' => $req->getData('stats'),
+			'background' => $req->getData('background'),
+			'class' => $req->getData('class'),
+			'health' => $req->getData('health')
+		];
+		$result = (new CharactersClient)->create($char);
 
-		if ($result != false) {
-			return $this->response(StatusCodes::CREATED);
+		if ($result != "") {
+			$this->response(StatusCodes::CREATED);
+			$this->set("id", $result);
+			return;
 		} else {
-			return $this->response(StatusCodes::SERVER_ERROR);
+			$this->response(StatusCodes::SERVER_ERROR);
+			return;
 		}
 	}
 

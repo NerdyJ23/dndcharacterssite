@@ -6,7 +6,7 @@ class CharacterClassSchema implements SchemaInterface {
 	static function toSummarizedSchema($class): mixed {
 		return [
 			'id' => $class->id,
-			'class' => $class->Class,
+			'name' => $class->Class,
 			'level' => $class->Level
 		];
 	}

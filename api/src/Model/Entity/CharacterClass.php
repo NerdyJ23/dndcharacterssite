@@ -9,7 +9,6 @@ class CharacterClass extends Entity {
 	protected $_hidden = ['ID', 'Char_ID'];
 	protected $_virtual = ['id'];
 	protected $_accessible = [
-		'ID' => true, //int
 		'Char_ID' => true, //varchar
 		'Class' => true, //varchar hashed
 		'Level' => true, //varchar

@@ -21,6 +21,9 @@ class Character extends Entity {
 	protected function _getId() {
 		return ((new EncryptionController)->encrypt($this->_fields['ID']));
 	}
+	protected function _getVisibility(): int {
+		return intval($this->_fields["Visibility"]);
+	}
 	protected function _getFull_Name() {
 		$str = $this->First_Name;
 		if($this->Nickname !== null) {
