@@ -10,16 +10,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Cake\Http\Exception\ForbiddenException;
 
-use App\Controller\Security\AuthenticationController;
-
+use App\Client\Security\AuthClient;
 class AuthenticationMiddleware implements MiddlewareInterface {
 
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-		$auth = new AuthenticationController();
-		// return $handler->handle($request);
 		if(!$request->getCookie('token')) { //and auth token correctly
 			return $this->_accessDenied();
-		} else if(!$auth->validToken($request->getCookie('token'))) {
+		} else if(!AuthClient::validToken($request->getCookie('token'))) {
 			return $this->_accessDenied();
 		} else {
 			return $handler->handle($request);
@@ -27,6 +24,7 @@ class AuthenticationMiddleware implements MiddlewareInterface {
 	}
 
 	private function _accessDenied():Response {
+
 		$response = new Response();
 		$response = $response->withStatus(403, 'Not Logged In');
 		$response = $response->withType('json');
