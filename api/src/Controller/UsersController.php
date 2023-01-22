@@ -9,7 +9,7 @@ use Cake\I18n\FrozenTime;
 use App\Controller\Security\EncryptionController;
 use App\Controller\Security\AuthenticationController;
 use App\Controller\Component\Enum\StatusCodes;
-
+use App\Client\Users\UserClient;
 
 class UsersController extends ApiController {
 	public function initialize(): void {
@@ -42,78 +42,22 @@ class UsersController extends ApiController {
 
 	public function get() {
 		$token = $this->request->getCookie('token');
-		$valid = (new AuthenticationController)->validToken($token);
-		if ($valid == true) {
-			$query = $this->Users->find('all')
-				->where(['Users.Token = ' => $token])
-				->limit(1);
-			$data = $query->all()->toArray();
-			if(sizeof($data) > 0) {
-				$this->set('user', $this->toExtendedSchema($data[0]));
-				return;
-			} else {
-				return;
-			}
+		$result = UserClient::getByToken($token);
+		if ($result != null) {
+			$this->set('user', $this->toExtendedSchema($result));
 		} else {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 	}
 
-	public function getByToken($token) {
-		if ($token == null) {
-			return null;
-		}
-		$valid = (new AuthenticationController)->validToken($token);
-
-		if (!$valid) {
-			return null;
-		}
-
-		$query = $this->Users->find('all')
-			->where(['Users.Token = ' => $token])
-			->limit(1);
-
-		if ($query == null) {
-			return null;
-		}
-
-		$data = $query->all()->toArray();
-		return sizeOf($data) == 0 ? null : $data[0];
-
-	}
 	public function login() {
 		$pass = $this->request->getData('password');
 		$username = $this->request->getData('username');
-		$validUser = (new AuthenticationController)->validUser($username, $pass);
-		if($validUser == true) {
-			$query = $this->Users->find('all')
-				->where(['Users.Username = ' => $username])
-				->limit(1);
-			$data = $query->all()->toArray();
-
-			return $this->_loginAuth($data[0]);
-		} else {
-			$this->response = $this->response->withStatus(403, 'Login failed. Check credentials are correct');
-		}
-	}
-
-	private function _loginAuth($user) {
-		$decrypted = intval((new EncryptionController)->decrypt($user->encryptedId));
-		$userTable = $this->getTableLocator()->get('Users');
-		$u = $userTable->get($decrypted);
-		$token = (new AuthenticationController)->generateToken();
-		$userTable->patchEntity($u, ['Token' => $token]);
-
-		$u->token = $token;
-		$u->token_valid_until = $u->setTokenTimeLimit(7);
-		$result = $userTable->saveOrFail($u);
-
-		$aftersave = $this->Users->get($decrypted);
-		if($result != false) {
-			// $response = $this->response;
+		$token = UserClient::login($username, $pass);
+		if ($token != null) {
 			$cookie = Cookie::create(
 				'token',
-				$u->token,
+				$token,
 				[
 					'expires' => new DateTime('+ 7 days'),
 					'httpOnly' => true,
@@ -127,9 +71,8 @@ class UsersController extends ApiController {
 			// $response = $response->withHeader('Set-Cookie', 'accessToken=' . $u->token . '; HttpOnly; Secure; SameSite=Strict; Max-Age=604800;');
 			// $response = $response->withHeader('Access-Control-Allow-Origin', 'http://localhost:1234');
 			$this->response = $this->response->withStatus(200, 'Logged in successfully');
-			return;
 		} else {
-			return $this->response(StatusCodes::USER_ERROR);
+			$this->response = $this->response->withStatus(403, 'Login failed. Check credentials are correct');
 		}
 	}
 
