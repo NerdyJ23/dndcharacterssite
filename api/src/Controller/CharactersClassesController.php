@@ -4,6 +4,8 @@ use Cake\Controller\Controller;
 use App\Controller\Component\Enum\StatusCodes;
 use App\Controller\Component\Pagination;
 
+use App\Schema\AbstractSchema;
+
 class CharactersClassesController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
@@ -55,7 +57,7 @@ class CharactersClassesController extends ApiController {
 			return;
 		}
 
-		$this->set("result", $data);
+		$this->set("result", AbstractSchema::schema($data, "CharacterClass"));
 	}
 
 	public function create() {
@@ -103,7 +105,7 @@ class CharactersClassesController extends ApiController {
 
 		$result = $this->fetchTable('CharactersClasses')->save($class);
 		if ($result) {
-			$this->set("result", $result);
+			$this->set("result", $result->id);
 			$this->response = $this->response(StatusCodes::CREATED);
 			return;
 		}
