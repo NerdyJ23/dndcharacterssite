@@ -7,8 +7,10 @@ use App\Client\Characters\CharactersHealthClient;
 use App\Client\Characters\CharactersStatsClient;
 use App\Client\Characters\CharactersClassesClient;
 use App\Client\Security\AuthClient;
+use App\Client\Security\EncryptionClient;
 use App\Client\Users\UserClient;
 use App\Controller\Component\Pagination;
+use App\Controller\Component\Enum\SuccessState;
 
 class CharactersClient extends AbstractClient {
 	const TABLE = "Characters";
@@ -38,11 +40,15 @@ class CharactersClient extends AbstractClient {
 		->toArray();
 	}
 
-	static function create(object $char): string {
+	static function create(object $char, int $userId): string {
+		if (!property_exists($char, "first_name") && !property_exists($char, "race") && !property_exists($char)) {
+			return "";
+		}
+
 		$charItem = parent::fetchTable('Characters')->newEntity([
 			'First_Name' => $char->first_name,
 			'Race' => $char->race,
-			'User_Access' => $char->user_access,
+			'User_Access' => $userId,
 		]);
 
 		if (property_exists($char, "nickname") && $char->nickname != null) {
@@ -72,7 +78,7 @@ class CharactersClient extends AbstractClient {
 				if (is_string($char->health)) {
 					$char->health = json_decode($char->health);
 				}
-				(new CharactersHealthClient)->create($this->decrypt($result->id), (object)$char->health);
+				CharactersHealthClient::create(EncryptionClient::decrypt($result->id), (object)$char->health);
 			}
 
 			if (property_exists($char, "stats")) {
@@ -80,7 +86,7 @@ class CharactersClient extends AbstractClient {
 					$char->stats = json_decode($char->stats);
 				}
 				foreach ($char->stats as $stat) {
-					(new CharactersStatsClient)->create($this->decrypt($result->id), $stat);
+					CharactersStatsClient::create(EncryptionClient::decrypt($result->id), $stat);
 				}
 			}
 
@@ -89,7 +95,7 @@ class CharactersClient extends AbstractClient {
 					$char->class = json_decode($char->class);
 				}
 				foreach ($char->class as $class) {
-					(new CharactersClassesClient)->create($this->decrypt($result->id), $class);
+					CharactersClassesClient::create(EncryptionClient::decrypt($result->id), $class);
 				}
 			}
 
@@ -97,7 +103,7 @@ class CharactersClient extends AbstractClient {
 				if (is_string($char->background)) {
 					$char->background = json_decode($char->background);
 				}
-				(new CharactersBackgroundClient)->create($this->decrypt($result->id), $char->background);
+				CharactersBackgroundClient::create(EncryptionClient::decrypt($result->id), $char->background);
 			}
 			return $result->id;
 		}
@@ -133,6 +139,54 @@ class CharactersClient extends AbstractClient {
 			$result = $query->all()->toArray();
 			return sizeOf($result) == 0 ? null : $result[0];
 		}
+	}
+
+	static function update(object $char, int $userId):SuccessState {
+		$charItem = parent::fetchTable(CharactersClient::TABLE)->get(EncryptionClient::decrypt($char->id));
+		$response = SuccessState::NONE;
+
+		if (property_exists($char, 'first_name') && $char->first_name != null) {
+			$charItem->First_Name = $char->first_name;
+		}
+
+		if (property_exists($char, 'nickname') && $char->nickname != null) {
+			$charItem->Nickname = $char->nickname;
+		}
+
+		if (property_exists($char, 'last_name') && $char->last_name != null) {
+			$charItem->Last_Name = $char->last_name;
+		}
+
+		if (property_exists($char, 'race') && $char->race != null) {
+			$charItem->Race = $char->race;
+		}
+
+		if (property_exists($char, 'exp') && $char->exp != null) {
+			$charItem->Exp = $char->exp;
+		}
+
+		if (property_exists($char, 'alignment') && $char->alignment != null) {
+			$charItem->Alignment = $char->alignment;
+		}
+
+		if (property_exists($char, 'public') && $char->public != null) {
+			$charItem->Visibility = $char->public;
+		}
+
+		if (property_exists($char, 'stats') && $char->stats != null) {
+			$charStats = json_decode($char->stats);
+			foreach ($charStats as $stat) {
+				$result = CharactersStatsClient::update($stat, $userId);
+				$response = SuccessState::success($response, $result);
+			}
+		}
+		$result = parent::fetchTable(CharactersClient::TABLE)->save($charItem);
+		if ($result == false) {
+			$response = SuccessState::success($response, $result);
+		} else {
+			$response = SuccessState::success($response, true);
+		}
+		return $response;
 	}
 
 	static function uploadImage($file, $charId):bool {
