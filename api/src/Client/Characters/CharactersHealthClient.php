@@ -4,7 +4,7 @@ namespace App\Client\Characters;
 use App\Client\AbstractClient;
 class CharactersHealthClient extends AbstractClient {
 
-	public function create(int $charId, object $health) {
+	static function create(int $charId, object $health) {
 		$healthItem = parent::fetchTable('CharactersHealth')->newEntity([
 			'Char_ID' => $charId,
 			'Current_Health' => $health->current_health

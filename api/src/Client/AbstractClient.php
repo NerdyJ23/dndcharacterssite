@@ -9,11 +9,11 @@ class AbstractClient {
 		return TableRegistry::getTableLocator()->get($table);
 	}
 
-	public function decrypt(string $id):int {
+	static function decrypt(string $id):int {
 		return EncryptionClient::decrypt($id);
 	}
 
-	public function encrypt(int $id):string {
+	static function encrypt(int $id):string {
 		return EncryptionClient::encrypt($id);
 	}
 }
