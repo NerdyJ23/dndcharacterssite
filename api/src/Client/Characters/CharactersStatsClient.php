@@ -4,7 +4,7 @@ namespace App\Client\Characters;
 use App\Client\AbstractClient;
 
 class CharactersStatsClient extends AbstractClient {
-	public function list(int $charId):array {
+	static function list(int $charId):array {
 		$query = parent::fetchTable('CharactersStats')->find('all')
 		->where(['Char_ID' => $char[0]->ID])
 		->limit($limit)
@@ -13,7 +13,7 @@ class CharactersStatsClient extends AbstractClient {
 		return $query == null ? null : $query->all()->toArray();
 	}
 
-	public function create(int $charId, object $stats):string {
+	static function create(int $charId, object $stats):string {
 		$statItem = parent::fetchTable('CharactersStats')->newEntity([
 			'Char_ID' => $charId,
 			'Name' => $stats->name,
@@ -26,5 +26,18 @@ class CharactersStatsClient extends AbstractClient {
 			return $result->id;
 		}
 		return "";
+	}
+
+	static function update(object $stat):bool {
+		if (!property_exists($stat, 'id') || $stat->id == null) {
+			return false;
+		}
+
+		$statItem = parent::fetchTable('CharactersStats')->get(parent::decrypt($stat->id));
+		if ($result != false) {
+
+		} else {
+			return false;
+		}
 	}
 }
