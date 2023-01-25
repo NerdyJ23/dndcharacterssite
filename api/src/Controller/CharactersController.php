@@ -143,12 +143,12 @@ class CharactersController extends ApiController {
 
 		if ($result == SuccessState::SUCCESS) {
 			return $this->response(StatusCodes::NO_CONTENT);
-		} else if ($result == SuccessState::FAIL) {
-			return $this->response(StatusCodes::SERVER_ERROR);
-		} else {
+		} else if ($result == SuccessState::PARTIAL) {
 			$this->response = $this->response(StatusCodes::SUCCESS);
 			$this->set('statusMessage', 'Some fields failed to save correctly');
 			return;
+		} else {
+			return $this->response(StatusCodes::SERVER_ERROR);
 		}
 	}
 
