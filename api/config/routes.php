@@ -28,33 +28,39 @@ return static function (RouteBuilder $routes) {
 			$builder->applyMiddleware('auth');
 			$builder->get('/', 'Characters::list');
 			$builder->post('/', 'Characters::create');
-			$builder->patch('/', 'Characters::update');
-			$builder->delete('/', 'Characters::archive');
 		});
 		$builder->resources('Characters', function (RouteBuilder $builder) {
-			$builder->connect('/', 'Characters::get');
+			$builder->get('/', 'Characters::get');
+			$builder->applyMiddleware('auth');
+			$builder->patch('/', 'Characters::update');
+			$builder->delete('/', 'Characters::archive');
 
 			$builder->scope('/image', function (RouteBuilder $builder) {
 				$builder->get('/', 'Characters::getCharacterImage');
+				$builder->applyMiddleware('auth');
 				$builder->post('/', 'Characters::uploadCharacterImage');
 			});
 
 			$builder->scope('/classes', function (RouteBuilder $builder) {
 				$builder->get('/', 'CharactersClasses::list');
+				$builder->applyMiddleware('auth');
 				$builder->post('/', 'CharactersClasses::create');
 			});
 
 			$builder->resources('Classes', function (RouteBuilder $builder) {
+				$builder->applyMiddleware('auth');
 				$builder->patch('/', 'CharactersClasses::update');
 				$builder->delete('/', 'CharactersClasses::delete');
 			});
 
 			$builder->scope('/stats', function (RouteBuilder $builder) {
 				$builder->get('/', 'CharactersStats::list');
+				$builder->applyMiddleware('auth');
 				$builder->post('/', 'CharactersStats::create');
 			});
 
 			$builder->resources('Stats', function (RouteBuilder $builder) {
+				$builder->applyMiddleware('auth');
 				$builder->patch('/', 'CharactersStats::update');
 				$builder->delete('/', 'CharactersStats::delete');
 			});
