@@ -12,6 +12,7 @@ use App\Client\Characters\CharactersClient;
 use App\Client\Users\UserClient;
 use App\Client\Security\AuthClient;
 use App\Schema\AbstractSchema;
+use App\Controller\Component\Enum\SuccessState;
 
 class CharactersController extends ApiController {
 	public function initialize(): void {
@@ -75,7 +76,7 @@ class CharactersController extends ApiController {
 			'race' => $req->getData('race'),
 			'exp' => $req->getData('exp'),
 			'alignment' => $req->getData('alignment'),
-			'user_access' => $user->ID,
+			// 'user_access' => $user->ID,
 
 			'public' => $req->getData('public'),
 			'stats' => $req->getData('stats'),
@@ -83,7 +84,7 @@ class CharactersController extends ApiController {
 			'class' => $req->getData('class'),
 			'health' => $req->getData('health')
 		];
-		$result = CharactersClient::create($char);
+		$result = CharactersClient::create($char, $user->ID);
 
 		if ($result != "") {
 			$this->response(StatusCodes::CREATED);
@@ -104,12 +105,51 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$result = (new CharactersClient)->get($charId, $token);
-		if (sizeOf($result) > 0) {
-			$this->set("result", AbstractSchema::schema($result[0], "Character"));
+		$result = CharactersClient::get($charId, $token);
+		if ($result != null) {
+			$this->set("result", AbstractSchema::schema($result, "Character"));
 			return;
 		}
 		return $this->response(StatusCodes::NOT_FOUND);
+	}
+
+	public function update() {
+		$req = $this->request;
+
+		if (!AuthClient::validToken($req->getCookie('token'))) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
+		}
+		$user = UserClient::getByToken($req->getCookie('token'));
+		if ($user == null) {
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
+
+		$char = (object)[
+			'id' => $req->getParam('character_id'),
+			'first_name' => $req->getData('first_name'),
+			'nickname' => $req->getData('nickname'),
+			'last_name' => $req->getData('last_name'),
+			'race' => $req->getData('race'),
+			'exp' => $req->getData('exp'),
+			'alignment' => $req->getData('alignment'),
+
+			'public' => $req->getData('public'),
+			'stats' => $req->getData('stats'),
+			'background' => $req->getData('background'),
+			'class' => $req->getData('class'),
+			'health' => $req->getData('health')
+		];
+		$result = CharactersClient::update($char, $user->ID);
+
+		if ($result == SuccessState::SUCCESS) {
+			return $this->response(StatusCodes::NO_CONTENT);
+		} else if ($result == SuccessState::FAIL) {
+			return $this->response(StatusCodes::SERVER_ERROR);
+		} else {
+			$this->response = $this->response(StatusCodes::SUCCESS);
+			$this->set('statusMessage', 'Some fields failed to save correctly');
+			return;
+		}
 	}
 
 	public function getCharacterImage() {
