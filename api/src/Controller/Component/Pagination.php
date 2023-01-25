@@ -4,7 +4,7 @@ use Cake\Http\ServerRequest;
 
 class Pagination {
 	private $page = 1;
-	private $limit = 200;
+	private $limit = 30;
 
 	function __construct(ServerRequest $request) {
 		if ($request != null) {
