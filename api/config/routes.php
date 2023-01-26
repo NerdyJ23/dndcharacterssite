@@ -45,6 +45,7 @@ return static function (RouteBuilder $routes) {
 			});
 
 			$builder->resources('Classes', function (RouteBuilder $builder) {
+				$builder->get('/', 'CharactersClasses::get');
 				$builder->applyMiddleware('auth');
 				$builder->patch('/', 'CharactersClasses::update');
 				$builder->delete('/', 'CharactersClasses::delete');
@@ -70,7 +71,7 @@ return static function (RouteBuilder $routes) {
 			// 	$builder->patch('/', 'CharactersStats::update');
 			// });
 			$builder->resources('Health', function (RouteBuilder $builder) {
-				$builder->get('/', 'CharactersHealth::read');
+				$builder->get('/', 'CharactersHealth::get');
 				$builder->applyMiddleware('auth');
 				$builder->patch('/', 'CharactersHealth::update');
 			});

@@ -101,7 +101,7 @@ class CharactersController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$result = CharactersClient::get($id, $token);
+		$result = CharactersClient::read($id, $token);
 		if ($result != null) {
 			$this->set("result", AbstractSchema::schema($result, "Character"));
 			return;

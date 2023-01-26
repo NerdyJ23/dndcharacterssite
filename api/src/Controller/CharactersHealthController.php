@@ -14,7 +14,7 @@ class CharactersHealthController extends ApiController {
 		parent::initialize();
 	}
 
-	public function read() {
+	public function get() {
 		$req = $this->request;
 		$access = CharactersClient::canView(
 			charId: $req->getParam('character_id'),
