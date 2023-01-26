@@ -265,7 +265,10 @@ class CharactersClient extends AbstractClient {
 	}
 
 	//Permission Checks
-	static function canEdit(string $token, string $charId) {
+	static function canEdit(mixed $token, string $charId):bool {
+		if (!AuthClient::validToken($token)) {
+			return false;
+		}
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			throw new UserNotFoundException();
@@ -280,7 +283,7 @@ class CharactersClient extends AbstractClient {
 		return $char != null;
 	}
 
-	static function canView(string $token, string $charId) {
+	static function canView(mixed $token, string $charId):bool {
 		return CharactersClient::get($charId, $token) != null;
 	}
 }

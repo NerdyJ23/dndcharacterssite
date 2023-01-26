@@ -14,6 +14,9 @@ class ErrorRenderer extends ExceptionRenderer {
         return $this->sendResponse($e->getCode(), $e->getMessage());
     }
 
+    public function input($e) {
+        return $this->sendResponse($e->getCode(), $e->getMessage());
+    }
     private function sendResponse(int $code, string $message) {
         try {
             $res = $this->controller->getResponse();
