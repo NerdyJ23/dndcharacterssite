@@ -31,6 +31,12 @@ class ErrorRenderer extends ExceptionRenderer {
 
     //Default Errors
 
+    //404
+    public function recordNotFound($e) {
+        return $this->sendResponse(404, '');
+    }
+
+    //500
     public function internalError($e) {
         return $this->sendResponse($e->getCode(), $e->getMessage());
     }
