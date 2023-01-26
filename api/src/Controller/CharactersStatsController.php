@@ -6,7 +6,7 @@ use App\Controller\Component\Enum\StatusCodes;
 use App\Controller\Component\Pagination;
 
 use App\Client\Characters\CharactersStatsClient;
-
+use App\Client\Characters\CharactersClient;
 use App\Schema\AbstractSchema;
 
 class CharactersStatsController extends ApiController {
@@ -22,19 +22,12 @@ class CharactersStatsController extends ApiController {
 		$token = $this->request->getCookie('token');
 		$id = $this->request->getParam("character_id");
 
-		$charDB = new CharactersController();
-		$char = $charDB->getById($this->decrypt($id), $token);
-
-		if (sizeOf($char) == 0) {
+		if (!CharactersClient::canView(token: $token, charId: $id)) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		if ($query == null) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$result = $query->all()->toArray();
-		$this->set("result", sizeOf($result) == 0 ? [] : AbstractSchema::schema($result, "CharacterStat"));
+		$result = CharactersStatsClient::list(token: $token, charId: $id, pagination: $pagination);
+		$this->set("result", AbstractSchema::schema($result, "CharacterStat"));
 		$this->set("page", $page);
 		$this->set("limit", $limit);
 		$this->set("count", sizeOf($result));

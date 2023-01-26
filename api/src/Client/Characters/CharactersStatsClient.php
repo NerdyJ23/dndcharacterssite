@@ -2,25 +2,32 @@
 namespace App\Client\Characters;
 
 use App\Client\AbstractClient;
+use App\Client\Characters\CharactersClient;
+use App\Controller\Component\Pagination;
 
 class CharactersStatsClient extends AbstractClient {
-	static function list(int $charId):array {
-		$query = parent::fetchTable('CharactersStats')->find('all')
-		->where(['Char_ID' => $char[0]->ID])
-		->limit($limit)
-		->page($page);
+	const TABLE = 'CharactersStats';
 
-		return $query == null ? null : $query->all()->toArray();
+	static function list(string $charId, mixed $token, Pagination $pagination):array {
+		if (CharactersClient::canView(token: $token, charId: $charId)) {
+			return parent::fetchTable(CharactersStatsClient::TABLE)->find('all')
+			->where(['Char_ID' => parent::decrypt($charId)])
+			->page($pagination->getPage())
+			->limit($pagination->getLimit())
+			->all()
+			->toArray();
+		}
+		return [];
 	}
 
 	static function create(int $charId, object $stats):string {
-		$statItem = parent::fetchTable('CharactersStats')->newEntity([
+		$statItem = parent::fetchTable(CharactersStatsClient::TABLE)->newEntity([
 			'Char_ID' => $charId,
 			'Name' => $stats->name,
 			'Value' => $stats->value
 		]);
 
-		$result = parent::fetchTable('CharactersStats')->save($statItem);
+		$result = parent::fetchTable(CharactersStatsClient::TABLE)->save($statItem);
 
 		if ($result != false) {
 			return $result->id;
@@ -33,7 +40,7 @@ class CharactersStatsClient extends AbstractClient {
 			return false;
 		}
 
-		$statItem = parent::fetchTable('CharactersStats')->get(parent::decrypt($stat->id));
+		$statItem = parent::fetchTable(CharactersStatsClient::TABLE)->get(parent::decrypt($stat->id));
 
 		if (property_exists($stat, 'name') && $stat->name != null) {
 			$statItem->Name = $stat->name;
@@ -43,7 +50,7 @@ class CharactersStatsClient extends AbstractClient {
 			$statItem->Value = $stat->value;
 		}
 
-		$result = parent::fetchTable('CharactersStats')->save($statItem);
+		$result = parent::fetchTable(CharactersStatsClient::TABLE)->save($statItem);
 		return $result != false;
 	}
 }
