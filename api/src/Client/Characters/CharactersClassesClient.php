@@ -7,7 +7,7 @@ use App\Error\Exceptions\InputException;
 class CharactersClassesClient extends AbstractClient {
 	const TABLE = 'CharactersClasses';
 
-	static function create(string $charId, object $class, string $token):string {
+	static function create(string $charId, object $class, mixed $token):string {
 		if (CharactersClient::canEdit(token: $token, charId: $charId)) {
 			if (!property_exists($class, "name") || $class->name == null) {
 				throw new InputException('Class name is required and cannot be blank');
@@ -32,7 +32,7 @@ class CharactersClassesClient extends AbstractClient {
 		return "";
 	}
 
-	static function read(string $charId, string $token, string $classId) {
+	static function read(string $charId, mixed $token, string $classId) {
 		if (CharactersClient::canView(charId: $charId, token: $token)) {
 			return parent::fetchTable(CharactersClassesClient::TABLE)->find('all')
 			->where(['ID' => parent::decrypt($classId)])
@@ -41,7 +41,7 @@ class CharactersClassesClient extends AbstractClient {
 		return null;
 	}
 
-	static function update(string $charId, object $class, string $token):bool {
+	static function update(string $charId, object $class, mixed $token):bool {
 		if (CharactersClient::canEdit(token: $token, charId: $charId)) {
 			$classItem = parent::fetchTable(CharactersClassesClient::TABLE)->find('all')
 			->where(['ID' => parent::decrypt($class->id)])
@@ -65,7 +65,7 @@ class CharactersClassesClient extends AbstractClient {
 		return false;
 	}
 
-	static function delete(string $charId, string $classId, string $token):bool {
+	static function delete(string $charId, string $classId, mixed $token):bool {
 		if (CharactersClient::canEdit(token: $token, charId: $charId)) {
 			$class = parent::fetchTable(CharactersClassesClient::TABLE)->find('all')
 				->where(['ID' => parent::decrypt($classId)])
@@ -83,7 +83,7 @@ class CharactersClassesClient extends AbstractClient {
 		return false;
 	}
 
-	static function classCount(string $charId, string $token):int {
+	static function classCount(string $charId, mixed $token):int {
 		return sizeOf(parent::fetchTable(CharactersClassesClient::TABLE)->find('all')
 		->where(['Char_ID' => parent::decrypt($charId)])
 		->all()

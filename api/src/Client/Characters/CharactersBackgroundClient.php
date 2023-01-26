@@ -8,7 +8,7 @@ use App\Client\Characters\CharactersClient;
 class CharactersBackgroundClient extends AbstractClient{
 	const TABLE = "CharactersBackgrounds";
 
-	static function list(int $id, string $token) {
+	static function list(int $id, mixed $token) {
 		$char = CharactersClient::read($id, $token);
 		if ($char != null) {
 			if (property_exists($char, "Background")) {
@@ -32,7 +32,7 @@ class CharactersBackgroundClient extends AbstractClient{
 		return "";
 	}
 
-	static function update(object $background, string $charId, string $token):bool {
+	static function update(object $background, string $charId, mixed $token):bool {
 		$access = CharactersClient::canEdit(token: $token, charId: $charId);
 		if (!$access) {
 			return false;

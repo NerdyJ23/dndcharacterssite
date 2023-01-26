@@ -26,7 +26,7 @@ class CharactersClient extends AbstractClient {
 		->toArray();
 	}
 
-	static function list(Pagination $pagination, string $token):array {
+	static function list(Pagination $pagination, mixed $token):array {
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			return UserClient::listPublic($pagination);
@@ -41,7 +41,7 @@ class CharactersClient extends AbstractClient {
 		->toArray();
 	}
 
-	static function create(object $char, string $token): string {
+	static function create(object $char, mixed $token): string {
 		if (!property_exists($char, "first_name") && !property_exists($char, "race") && !property_exists($char)) {
 			return "";
 		}
@@ -147,7 +147,7 @@ class CharactersClient extends AbstractClient {
 		}
 	}
 
-	static function update(object $char, string $token):object {
+	static function update(object $char, mixed $token):object {
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			throw new UserNotFoundException();

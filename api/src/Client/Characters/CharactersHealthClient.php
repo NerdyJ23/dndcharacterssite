@@ -38,7 +38,7 @@ class CharactersHealthClient extends AbstractClient {
 		}
 		return "";
 	}
-	static function read(string $healthId, string $charId, string $token) {
+	static function read(string $healthId, string $charId, mixed $token) {
 		if (!CharactersClient::canView(token: $token, charId: $charId)) {
 			return null;
 		}
@@ -54,7 +54,7 @@ class CharactersHealthClient extends AbstractClient {
 		}
 		return null;
 	}
-	static function update(object $health, string $token, string $charId):bool {
+	static function update(object $health, mixed $token, string $charId):bool {
 		if (!CharactersClient::canEdit(token: $token, charId: $charId)) {
 			return false;
 		}
