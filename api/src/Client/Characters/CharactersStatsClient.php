@@ -34,10 +34,16 @@ class CharactersStatsClient extends AbstractClient {
 		}
 
 		$statItem = parent::fetchTable('CharactersStats')->get(parent::decrypt($stat->id));
-		if ($result != false) {
 
-		} else {
-			return false;
+		if (property_exists($stat, 'name') && $stat->name != null) {
+			$statItem->Name = $stat->name;
 		}
+
+		if (property_exists($stat, 'value') && $stat->value != null) {
+			$statItem->Value = $stat->value;
+		}
+
+		$result = parent::fetchTable('CharactersStats')->save($statItem);
+		return $result != false;
 	}
 }

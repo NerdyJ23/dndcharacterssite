@@ -37,4 +37,38 @@ class CharactersHealthClient extends AbstractClient {
 		}
 		return "";
 	}
+
+	static function update(object $health, int $userId):bool {
+		if (property_exists($health, 'id') && $health->id != null) {
+			$healthItem = parent::fetchTable('CharactersHealth')->get(parent::decrypt($health->id));
+
+			if (property_exists($health, 'current_health') && $health->current_health != null) {
+				$healthItem->Current_Health = $health->current_health;
+			}
+
+			if (property_exists($health, 'max_health') && $health->max_health != null) {
+				$healthItem->Max_Health = $health->max_health;
+			}
+
+			if (property_exists($health, 'temporary_health') && $health->temporary_health != null) {
+				$healthItem->Temporary_Health = $healthItem->temporary_health;
+			}
+
+			if (property_exists($health, 'hit_die') && $health->hit_die != null) {
+				$healthItem->Hit_Die = $health->hit_die;
+			}
+
+			if (property_exists($health, 'death_fails') && $health->death_fails != null) {
+				$healthItem->Death_Fails = $health->death_fails;
+			}
+
+			if (property_exists($health, 'death_success') && $health->death_success != null) {
+				$healthItem->Death_Success = $health->death_success;
+			}
+
+			$result = parent::fetchTable('CharactersHealth')->save($healthItem);
+			return $result != false;
+		}
+		return false;
+	}
 }

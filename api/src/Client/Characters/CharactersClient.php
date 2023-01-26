@@ -141,9 +141,16 @@ class CharactersClient extends AbstractClient {
 		}
 	}
 
-	static function update(object $char, int $userId):SuccessState {
-		$charItem = parent::fetchTable(CharactersClient::TABLE)->get(EncryptionClient::decrypt($char->id));
-		$response = SuccessState::NONE;
+	static function update(object $char, int $userId):object {
+		$charItem = parent::fetchTable(CharactersClient::TABLE)
+		->find()
+		->where(['Characters.ID' => EncryptionClient::decrypt($char->id)])
+		->contain(['Health', 'Background'])
+		->first();
+		$response = (object)[
+			'status' => SuccessState::NONE,
+			'message' => []
+		];
 
 		if (property_exists($char, 'first_name') && $char->first_name != null) {
 			$charItem->First_Name = $char->first_name;
@@ -173,18 +180,56 @@ class CharactersClient extends AbstractClient {
 			$charItem->Visibility = $char->public;
 		}
 
+		//Stats
 		if (property_exists($char, 'stats') && $char->stats != null) {
 			$charStats = json_decode($char->stats);
 			foreach ($charStats as $stat) {
-				$result = CharactersStatsClient::update($stat, $userId);
-				$response = SuccessState::success($response, $result);
+				if (property_exists($stat, 'id') && $stat->id != null) {
+					$result = CharactersStatsClient::update($stat, $userId);
+					if ($result == false) {
+						$response->message[] = 'Character stat ' . $stat->id . ' failed to save';
+					}
+				} else {
+					$result = false;
+					$response->message[] = 'Character stat ' . $stat->name . ' has no ID';
+				}
+				$response->status = SuccessState::success($response->status, $result != false);
 			}
 		}
+
+		//Health
+		if (property_exists($char, 'health') && $char->health != null) {
+			$healthItem = json_decode($char->health);
+			if (!property_exists($healthItem, 'id') || $healthItem->id == null) {
+				$healthItem->id = $charItem->health->id;
+			}
+			$result = CharactersHealthClient::update($healthItem, $userId);
+			if ($result == false) {
+				$response->message[] = 'Character health ' . $healthItem->id . ' failed to save';
+				$response->status = SuccessState::success($response->status, false);
+			}
+		}
+
+		//Background
+		if (property_exists($char, 'background') && $char->background != null) {
+			$backgroundItem = json_decode($char->background);
+			if (!property_exists($backgroundItem, 'id') || $backgroundItem->id == null) {
+				$backgroundItem->id = $charItem->background->id;
+			}
+			$result = CharactersBackgroundClient::update($backgroundItem, $userId);
+
+			if ($result == false) {
+				$response->message[] = 'Character background ' . $backgroundItem->id . ' failed to save';
+				$response->status = SuccessState::success($response->status, false);
+			}
+		}
+		//Save Character
 		$result = parent::fetchTable(CharactersClient::TABLE)->save($charItem);
 		if ($result == false) {
-			$response = SuccessState::success($response, $result);
+			$response->status = SuccessState::success($response->status, $result);
+			$response->message[] = 'Character failed to save';
 		} else {
-			$response = SuccessState::success($response, true);
+			$response->status = SuccessState::success($response->status, true);
 		}
 		return $response;
 	}
