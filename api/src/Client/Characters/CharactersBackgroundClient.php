@@ -32,8 +32,13 @@ class CharactersBackgroundClient extends AbstractClient{
 		return "";
 	}
 
-	static function update(object $background, int $userId):bool {
-		$backgroundItem = parent::fetchTable('CharactersBackgrounds')->get(parent::decrypt($background->id));
+	static function update(object $background, string $charId, string $token):bool {
+		$access = CharactersClient::canEdit(token: $token, charId: $charId);
+		if (!$access) {
+			return false;
+		}
+
+		$backgroundItem = parent::fetchTable(CharactersBackgroundClient::TABLE)->get(parent::decrypt($background->id));
 
 		if (property_exists($background, 'name') && $background->name != null) {
 			$backgroundItem->Name = $background->name;
@@ -43,7 +48,7 @@ class CharactersBackgroundClient extends AbstractClient{
 			$backgroundItem->Description = $background->description;
 		}
 
-		$result = parent::fetchTable('CharactersBackgrounds')->save($backgroundItem);
+		$result = parent::fetchTable(CharactersBackgroundClient::TABLE)->save($backgroundItem);
 		return $result != false;
 	}
 }

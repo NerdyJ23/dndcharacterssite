@@ -7,10 +7,11 @@ use App\Client\Characters\CharactersHealthClient;
 use App\Client\Characters\CharactersStatsClient;
 use App\Client\Characters\CharactersClassesClient;
 use App\Client\Security\AuthClient;
-use App\Client\Security\EncryptionClient;
 use App\Client\Users\UserClient;
 use App\Controller\Component\Pagination;
 use App\Controller\Component\Enum\SuccessState;
+
+use App\Error\Exceptions\UserNotFoundException;
 
 class CharactersClient extends AbstractClient {
 	const TABLE = "Characters";
@@ -40,15 +41,20 @@ class CharactersClient extends AbstractClient {
 		->toArray();
 	}
 
-	static function create(object $char, int $userId): string {
+	static function create(object $char, string $token): string {
 		if (!property_exists($char, "first_name") && !property_exists($char, "race") && !property_exists($char)) {
 			return "";
+		}
+
+		$user = UserClient::getByToken($token);
+		if ($user == null) {
+			throw new UserNotFoundException();
 		}
 
 		$charItem = parent::fetchTable('Characters')->newEntity([
 			'First_Name' => $char->first_name,
 			'Race' => $char->race,
-			'User_Access' => $userId,
+			'User_Access' => $user->ID,
 		]);
 
 		if (property_exists($char, "nickname") && $char->nickname != null) {
@@ -78,7 +84,7 @@ class CharactersClient extends AbstractClient {
 				if (is_string($char->health)) {
 					$char->health = json_decode($char->health);
 				}
-				CharactersHealthClient::create(EncryptionClient::decrypt($result->id), (object)$char->health);
+				CharactersHealthClient::create(parent::decrypt($result->id), (object)$char->health);
 			}
 
 			if (property_exists($char, "stats")) {
@@ -86,7 +92,7 @@ class CharactersClient extends AbstractClient {
 					$char->stats = json_decode($char->stats);
 				}
 				foreach ($char->stats as $stat) {
-					CharactersStatsClient::create(EncryptionClient::decrypt($result->id), $stat);
+					CharactersStatsClient::create(parent::decrypt($result->id), $stat);
 				}
 			}
 
@@ -95,7 +101,7 @@ class CharactersClient extends AbstractClient {
 					$char->class = json_decode($char->class);
 				}
 				foreach ($char->class as $class) {
-					CharactersClassesClient::create(EncryptionClient::decrypt($result->id), $class);
+					CharactersClassesClient::create(parent::decrypt($result->id), $class);
 				}
 			}
 
@@ -103,19 +109,19 @@ class CharactersClient extends AbstractClient {
 				if (is_string($char->background)) {
 					$char->background = json_decode($char->background);
 				}
-				CharactersBackgroundClient::create(EncryptionClient::decrypt($result->id), $char->background);
+				CharactersBackgroundClient::create(parent::decrypt($result->id), $char->background);
 			}
 			return $result->id;
 		}
 		return "";
 	}
 
-	static function get(int $id, mixed $token) {
+	static function get(string $id, mixed $token) {
 		$valid = AuthClient::validToken($token);
 		if (!$valid) {
 			$query = parent::fetchTable(CharactersClient::TABLE)->find('all')
 			->where([
-				'Characters.ID =' => $id,
+				'Characters.ID =' => parent::decrypt($id),
 				'Visibility = 1'
 			])
 			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat']);
@@ -129,7 +135,7 @@ class CharactersClient extends AbstractClient {
 
 			$query = parent::fetchTable(CharactersClient::TABLE)->find('all')
 				->where([
-					'Characters.ID =' => $id,
+					'Characters.ID =' => parent::decrypt($id),
 					'OR' => [
 						['Characters.Visibility = 1'],
 						['Characters.User_Access =' => $user->ID]
@@ -141,12 +147,20 @@ class CharactersClient extends AbstractClient {
 		}
 	}
 
-	static function update(object $char, int $userId):object {
+	static function update(object $char, string $token):object {
+		$user = UserClient::getByToken($token);
+		if ($user == null) {
+			throw new UserNotFoundException();
+		}
 		$charItem = parent::fetchTable(CharactersClient::TABLE)
 		->find()
-		->where(['Characters.ID' => EncryptionClient::decrypt($char->id)])
+		->where([
+			'Characters.ID' => parent::decrypt($char->id),
+			'Characters.User_Access' => $user->ID
+		])
 		->contain(['Health', 'Background'])
 		->first();
+
 		$response = (object)[
 			'status' => SuccessState::NONE,
 			'message' => []
@@ -185,7 +199,7 @@ class CharactersClient extends AbstractClient {
 			$charStats = json_decode($char->stats);
 			foreach ($charStats as $stat) {
 				if (property_exists($stat, 'id') && $stat->id != null) {
-					$result = CharactersStatsClient::update($stat, $userId);
+					$result = CharactersStatsClient::update($stat, $token);
 					if ($result == false) {
 						$response->message[] = 'Character stat ' . $stat->id . ' failed to save';
 					}
@@ -203,7 +217,7 @@ class CharactersClient extends AbstractClient {
 			if (!property_exists($healthItem, 'id') || $healthItem->id == null) {
 				$healthItem->id = $charItem->health->id;
 			}
-			$result = CharactersHealthClient::update($healthItem, $userId);
+			$result = CharactersHealthClient::update(health: $healthItem, token: $token, charId: $char->id);
 			if ($result == false) {
 				$response->message[] = 'Character health ' . $healthItem->id . ' failed to save';
 				$response->status = SuccessState::success($response->status, false);
@@ -216,7 +230,7 @@ class CharactersClient extends AbstractClient {
 			if (!property_exists($backgroundItem, 'id') || $backgroundItem->id == null) {
 				$backgroundItem->id = $charItem->background->id;
 			}
-			$result = CharactersBackgroundClient::update($backgroundItem, $userId);
+			$result = CharactersBackgroundClient::update(background: $backgroundItem, token: $token, charId: $charItem->id);
 
 			if ($result == false) {
 				$response->message[] = 'Character background ' . $backgroundItem->id . ' failed to save';
@@ -248,5 +262,25 @@ class CharactersClient extends AbstractClient {
 
 	static function getFilePath($id) {
 		return RESOURCES . 'portraits' . DS . $id . '.png';
+	}
+
+	//Permission Checks
+	static function canEdit(string $token, string $charId) {
+		$user = UserClient::getByToken($token);
+		if ($user == null) {
+			throw new UserNotFoundException();
+		}
+		$char = parent::fetchTable(CharactersClient::TABLE)->find()
+		->where([
+			'ID' => parent::decrypt($charId),
+			'User_Access' => $user->ID
+		])
+		->first();
+
+		return $char != null;
+	}
+
+	static function canView(string $token, string $charId) {
+		return CharactersClient::get($charId, $token) != null;
 	}
 }

@@ -50,11 +50,12 @@ class CharactersController extends ApiController {
 
 	public function create() {
 		$req = $this->request;
+		$token = $req->getCookie('token');
 
-		if (!AuthClient::validToken($req->getCookie('token'))) {
+		if (!AuthClient::validToken($token)) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
-		$user = UserClient::getByToken($req->getCookie('token'));
+		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
@@ -84,7 +85,7 @@ class CharactersController extends ApiController {
 			'class' => $req->getData('class'),
 			'health' => $req->getData('health')
 		];
-		$result = CharactersClient::create($char, $user->ID);
+		$result = CharactersClient::create($char, $token);
 
 		if ($result != "") {
 			$this->response(StatusCodes::CREATED);
@@ -100,12 +101,7 @@ class CharactersController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$charId = $this->decrypt($id);
-		if ($charId == false) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$result = CharactersClient::get($charId, $token);
+		$result = CharactersClient::get($id, $token);
 		if ($result != null) {
 			$this->set("result", AbstractSchema::schema($result, "Character"));
 			return;
@@ -115,13 +111,19 @@ class CharactersController extends ApiController {
 
 	public function update() {
 		$req = $this->request;
+		$token = $req->getCookie('token');
 
-		if (!AuthClient::validToken($req->getCookie('token'))) {
+		if (!AuthClient::validToken($token)) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
-		$user = UserClient::getByToken($req->getCookie('token'));
+		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
+
+		$char = CharactersClient::get($req->getParam('character_id'), $token);
+		if ($char == null || $char->User_Access != $user->ID) {
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		$char = (object)[
@@ -139,7 +141,7 @@ class CharactersController extends ApiController {
 			'class' => $req->getData('class'),
 			'health' => $req->getData('health')
 		];
-		$result = CharactersClient::update($char, $user->ID);
+		$result = CharactersClient::update($char, $token);
 
 		if ($result->status == SuccessState::SUCCESS) {
 			return $this->response(StatusCodes::NO_CONTENT);

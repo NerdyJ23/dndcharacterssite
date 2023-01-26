@@ -38,7 +38,10 @@ class CharactersHealthClient extends AbstractClient {
 		}
 		return "";
 	}
-	static function read(string $healthId, string $charId) {
+	static function read(string $healthId, string $charId, string $token) {
+		if (!CharactersClient::canView(token: $token, charId: $charId)) {
+			return null;
+		}
 		$result = parent::fetchTable('CharactersHealth')
 		->find()
 		->where(['ID' => parent::decrypt($healthId),
@@ -51,7 +54,10 @@ class CharactersHealthClient extends AbstractClient {
 		}
 		return null;
 	}
-	static function update(object $health, int $userId):bool {
+	static function update(object $health, string $token, string $charId):bool {
+		if (!CharactersClient::canEdit(token: $token, charId: $charId)) {
+			return false;
+		}
 		if (property_exists($health, 'id') && $health->id != null) {
 			$healthItem = parent::fetchTable('CharactersHealth')->get(parent::decrypt($health->id));
 

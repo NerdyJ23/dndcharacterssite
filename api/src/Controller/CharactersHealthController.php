@@ -16,12 +16,19 @@ class CharactersHealthController extends ApiController {
 
 	public function read() {
 		$req = $this->request;
-		$access = CharactersClient::get($this->decrypt($req->getParam('character_id')), $req->getCookie('token')) != null;
+		$access = CharactersClient::canView(
+			charId: $req->getParam('character_id'),
+			token: $req->getCookie('token')
+		);
 		if (!$access) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$result = CharactersHealthClient::read($req->getParam('health_id'), $req->getParam('character_id'));
+		$result = CharactersHealthClient::read(
+			healthId: $req->getParam('health_id'),
+			charId: $req->getParam('character_id'),
+			token: $req->getCookie('token')
+		);
 		if ($result != null) {
 			$this->set('result', AbstractSchema::schema($result, "CharacterHealth"));
 			$this->response = $this->response(StatusCodes::SUCCESS);
@@ -36,9 +43,7 @@ class CharactersHealthController extends ApiController {
 		if (!$access) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
-		$char = CharactersClient::get($this->decrypt($req->getParam('character_id')), $req->getCookie('token'));
-		$user = UserClient::getByToken($req->getCookie('token'));
-		if ($char != null && $user != null && $char->User_Access == $user->ID) {
+		if (CharactersClient::canEdit(token: $req->getCookie('token'), charId: $req->getParam('character_id'))) {
 			$health = (object) [
 				'id' => $req->getParam('health_id'),
 				'current_health' => $req->getData('current_health'),
@@ -48,7 +53,13 @@ class CharactersHealthController extends ApiController {
 				'death_fails' => $req->getData('death_fails'),
 				'death_success' => $req->getData('death_success')
 			];
-			$result = CharactersHealthClient::update($health, $user->ID);
+
+			$result = CharactersHealthClient::update(
+				health: $health,
+				token: $req->getCookie('token'),
+				charId: $req->getParam('character_id')
+			);
+
 			if ($result) {
 				return $this->response(StatusCodes::NO_CONTENT);
 			} else {
