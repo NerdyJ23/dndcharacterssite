@@ -37,7 +37,19 @@ class CharactersHealthClient extends AbstractClient {
 		}
 		return "";
 	}
+	static function read(string $healthId, string $charId) {
+		$result = parent::fetchTable('CharactersHealth')
+		->find()
+		->where(['ID' => parent::decrypt($healthId),
+			'Char_ID' => parent::decrypt($charId)
+		])
+		->first();
 
+		if ($result != false) {
+			return $result;
+		}
+		return null;
+	}
 	static function update(object $health, int $userId):bool {
 		if (property_exists($health, 'id') && $health->id != null) {
 			$healthItem = parent::fetchTable('CharactersHealth')->get(parent::decrypt($health->id));

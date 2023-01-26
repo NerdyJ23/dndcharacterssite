@@ -110,7 +110,7 @@ class CharactersClient extends AbstractClient {
 		return "";
 	}
 
-	static function get(int $id, string $token) {
+	static function get(int $id, mixed $token) {
 		$valid = AuthClient::validToken($token);
 		if (!$valid) {
 			$query = parent::fetchTable(CharactersClient::TABLE)->find('all')
