@@ -2,6 +2,7 @@
 namespace App\Client\Characters;
 
 use App\Client\AbstractClient;
+use App\Error\Exceptions\LogicException;
 class CharactersHealthClient extends AbstractClient {
 
 	static function create(int $charId, object $health) {
@@ -78,6 +79,9 @@ class CharactersHealthClient extends AbstractClient {
 				$healthItem->Death_Success = $health->death_success;
 			}
 
+			if ($healthItem->Max_Health < $healthItem->Current_Health) {
+				throw new LogicException('Character Max HP (' . $healthItem->Max_Health . ') cannot be less than Current HP (' . $healthItem->Current_Health .')');
+			}
 			$result = parent::fetchTable('CharactersHealth')->save($healthItem);
 			return $result != false;
 		}

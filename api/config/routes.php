@@ -31,9 +31,6 @@ return static function (RouteBuilder $routes) {
 		});
 		$builder->resources('Characters', function (RouteBuilder $builder) {
 			$builder->get('/', 'Characters::get');
-			$builder->applyMiddleware('auth');
-			$builder->patch('/', 'Characters::update');
-			$builder->delete('/', 'Characters::archive');
 
 			$builder->scope('/image', function (RouteBuilder $builder) {
 				$builder->get('/', 'Characters::getCharacterImage');
@@ -72,7 +69,15 @@ return static function (RouteBuilder $routes) {
 			// $builder->resources('Background', function (RouteBuilder $builder) {
 			// 	$builder->patch('/', 'CharactersStats::update');
 			// });
+			$builder->resources('Health', function (RouteBuilder $builder) {
+				$builder->get('/', 'CharactersHealth::read');
+				$builder->applyMiddleware('auth');
+				$builder->patch('/', 'CharactersHealth::update');
+			});
 
+			$builder->applyMiddleware('auth');
+			$builder->patch('/', 'Characters::update');
+			$builder->delete('/', 'Characters::archive');
 			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});
     });
