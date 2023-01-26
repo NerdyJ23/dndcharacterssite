@@ -9,7 +9,7 @@ class CharactersBackgroundClient extends AbstractClient{
 	const TABLE = "CharactersBackgrounds";
 
 	static function list(int $id, string $token) {
-		$char = CharactersClient::get($id, $token);
+		$char = CharactersClient::read($id, $token);
 		if ($char != null) {
 			if (property_exists($char, "Background")) {
 				return $char->background;

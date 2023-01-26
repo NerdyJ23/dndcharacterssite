@@ -121,7 +121,7 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
 
-		$char = CharactersClient::get($req->getParam('character_id'), $token);
+		$char = CharactersClient::read($req->getParam('character_id'), $token);
 		if ($char == null || $char->User_Access != $user->ID) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
@@ -164,7 +164,7 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
-		$char = CharactersClient::get($charId, $token);
+		$char = CharactersClient::read($charId, $token);
 		if ($char == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
@@ -194,7 +194,7 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
-		if(CharactersClient::get($charId, $token) == null) {
+		if(CharactersClient::read($charId, $token) == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 

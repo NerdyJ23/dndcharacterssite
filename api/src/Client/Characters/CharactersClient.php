@@ -284,6 +284,6 @@ class CharactersClient extends AbstractClient {
 	}
 
 	static function canView(mixed $token, string $charId):bool {
-		return CharactersClient::get($charId, $token) != null;
+		return CharactersClient::read($charId, $token) != null;
 	}
 }
