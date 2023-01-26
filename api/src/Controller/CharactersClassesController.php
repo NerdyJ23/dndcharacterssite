@@ -27,7 +27,7 @@ class CharactersClassesController extends ApiController {
 		if (!CharactersClient::canView(token: $token, charId: $id)) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-		$char = CharactersClient::get(id: $id, token: $token);
+		$char = CharactersClient::read(id: $id, token: $token);
 		$classes = $this->CharactersClasses->find('all')
 			->where(['CharactersClasses.Char_ID' => $char->ID])
 			->limit($limit)
@@ -43,22 +43,35 @@ class CharactersClassesController extends ApiController {
 		$this->set("result", AbstractSchema::schema($classes, "CharacterClass"));
 	}
 
-	public function create() {
-		$name = $this->request->getData("name");
-		$level = $this->request->getData("level");
-		$id = $this->request->getParam("character_id");
-		$token = $this->request->getCookie('token');
+	public function get() {
+		$req = $this->request;
+		$id = $req->getParam("character_id");
+		$token = $req->getCookie("token");
 
 		if (!CharactersClient::canView(token: $token, charId: $id)) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-
-		if ($name == null || trim($name) == "") {
-			throw new InputException('Class name is required and cannot be blank');
+		$class = CharactersClassesClient::read(
+			classId: $req->getParam('class_id'),
+			token: $token,
+			charId: $id
+		);
+		if ($class != null) {
+			$this->set('result', AbstractSchema::schema($class, 'CharacterClass'));
+			$this->response = $this->response(StatusCodes::SUCCESS);
+			return;
 		}
+		return $this->response(StatusCodes::NOT_FOUND);
+	}
 
-		if (!is_numeric($level)) {
-			throw new InputException('Class level must be an integer and cannot be blank');
+	public function create() {
+		$req = $this->request;
+
+		$id = $req->getParam("character_id");
+		$token = $req->getCookie('token');
+
+		if (!CharactersClient::canView(token: $token, charId: $id)) {
+			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		if (!CharactersClient::canEdit(token: $token, charId: $id)) {
@@ -66,8 +79,8 @@ class CharactersClassesController extends ApiController {
 		}
 
 		$class = (object)[
-			'name' => trim($name),
-			'level' => (int)$level
+			'name' => $req->getData('name'),
+			'level' => $req->getData('level')
 		];
 		$result = CharactersClassesClient::create(charId: $id, class: $class, token: $token);
 
@@ -112,58 +125,19 @@ class CharactersClassesController extends ApiController {
 		$classId = $this->request->getParam("class_id");
 		$token = $this->request->getCookie('token');
 
-		if ($token == null) {
+		if (!CharactersClient::canView(token: $token, charId: $charId)) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+
+		if (!CharactersClient::canEdit(token: $token, charId: $charId)) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
-		$userDB = new UsersController();
-		$user = $userDB->getByToken($token);
-		if ($user == null) {
-			return $this->response(StatusCodes::TOKEN_MISMATCH);
-		}
 
-		$char = $this->_getCharacter($this->decrypt($charId));
-		if ($char == null) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		if ($user->ID != $char->User_Access) {
-			return $this->response(StatusCodes::ACCESS_DENIED);
-		}
-
-		$class = $this->CharactersClasses->find('all')
-		->where([
-			'ID' => $this->decrypt($classId),
-			'Char_ID' => $this->decrypt($charId)
-		]);
-		if ($class == null) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$class = $class->all()->toArray();
-		if (sizeOf($class) == 0) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		} else if ($this->_classCount($char->ID) == 1) {
-			$this->set("errorMessage", "Character must have at least one (1) class");
-			$this->response = $this->response(StatusCodes::USER_ERROR);
-			return;
-		}
-
-		$result = $this->CharactersClasses->delete($class[0]);
-		if ($result != false) {
+		$result = CharactersClassesClient::delete(token: $token, charId: $charId, classId: $classId);
+		if ($result) {
 			return $this->response(StatusCodes::NO_CONTENT);
 		}
 		return $this->response(StatusCodes::SERVER_ERROR);
-	}
-
-	private function _classCount($charId): int {
-		$query = $this->CharactersClasses->find('all')
-		->where(['Char_ID' => $charId]);
-
-		if ($query == null) {
-			return 0;
-		}
-
-		return sizeOf($query->all()->toArray());
 	}
 }
