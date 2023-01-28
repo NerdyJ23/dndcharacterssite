@@ -2,15 +2,13 @@ import { cakeApi } from "./api";
 
 export default {
 	getCharacter(id) {
-		const response = cakeApi().get(`/characters/${id}`).catch((error) => {
+		const response = cakeApi().get(`/characters/${id}`, {
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;
 	},
-	getCharacterStats(id) {
-
-	},
-
 	getCharacterList() {
 		const response = cakeApi().get(`/characters`, {
 			withCredentials: true
@@ -32,9 +30,9 @@ export default {
 		return response;
 	},
 	createCharacter(char) {
-		const response = cakeApi().post(`/characters`, {
+		const response = cakeApi().post(`/characters`, char, {
 			withCredentials: true
-		}, char).catch((error) => {
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;
