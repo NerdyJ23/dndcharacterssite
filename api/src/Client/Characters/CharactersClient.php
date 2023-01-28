@@ -29,7 +29,7 @@ class CharactersClient extends AbstractClient {
 	static function list(Pagination $pagination, mixed $token):array {
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
-			return UserClient::listPublic($pagination);
+			return CharactersClient::listPublic($pagination);
 		}
 
 		return parent::fetchTable('Characters')->find('all')
@@ -80,36 +80,36 @@ class CharactersClient extends AbstractClient {
 		$result = parent::fetchTable('Characters')->save($charItem);
 
 		if ($result != false) {
-			if (property_exists($char, "health")) {
+			if (property_exists($char, "health") && $char->health != null && $char->health != "") {
 				if (is_string($char->health)) {
 					$char->health = json_decode($char->health);
 				}
 				CharactersHealthClient::create(parent::decrypt($result->id), (object)$char->health);
 			}
 
-			if (property_exists($char, "stats")) {
+			if (property_exists($char, "stats") && $char->stats != null && $char->stats != "") {
 				if (is_string($char->stats)) {
 					$char->stats = json_decode($char->stats);
 				}
 				foreach ($char->stats as $stat) {
-					CharactersStatsClient::create(parent::decrypt($result->id), $stat);
+					CharactersStatsClient::create(parent::decrypt($result->id), (object)$stat);
 				}
 			}
 
-			if (property_exists($char, "class")) {
+			if (property_exists($char, "class") && $char->class != null && $char->class != "") {
 				if (is_string($char->class)) {
 					$char->class = json_decode($char->class);
 				}
 				foreach ($char->class as $class) {
-					CharactersClassesClient::create(parent::decrypt($result->id), $class);
+					CharactersClassesClient::create(parent::decrypt($result->id), (object)$class);
 				}
 			}
 
-			if (property_exists($char, "background")) {
+			if (property_exists($char, "background") && $char->background != null && $char->background != "") {
 				if (is_string($char->background)) {
-					$char->background = json_decode($char->background);
+					$char->background = json_decode($char->background, false);
 				}
-				CharactersBackgroundClient::create(parent::decrypt($result->id), $char->background);
+				CharactersBackgroundClient::create(parent::decrypt($result->id), (object)$char->background);
 			}
 			return $result->id;
 		}

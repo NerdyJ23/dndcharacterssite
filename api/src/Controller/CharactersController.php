@@ -39,9 +39,8 @@ class CharactersController extends ApiController {
 		if ($token == null || !AuthClient::validToken($token)) {
 			AbstractSchema::schema(CharactersClient::listPublic($pagination), "Character");
 		}
-		$result = CharactersClient::list($pagination, $token);
+		$result = CharactersClient::list(pagination: $pagination, token: $token);
 		$resultSet = AbstractSchema::schema($result, "Character");
-
 		$this->set("result", $resultSet);
 		$this->set("count", sizeOf($resultSet));
 		$this->set("page", $pagination->getPage());
