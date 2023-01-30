@@ -1,6 +1,8 @@
 <template>
-	<v-container v-if="!editing" fluid>
-		<v-row>
+	<v-container fluid>
+		<v-btn @click="editing = !editing">Edit</v-btn>
+
+		<v-row v-if="!editing">
 			<v-col cols="3">
 				<CharacterPageStats v-if="loading" :loading="loading"/>
 				<CharacterPageStats v-else :loading="loading" :stats="char.stats"/>
@@ -13,9 +15,8 @@
 				/>
 			</v-col>
 		</v-row>
+		<CharacterEditPage :char="char" v-else />
 	</v-container>
-
-	<CharacterEditPage :char="char" v-else />
 </template>
 <script>
 import characterApi from "../services/characterApi";

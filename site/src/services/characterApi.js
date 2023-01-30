@@ -24,7 +24,10 @@ export default {
 		return response;
 	},
 	getPortrait(id) {
-		const response = cakeApi().get(`/characters/${id}/image`, {responseType: "blob"}).catch((error) => {
+		const response = cakeApi().get(`/characters/${id}/image`, {
+			responseType: "blob",
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;
