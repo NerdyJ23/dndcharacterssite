@@ -41,6 +41,15 @@ export default {
 	computed: {
 		...mapState(["GenericStore"]),
 		...mapState(["UserStore"])
+	},
+	watch: {
+		"GenericStore.validSession": {
+			handler() {
+				if (this.GenericStore.validSession) {
+					this.$store.dispatch('loadUser');
+				}
+			}, immediate: true
+		}
 	}
 }
 </script>

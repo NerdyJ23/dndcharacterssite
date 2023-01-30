@@ -19,16 +19,11 @@ import Login from './components/Login/LoginDialog';
 
 export default {
 	mounted() {
-		const self = this;
-		this.calcHeight();
-		window.addEventListener('resize', () => {
-			self.calcHeight();
-		})
 		// this.$vuetify.theme.dark = true;
+		this.$store.dispatch('checkValidSession');
 	},
 	data() {
 		return {
-			contentHeight: 0
 		}
 	},
   	name: 'App',
@@ -40,12 +35,6 @@ export default {
 	methods: {
 		toggleDrawer() {
 			this.$refs.drawer.toggle();
-		},
-		calcHeight() {
-			const self = this;
-			this.$nextTick(() => {
-				self.contentHeight = window.innerHeight - self.$refs.navbar.$el.clientHeight - 4;
-			});
 		},
 		showLogin() {
 			this.$refs.login.show();
