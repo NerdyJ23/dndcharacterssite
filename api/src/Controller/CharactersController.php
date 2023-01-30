@@ -86,13 +86,12 @@ class CharactersController extends ApiController {
 		];
 		$result = CharactersClient::create($char, $token);
 
-		if ($result != "") {
-			$this->response(StatusCodes::CREATED);
+		if ($result != "" && is_string($result)) {
+			$this->response = $this->response(StatusCodes::CREATED);
 			$this->set("id", $result);
 			return;
 		} else {
-			$this->response(StatusCodes::SERVER_ERROR);
-			return;
+			return $this->response(StatusCodes::SERVER_ERROR);
 		}
 	}
 
