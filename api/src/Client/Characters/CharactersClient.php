@@ -133,17 +133,16 @@ class CharactersClient extends AbstractClient {
 				return StatusCodes::TOKEN_MISMATCH;
 			}
 
-			$query = parent::fetchTable(CharactersClient::TABLE)->find('all')
+			return parent::fetchTable(CharactersClient::TABLE)->find('all')
 				->where([
 					'Characters.ID =' => parent::decrypt($id),
 					'OR' => [
-						['Characters.Visibility = 1'],
-						['Characters.User_Access =' => $user->ID]
+						['Characters.Visibility' => 1],
+						['Characters.User_Access' => $user->ID]
 					]
 			])
-			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat']);
-			$result = $query->all()->toArray();
-			return sizeOf($result) == 0 ? null : $result[0];
+			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat'])
+			->first();
 		}
 	}
 
@@ -260,8 +259,8 @@ class CharactersClient extends AbstractClient {
 		return true;
 	}
 
-	static function getFilePath($id) {
-		return RESOURCES . 'portraits' . DS . $id . '.png';
+	static function getFilePath(string $id) {
+		return RESOURCES . 'portraits' . DS . parent::decrypt($id) . '.png';
 	}
 
 	//Permission Checks

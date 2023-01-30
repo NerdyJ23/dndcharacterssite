@@ -157,16 +157,11 @@ class CharactersController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$charId = $this->decrypt($id);
-		if ($charId == false) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$char = CharactersClient::read($charId, $token);
+		$char = CharactersClient::read(id: $id, token: $token);
 		if ($char == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-		$filepath = CharactersClient::getFilePath($charId);
+		$filepath = CharactersClient::getFilePath($id);
 		if (is_file($filepath)) {
 			return $this->response->withFile($filepath);
 		} else {
