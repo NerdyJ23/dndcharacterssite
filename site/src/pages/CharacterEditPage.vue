@@ -54,6 +54,7 @@
 				</v-col>
 			</v-row>
 		</v-card-text>
+		<error-message-bar :show="error.show" :message="error.message" />
 	</v-card>
 </template>
 <script>
@@ -62,13 +63,15 @@ import characterApi from '@/services/characterApi';
 import CharacterEditStats from '@/components/Characters/CharacterEditStats.vue';
 import CharacterEditInfo from '@/components/Characters/CharacterEditInfo.vue';
 import OverlayLoader from '@/components/Utility/OverlayLoader.vue';
+import ErrorMessageBar from '@/components/Utility/ErrorMessageBar.vue';
 
 export default {
 	name: "CharacterEditPage",
 	components: {
     CharacterEditStats,
 	CharacterEditInfo,
-	OverlayLoader
+	OverlayLoader,
+	ErrorMessageBar
 },
 	props: {
 		char: {
@@ -112,7 +115,11 @@ export default {
 				inventory: 3
 			},
 			dirty: false,
-			loading: true,
+			loading: false,
+			error: {
+				show: false,
+				message: ""
+			}
 		}
 	},
 	methods: {
@@ -123,9 +130,11 @@ export default {
 			if (response.status === 201) {
 				window.location.href = `/characters/${response.data.id}`;
 			} else {
+				this.error.show = true;
+				this.error.message = response.data.errorMessage;
+				this.loading = false;
 				console.error("fucak");
 			}
-			this.loading = false;
 		},
 	},
 	watch: {
