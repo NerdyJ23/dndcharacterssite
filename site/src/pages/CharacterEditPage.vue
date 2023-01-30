@@ -1,5 +1,6 @@
 <template>
 	<v-card class="dnd-edit-character">
+		<overlay-loader :loading="loading"></overlay-loader>
 		<v-card-title>{{ state }} Character</v-card-title>
 		<v-card-text>
 			<v-row>
@@ -35,8 +36,8 @@
 				</v-col>
 				<v-col cols="10" class="d-flex flex-row">
 					<v-divider class="mr-3" vertical />
-					<CharacterEditInfo v-show="selectedTab==tabs.info" :char="char" />
-					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" />
+					<CharacterEditInfo v-show="selectedTab==tabs.info" :char="char" :loading="loading"/>
+					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" :loading="loading"/>
 				</v-col>
 			</v-row>
 			<v-row class="sticky-bar">
@@ -60,12 +61,14 @@ import characterApi from '@/services/characterApi';
 
 import CharacterEditStats from '@/components/Characters/CharacterEditStats.vue';
 import CharacterEditInfo from '@/components/Characters/CharacterEditInfo.vue';
+import OverlayLoader from '@/components/Utility/OverlayLoader.vue';
 
 export default {
 	name: "CharacterEditPage",
 	components: {
     CharacterEditStats,
-	CharacterEditInfo
+	CharacterEditInfo,
+	OverlayLoader
 },
 	props: {
 		char: {
@@ -109,18 +112,21 @@ export default {
 				inventory: 3
 			},
 			dirty: false,
+			loading: true,
 		}
 	},
 	methods: {
 		async save() {
+			this.loading = true;
 			const response = await characterApi.createCharacter(this.char);
 			console.log(response);
 			if (response.status === 201) {
-
+				window.location.href = `/characters/${response.data.id}`;
 			} else {
 				console.error("fucak");
 			}
-		}
+			this.loading = false;
+		},
 	},
 	watch: {
 		char: {

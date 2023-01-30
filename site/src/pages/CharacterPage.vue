@@ -35,7 +35,7 @@ export default {
 		return {
 			loading: true,
 			char: null,
-			editing: true,
+			editing: false,
 		}
 	},
 	mounted() {

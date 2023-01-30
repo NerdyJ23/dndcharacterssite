@@ -4,6 +4,7 @@
 			<v-row v-for="(stat, index) in stats">
 				<v-col>
 					<v-text-field
+						:disabled="loading"
 						v-model="stat.name"
 						label="Name"
 						required
@@ -12,6 +13,7 @@
 				</v-col>
 				<v-col>
 					<v-text-field
+						:disabled="loading"
 						v-model="stat.value"
 						label="Label"
 						type="number"
@@ -22,13 +24,13 @@
 				</v-col>
 				<v-col cols="1">
 					<v-btn icon>
-						<v-icon color="red" @click="remove(index)">mdi-delete</v-icon>
+						<v-icon color="red" :disabled="loading" @click="remove(index)">mdi-delete</v-icon>
 					</v-btn>
 				</v-col>
 			</v-row>
 			<v-row>
 				<v-col class="d-flex justify-center">
-					<v-btn fab color="light-green lighten" @click="add">
+					<v-btn fab color="light-green lighten" :disabled="loading" @click="add">
 						<v-icon>mdi-plus</v-icon>
 					</v-btn>
 				</v-col>
@@ -47,6 +49,11 @@ export default {
 			type: Array,
 			required: false,
 			default: () => {return []}
+		},
+		loading: {
+			type: Boolean,
+			required: false,
+			default: false
 		}
 	},
 	data() {
