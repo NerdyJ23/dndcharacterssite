@@ -1,5 +1,6 @@
 <template>
 	<v-container fluid>
+		<v-btn @click="prefillStats">Use template</v-btn>
 		<v-form v-model="valid">
 			<v-row v-for="(stat, index) in stats">
 				<v-col>
@@ -78,6 +79,21 @@ export default {
 			let newStat = {};
 			Object.assign(newStat, this.emptyStat);
 			this.stats.push(newStat);
+		},
+		prefillStats(templateId) {
+			this.stats.push(this.defaultStat("Strength"));
+			this.stats.push(this.defaultStat("Dexterity"));
+			this.stats.push(this.defaultStat("Constitution"));
+			this.stats.push(this.defaultStat("Intelligence"));
+			this.stats.push(this.defaultStat("Wisdom"));
+			this.stats.push(this.defaultStat("Charisma"));
+		},
+		defaultStat(name) {
+			return {
+				id: "",
+				name: name,
+				value: 10
+			};
 		}
 	}
 }

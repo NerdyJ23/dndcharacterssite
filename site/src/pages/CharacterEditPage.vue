@@ -95,7 +95,8 @@ export default {
 						max_health: 0,
 						current_health: 0,
 						temporary_health: 0
-					}
+					},
+					stats: []
 				}
 			}
 		},
