@@ -1,17 +1,37 @@
 <template>
 <div>
 	<v-toolbar elevation="1">
-		<!-- <v-btn plain @click="$emit('toggleDrawer')"><v-icon>mdi-menu</v-icon></v-btn> -->
 		<v-toolbar-title class="text-h5">
 			<v-btn to="/" plain>DnD Character Site</v-btn>
 		</v-toolbar-title>
 		<v-spacer></v-spacer>
 		<div v-if="GenericStore.validSession">
-			<v-btn to="/characters" plain>My Characters</v-btn>
+			<v-menu
+				open-on-hover
+				offset-y
+				bottom
+				close-on-click
+				close-on-content-click
+			>
+				<template v-slot:activator="{on, attrs}">
+					<v-btn plain v-bind="attrs" v-on="on">
+						<v-icon>mdi-bookshelf</v-icon><span class="hidden-sm-and-down">Characters</span>
+					</v-btn>
+				</template>
+				<v-list flat>
+					<v-list-item to="/characters">
+						<v-list-item-content>My Characters</v-list-item-content>
+					</v-list-item>
+
+					<v-list-item to="/characters/create">
+						<v-list-item-content>Create New Character</v-list-item-content>
+					</v-list-item>
+				</v-list>
+			</v-menu>
 			<v-menu open-on-hover offset-y bottom>
 				<template v-slot:activator="{on, attrs}">
 					<v-btn plain v-bind="attrs" v-on="on">
-						<v-icon>mdi-account-circle</v-icon>{{ UserStore.user.username }}
+						<v-icon>mdi-account-circle</v-icon><span class="hidden-sm-and-down">{{ UserStore.user.username }}</span>
 					</v-btn>
 				</template>
 				<v-list>
