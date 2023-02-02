@@ -5,9 +5,10 @@ use App\Client\AbstractClient;
 use App\Error\Exceptions\LogicException;
 class CharactersHealthClient extends AbstractClient {
 
-	static function create(int $charId, object $health) {
+	static function create(string $charId, object $health) {
+
 		$healthItem = parent::fetchTable('CharactersHealth')->newEntity([
-			'Char_ID' => $charId,
+			'Char_ID' => parent::decrypt($charId),
 			'Current_Health' => $health->current_health
 		]);
 

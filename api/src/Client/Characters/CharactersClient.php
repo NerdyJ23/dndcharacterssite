@@ -83,7 +83,7 @@ class CharactersClient extends AbstractClient {
 				if (is_string($char->health)) {
 					$char->health = json_decode($char->health);
 				}
-				CharactersHealthClient::create(parent::decrypt($result->id), (object)$char->health);
+				CharactersHealthClient::create($result->id, (object)$char->health, $token);
 			}
 
 			if (parent::propertyExists($char, "stats")) {
@@ -91,7 +91,7 @@ class CharactersClient extends AbstractClient {
 					$char->stats = json_decode($char->stats);
 				}
 				foreach ($char->stats as $stat) {
-					CharactersStatsClient::create(parent::decrypt($result->id), (object)$stat);
+					CharactersStatsClient::create($result->id, (object)$stat, $token);
 				}
 			}
 
@@ -100,7 +100,7 @@ class CharactersClient extends AbstractClient {
 					$char->class = json_decode($char->class);
 				}
 				foreach ($char->class as $class) {
-					CharactersClassesClient::create(parent::decrypt($result->id), (object)$class);
+					CharactersClassesClient::create($result->id, (object)$class, $token);
 				}
 			}
 
@@ -108,7 +108,7 @@ class CharactersClient extends AbstractClient {
 				if (is_string($char->background)) {
 					$char->background = json_decode($char->background, false);
 				}
-				CharactersBackgroundClient::create(parent::decrypt($result->id), (object)$char->background);
+				CharactersBackgroundClient::create($result->id, (object)$char->background, $token);
 			}
 			return $result->id;
 		}
