@@ -21,7 +21,20 @@ const state = {
 		265000,
 		305000,
 		335000
+	],
+	statTemplates: [
+		{
+			id: 0,
+			name: "DnD 5e",
+			list: ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"]
+		},
+		{
+			id: 1,
+			name: "Random",
+			list: ["A", "B", "C"]
+		}
 	]
+
 }
 const actions = {
 	async loadImage({commit, state}, id) {

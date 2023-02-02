@@ -1,6 +1,7 @@
 <template>
 	<v-container fluid>
-		<v-btn @click="prefillStats">Use template</v-btn>
+		<v-btn @click="showStatTemplateDialog">Use template</v-btn>
+		<character-stats-template-dialog ref="statTemplates" @selected="(item) => prefillStats(item)"/>
 		<v-form v-model="valid">
 			<v-row v-for="(stat, index) in stats">
 				<v-col>
@@ -40,10 +41,11 @@
 	</v-container>
 </template>
 <script>
+import CharacterStatsTemplateDialog from './CharacterStatsTemplateDialog.vue';
 export default {
 	name: "CharacterEditStats",
 	components: {
-
+		CharacterStatsTemplateDialog
 	},
 	props: {
 		stats: {
@@ -80,13 +82,10 @@ export default {
 			Object.assign(newStat, this.emptyStat);
 			this.stats.push(newStat);
 		},
-		prefillStats(templateId) {
-			this.stats.push(this.defaultStat("Strength"));
-			this.stats.push(this.defaultStat("Dexterity"));
-			this.stats.push(this.defaultStat("Constitution"));
-			this.stats.push(this.defaultStat("Intelligence"));
-			this.stats.push(this.defaultStat("Wisdom"));
-			this.stats.push(this.defaultStat("Charisma"));
+		prefillStats(stats) {
+			for(let stat of stats) {
+				this.stats.push(this.defaultStat(stat));
+			}
 		},
 		defaultStat(name) {
 			return {
@@ -94,6 +93,9 @@ export default {
 				name: name,
 				value: 10
 			};
+		},
+		showStatTemplateDialog() {
+			this.$refs.statTemplates.show();
 		}
 	}
 }
