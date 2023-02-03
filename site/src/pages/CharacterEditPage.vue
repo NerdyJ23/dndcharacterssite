@@ -38,6 +38,7 @@
 					<v-divider class="mr-3" vertical />
 					<CharacterEditInfo v-show="selectedTab==tabs.info" :char="char" :loading="loading"/>
 					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" :loading="loading" @delete="item => toDelete.stats.push(item)"/>
+					<CharacterEditSettings v-show="selectedTab==tabs.settings" :char="char" :loading="loading" />
 				</v-col>
 			</v-row>
 			<v-row class="sticky-bar">
@@ -62,6 +63,8 @@ import characterApi from '@/services/characterApi';
 
 import CharacterEditStats from '@/components/Characters/CharacterEditStats.vue';
 import CharacterEditInfo from '@/components/Characters/CharacterEditInfo.vue';
+import CharacterEditSettings from '@/components/Characters/CharacterEditSettings.vue';
+
 import OverlayLoader from '@/components/Utility/OverlayLoader.vue';
 import ErrorMessageBar from '@/components/Utility/ErrorMessageBar.vue';
 import { mapState } from 'vuex';
@@ -71,6 +74,7 @@ export default {
 	components: {
     CharacterEditStats,
 	CharacterEditInfo,
+	CharacterEditSettings,
 	OverlayLoader,
 	ErrorMessageBar
 },
@@ -114,7 +118,8 @@ export default {
 				info: 0,
 				stats: 1,
 				classes: 2,
-				inventory: 3
+				inventory: 3,
+				settings: 3
 			},
 			dirty: false,
 			loading: false,
