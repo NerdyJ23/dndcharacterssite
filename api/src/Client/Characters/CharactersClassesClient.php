@@ -9,16 +9,9 @@ class CharactersClassesClient extends AbstractClient {
 
 	static function create(string $charId, object $class, mixed $token):string {
 		if (CharactersClient::canEdit(token: $token, charId: $charId)) {
-			if (!property_exists($class, "name") || $class->name == null) {
-				throw new InputException('Class name is required and cannot be blank');
-			} else if (trim($class->name) == "") {
-				throw new InputException('Class name is required and cannot be blank');
-			}
+			parent::assertKeys($class, ["name"]);
+			parent::assertKeys($class, ["level"], "number");
 
-			if (!property_exists($class, "level") || !is_numeric($class->level)) {
-				throw new InputException("Class level must be an integer");
-
-			}
 			$classItem = parent::fetchTable(CharactersClassesClient::TABLE)->newEntity([
 				'Char_ID' => parent::decrypt($charId),
 				'Class' => $class->name,
@@ -47,14 +40,13 @@ class CharactersClassesClient extends AbstractClient {
 			->where(['ID' => parent::decrypt($class->id)])
 			->first();
 			if ($classItem != null) {
-				if (property_exists($class, "name") && $class->name != null) {
-					if (trim($class->name) == "") {
-						throw new InputException("Class name cannot be blank");
-					}
+				if (parent::propertyExists($class, "name")) {
+					parent::assertKeys($class, ["name"]);
 					$classItem->Class = $class->name;
 				}
 
-				if (property_exists($class, "level") && $class->level != null) {
+				if (parent::propertyExists($class, "level")) {
+					parent::assertKeys($class, ["level"], "number");
 					$classItem->Level = $class->level;
 				}
 

@@ -237,6 +237,16 @@ class CharactersClient extends AbstractClient {
 					}
 				}
 			}
+
+			if (property_exists($delete, "class")) {
+				$deleteClass = parent::toObject($delete, "class");
+				foreach ($deleteClass as $class) {
+					$class = (object)$class;
+					if (parent::propertyExists($class, "id")) {
+						CharactersClassesClient::delete(classId: $class->id, token: $token, charId: $char->id);
+					}
+				}
+			}
 		}
 
 		//Save Character
