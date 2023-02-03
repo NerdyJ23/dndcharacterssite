@@ -50,16 +50,27 @@ class AbstractClient {
 		return false;
 	}
 
-	static function _isValid(mixed $item, string $type) {
+	static function _isValid(mixed $item, string $type):bool {
 		switch ($type) {
 			case "string":
-				return trim($item) != "";
+				return is_string($item) && trim($item) != "";
 			case "array":
-				return sizeOf($item) != 0;
+				return is_array($item) && sizeOf($item) != 0;
 			case "number":
 				return is_numeric($item);
 			default:
-				return trim($item) != "";
+				return $item != null;
+		}
+	}
+
+	static function toObject(mixed $item, string $key): object {
+		if ($item != null) {
+			if (is_string($item->$key)) {
+				return (object)json_decode($item->$key);
+			}
+			return (object)$item->$key;
+		} else {
+			throw new InputException("Item is not valid");
 		}
 	}
 }

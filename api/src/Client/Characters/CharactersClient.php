@@ -42,8 +42,8 @@ class CharactersClient extends AbstractClient {
 	}
 
 	static function create(object $char, mixed $token): string {
-		parent::assertKeys($char, ["first_name", "race", "stats"]);
-		$char->stats = is_string($char->stats) ? json_decode($char->stats) : $char->stats;
+		parent::assertKeys($char, ["first_name", "race"]);
+		$char->stats = property_exists($char, "stats") && is_string($char->stats) ? json_decode($char->stats) : $char->stats;
 		parent::assertKeys($char, ["stats"], "array");
 
 		$user = UserClient::getByToken($token);
@@ -80,31 +80,24 @@ class CharactersClient extends AbstractClient {
 		$result = parent::fetchTable('Characters')->save($charItem);
 
 		if ($result != false) {
-			if (parent::propertyExists($char, "health")) {
-				if (is_string($char->health)) {
-					$char->health = json_decode($char->health);
-				}
-				CharactersHealthClient::create($result->id, (object)$char->health, $token);
+			if (parent::propertyExists($char, "health") || parent::propertyExists($char, "health", "array")) {
+				CharactersHealthClient::create($result->id, parent::toObject($char, "health"), $token);
 			}
 
 			foreach ($char->stats as $stat) {
 				CharactersStatsClient::create($result->id, (object)$stat, $token);
 			}
 
-			if (parent::propertyExists($char, "class")) {
-				if (is_string($char->class)) {
-					$char->class = json_decode($char->class);
-				}
+			if (parent::propertyExists($char, "class") || parent::propertyExists($char, "health", "array")) {
+				$char->class = parent::toObject($char, "class");
 				foreach ($char->class as $class) {
 					CharactersClassesClient::create($result->id, (object)$class, $token);
 				}
 			}
 
-			if (parent::propertyExists($char, "background")) {
-				if (is_string($char->background)) {
-					$char->background = json_decode($char->background, false);
-				}
-				CharactersBackgroundClient::create($result->id, (object)$char->background, $token);
+			if (parent::propertyExists($char, "background") || parent::propertyExists($char, "background", "array")) {
+				$char->background = parent::toObject($char, "background");
+				CharactersBackgroundClient::create($result->id, $char->background, $token);
 			}
 			return $result->id;
 		}
@@ -160,55 +153,55 @@ class CharactersClient extends AbstractClient {
 			'message' => []
 		];
 
-		if (property_exists($char, 'first_name') && $char->first_name != null) {
+		if (parent::propertyExists($char, 'first_name')) {
 			$charItem->First_Name = $char->first_name;
 		}
 
-		if (property_exists($char, 'nickname') && $char->nickname != null) {
+		if (parent::propertyExists($char, 'nickname')) {
 			$charItem->Nickname = $char->nickname;
 		}
 
-		if (property_exists($char, 'last_name') && $char->last_name != null) {
+		if (parent::propertyExists($char, 'last_name')) {
 			$charItem->Last_Name = $char->last_name;
 		}
 
-		if (property_exists($char, 'race') && $char->race != null) {
+		if (parent::propertyExists($char, 'race')) {
 			$charItem->Race = $char->race;
 		}
 
-		if (property_exists($char, 'exp') && $char->exp != null) {
+		if (parent::propertyExists($char, 'exp')) {
 			$charItem->Exp = $char->exp;
 		}
 
-		if (property_exists($char, 'alignment') && $char->alignment != null) {
+		if (parent::propertyExists($char, 'alignment')) {
 			$charItem->Alignment = $char->alignment;
 		}
 
-		if (property_exists($char, 'public') && $char->public != null) {
+		if (parent::propertyExists($char, 'public')) {
 			$charItem->Visibility = $char->public;
 		}
 
 		//Stats
-		if (property_exists($char, 'stats') && $char->stats != null) {
-			$charStats = json_decode($char->stats);
+		if (property_exists($char, 'stats')) {
+			$charStats = parent::toObject($char, "stats");
 			foreach ($charStats as $stat) {
-				if (property_exists($stat, 'id') && $stat->id != null) {
-					$result = CharactersStatsClient::update($stat, $token);
-					if ($result == false) {
-						$response->message[] = 'Character stat ' . $stat->id . ' failed to save';
-					}
+				$stat = (object)$stat;
+				if (parent::propertyExists($stat, 'id')) {
+					$result = CharactersStatsClient::update($stat, $token, $char->id);
 				} else {
-					$result = false;
-					$response->message[] = 'Character stat ' . $stat->name . ' has no ID';
+					$result = CharactersStatsClient::create(charId: $char->id, stat: $stat, token: $token);
+				}
+				if ($result == false) {
+					$response->message[] = 'Character stat ' . $stat->id . ' failed to save';
 				}
 				$response->status = SuccessState::success($response->status, $result != false);
 			}
 		}
 
 		//Health
-		if (property_exists($char, 'health') && $char->health != null) {
-			$healthItem = json_decode($char->health);
-			if (!property_exists($healthItem, 'id') || $healthItem->id == null) {
+		if (property_exists($char, 'health')) {
+			$healthItem = parent::toObject($char, "health");
+			if (!parent::propertyExists($healthItem, 'id')) {
 				$healthItem->id = $charItem->health->id;
 			}
 			$result = CharactersHealthClient::update(health: $healthItem, token: $token, charId: $char->id);
@@ -219,9 +212,9 @@ class CharactersClient extends AbstractClient {
 		}
 
 		//Background
-		if (property_exists($char, 'background') && $char->background != null) {
-			$backgroundItem = json_decode($char->background);
-			if (!property_exists($backgroundItem, 'id') || $backgroundItem->id == null) {
+		if (property_exists($char, 'background')) {
+			$backgroundItem = parent::toObject($char, "background");
+			if (!parent::propertyExists($backgroundItem, 'id')) {
 				$backgroundItem->id = $charItem->background->id;
 			}
 			$result = CharactersBackgroundClient::update(background: $backgroundItem, token: $token, charId: $charItem->id);
@@ -231,6 +224,21 @@ class CharactersClient extends AbstractClient {
 				$response->status = SuccessState::success($response->status, false);
 			}
 		}
+
+		//Delete items
+		if (property_exists($char, "toDelete")) {
+			$delete = parent::toObject($char, "toDelete");
+			if (property_exists($delete, "stats")) {
+				$deleteStats = parent::toObject($delete, "stats");
+				foreach ($deleteStats as $stat) {
+					$stat = (object)$stat;
+					if (parent::propertyExists($stat, "id")) {
+						CharactersStatsClient::delete(statId: $stat->id, token: $token, charId: $char->id);
+					}
+				}
+			}
+		}
+
 		//Save Character
 		$result = parent::fetchTable(CharactersClient::TABLE)->save($charItem);
 		if ($result == false) {

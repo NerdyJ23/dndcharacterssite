@@ -137,7 +137,8 @@ class CharactersController extends ApiController {
 			'stats' => $req->getData('stats'),
 			'background' => $req->getData('background'),
 			'class' => $req->getData('class'),
-			'health' => $req->getData('health')
+			'health' => $req->getData('health'),
+			'toDelete' => $req->getData('toDelete')
 		];
 		$result = CharactersClient::update($char, $token);
 

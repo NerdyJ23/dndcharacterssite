@@ -71,7 +71,7 @@ class CharactersHealthClient extends AbstractClient {
 			}
 
 			if (parent::propertyExists($health, 'temporary_health')) {
-				$healthItem->Temporary_Health = $healthItem->temporary_health;
+				$healthItem->Temporary_Health = $health->temporary_health;
 			}
 
 			if (parent::propertyExists($health, 'hit_die')) {
