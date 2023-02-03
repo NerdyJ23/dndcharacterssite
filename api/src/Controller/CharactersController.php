@@ -81,7 +81,7 @@ class CharactersController extends ApiController {
 			'public' => $req->getData('public'),
 			'stats' => $req->getData('stats'),
 			'background' => $req->getData('background'),
-			'class' => $req->getData('class'),
+			'classes' => $req->getData('classes'),
 			'health' => $req->getData('health')
 		];
 		$result = CharactersClient::create($char, $token);
@@ -136,7 +136,7 @@ class CharactersController extends ApiController {
 			'public' => $req->getData('public'),
 			'stats' => $req->getData('stats'),
 			'background' => $req->getData('background'),
-			'class' => $req->getData('class'),
+			'classes' => $req->getData('classes'),
 			'health' => $req->getData('health'),
 			'toDelete' => $req->getData('toDelete')
 		];

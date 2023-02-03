@@ -89,7 +89,7 @@ class CharactersClient extends AbstractClient {
 				CharactersStatsClient::create($result->id, (object)$stat, $token);
 			}
 
-			if (parent::propertyExists($char, "class") || parent::propertyExists($char, "health", "array")) {
+			if (parent::propertyExists($char, "classes") || parent::propertyExists($char, "classes", "array")) {
 				$char->class = parent::toObject($char, "class");
 				foreach ($char->class as $class) {
 					CharactersClassesClient::create($result->id, (object)$class, $token);
@@ -226,6 +226,17 @@ class CharactersClient extends AbstractClient {
 			}
 		}
 
+		if (property_exists($char, 'classes')) {
+			$classes = parent::toObject($char, "classes");
+			foreach($classes as $class) {
+				$class = (object)$class;
+				if (parent::propertyExists($class, "id")) {
+					CharactersClassesClient::update(class: $class, token: $token, charId: $char->id);
+				} else {
+					CharactersClassesClient::create(class: $class, token: $token, charId: $char->id);
+				}
+			}
+		}
 		//Delete items
 		if (property_exists($char, "toDelete")) {
 			$delete = parent::toObject($char, "toDelete");
@@ -239,8 +250,8 @@ class CharactersClient extends AbstractClient {
 				}
 			}
 
-			if (property_exists($delete, "class")) {
-				$deleteClass = parent::toObject($delete, "class");
+			if (property_exists($delete, "classes")) {
+				$deleteClass = parent::toObject($delete, "classes");
 				foreach ($deleteClass as $class) {
 					$class = (object)$class;
 					if (parent::propertyExists($class, "id")) {
