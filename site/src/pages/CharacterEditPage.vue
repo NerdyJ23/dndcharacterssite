@@ -64,6 +64,7 @@ import CharacterEditStats from '@/components/Characters/CharacterEditStats.vue';
 import CharacterEditInfo from '@/components/Characters/CharacterEditInfo.vue';
 import OverlayLoader from '@/components/Utility/OverlayLoader.vue';
 import ErrorMessageBar from '@/components/Utility/ErrorMessageBar.vue';
+import { mapState } from 'vuex';
 
 export default {
 	name: "CharacterEditPage",
@@ -123,8 +124,19 @@ export default {
 			}
 		}
 	},
+	computed: {
+		...mapState(["GenericStore"])
+	},
+	mounted() {
+		if (!this.GenericStore.validSession) {
+			this.$router.push("/login");
+		}
+	},
 	methods: {
 		async save() {
+			if (this.char.stats.length == 0) {
+				return;
+			}
 			this.loading = true;
 			const response = await characterApi.createCharacter(this.char);
 			console.log(response);
