@@ -4,7 +4,7 @@
 		<Navbar @toggleDrawer="toggleDrawer" ref="navbar" @login="showLogin" @logout="logout" />
 		<v-divider></v-divider>
 		<v-card class="d-flex" elevation="0">
-			<router-view style="width:auto" class="pl-10 col-12"></router-view>
+			<router-view v-if="show" style="width:auto" class="pl-10 col-12"></router-view>
 		</v-card>
 		<Login ref="login" @loggedin="loadUser"/>
     </v-main>
@@ -18,12 +18,14 @@ import { mapState } from "vuex";
 import Login from './components/Login/LoginDialog';
 
 export default {
-	mounted() {
+	async mounted() {
 		// this.$vuetify.theme.dark = true;
-		this.$store.dispatch('checkValidSession');
+		await this.$store.dispatch('checkValidSession');
+		this.show = true;
 	},
 	data() {
 		return {
+			show: false
 		}
 	},
   	name: 'App',
