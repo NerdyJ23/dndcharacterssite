@@ -104,7 +104,8 @@ export default {
 						current_health: 0,
 						temporary_health: 0
 					},
-					stats: []
+					stats: [],
+					classes: []
 				}
 			}
 		},

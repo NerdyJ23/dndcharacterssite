@@ -16,7 +16,7 @@
 							<span>
 								<span class="font-weight-bold">Class: </span>
 								<template v-for="a in char.classes">
-									Lv. {{ a.level }} {{ a.class }}
+									Lv. {{ a.level }} {{ a.name }}
 								</template>
 							</span>
 							<span>
