@@ -15,7 +15,7 @@
 				/>
 			</v-col>
 		</v-row>
-		<CharacterEditPage :char="char" v-else />
+		<CharacterEditPage @saved="updatePage" :char="char" v-else />
 	</v-container>
 </template>
 <script>
@@ -58,6 +58,10 @@ export default {
 				return this.char[attr];
 			}
 			return '';
+		},
+		async updatePage() {
+			await this.load();
+			this.editing = false;
 		}
 	}
 }

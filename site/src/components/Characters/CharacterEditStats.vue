@@ -73,7 +73,7 @@ export default {
 	methods: {
 		remove(index) {
 			if (this.stats[index].id !== "") {
-				this.deleted.push(this.stats[index]);
+				this.$emit("delete", this.stats[index]);
 			}
 			this.stats.splice(index,1);
 		},

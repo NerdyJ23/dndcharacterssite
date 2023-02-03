@@ -39,5 +39,13 @@ export default {
 			return error.response;
 		});
 		return response;
+	},
+	editCharacter(char) {
+		const response = cakeApi().patch(`/characters/${char.id}`, char, {
+			withCredentials: true
+		}).catch((error) => {
+			return error.response;
+		});
+		return response;
 	}
 }

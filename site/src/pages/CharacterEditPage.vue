@@ -37,7 +37,7 @@
 				<v-col cols="10" class="d-flex flex-row">
 					<v-divider class="mr-3" vertical />
 					<CharacterEditInfo v-show="selectedTab==tabs.info" :char="char" :loading="loading"/>
-					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" :loading="loading"/>
+					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" :loading="loading" @delete="item => toDelete.stats.push(item)"/>
 				</v-col>
 			</v-row>
 			<v-row class="sticky-bar">
@@ -121,6 +121,10 @@ export default {
 			error: {
 				show: false,
 				message: ""
+			},
+			toDelete: {
+				stats: [],
+				skills: []
 			}
 		}
 	},
@@ -138,10 +142,20 @@ export default {
 				return;
 			}
 			this.loading = true;
-			const response = await characterApi.createCharacter(this.char);
-			console.log(response);
+			let response = null;
+
+			if (this.state == 'Edit') {
+				this.char.toDelete = this.toDelete;
+				response = await characterApi.editCharacter(this.char);
+			} else {
+				response = await characterApi.createCharacter(this.char);
+			}
+
 			if (response.status === 201) {
-				window.location.href = `/characters/${response.data.id}`;
+				this.$router.push(`/characters/${response.data.id}`);
+			} else if (response.status === 204) {
+				this.$emit("saved");
+				this.loading = false;
 			} else {
 				this.error.show = true;
 				this.error.message = response.data.errorMessage;
