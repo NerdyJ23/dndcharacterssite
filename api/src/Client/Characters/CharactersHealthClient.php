@@ -5,29 +5,30 @@ use App\Client\AbstractClient;
 use App\Error\Exceptions\LogicException;
 class CharactersHealthClient extends AbstractClient {
 
-	static function create(int $charId, object $health) {
+	static function create(string $charId, object $health) {
+
 		$healthItem = parent::fetchTable('CharactersHealth')->newEntity([
-			'Char_ID' => $charId,
+			'Char_ID' => parent::decrypt($charId),
 			'Current_Health' => $health->current_health
 		]);
 
-		if (property_exists($health, "max_health")) {
+		if (parent::propertyExists($health, "max_health")) {
 			$healthItem->Max_Health = $health->max_health;
 		}
 
-		if (property_exists($health, "temporary_health")) {
+		if (parent::propertyExists($health, "temporary_health")) {
 			$healthItem->Temporary_Health = $health->temporary_health;
 		}
 
-		if (property_exists($health, "hit_die")) {
+		if (parent::propertyExists($health, "hit_die")) {
 			$healthItem->Hit_Die = $health->hit_die;
 		}
 
-		if (property_exists($health, "death_fails")) {
+		if (parent::propertyExists($health, "death_fails")) {
 			$healthItem->Death_Fails = $health->death_fails;
 		}
 
-		if (property_exists($health, "death_success")) {
+		if (parent::propertyExists($health, "death_success")) {
 			$healthItem->Death_Success = $health->death_success;
 		}
 
@@ -58,30 +59,30 @@ class CharactersHealthClient extends AbstractClient {
 		if (!CharactersClient::canEdit(token: $token, charId: $charId)) {
 			return false;
 		}
-		if (property_exists($health, 'id') && $health->id != null) {
+		if (parent::propertyExists($health, 'id')) {
 			$healthItem = parent::fetchTable('CharactersHealth')->get(parent::decrypt($health->id));
 
-			if (property_exists($health, 'current_health') && $health->current_health != null) {
+			if (parent::propertyExists($health, 'current_health')) {
 				$healthItem->Current_Health = $health->current_health;
 			}
 
-			if (property_exists($health, 'max_health') && $health->max_health != null) {
+			if (parent::propertyExists($health, 'max_health')) {
 				$healthItem->Max_Health = $health->max_health;
 			}
 
-			if (property_exists($health, 'temporary_health') && $health->temporary_health != null) {
+			if (parent::propertyExists($health, 'temporary_health')) {
 				$healthItem->Temporary_Health = $healthItem->temporary_health;
 			}
 
-			if (property_exists($health, 'hit_die') && $health->hit_die != null) {
+			if (parent::propertyExists($health, 'hit_die')) {
 				$healthItem->Hit_Die = $health->hit_die;
 			}
 
-			if (property_exists($health, 'death_fails') && $health->death_fails != null) {
+			if (parent::propertyExists($health, 'death_fails')) {
 				$healthItem->Death_Fails = $health->death_fails;
 			}
 
-			if (property_exists($health, 'death_success') && $health->death_success != null) {
+			if (parent::propertyExists($health, 'death_success')) {
 				$healthItem->Death_Success = $health->death_success;
 			}
 

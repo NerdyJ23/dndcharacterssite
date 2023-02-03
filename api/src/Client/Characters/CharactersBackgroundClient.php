@@ -18,9 +18,9 @@ class CharactersBackgroundClient extends AbstractClient{
 		return null;
 	}
 
-	static function create(int $charId, object $background): string {
+	static function create(string $charId, object $background): string {
 		$backgroundItem = parent::fetchTable(CharactersBackgroundClient::TABLE)->newEntity([
-			'Char_ID' => $charId,
+			'Char_ID' => parent::decrypt($charId),
 			'Name' => $background->name,
 			'Description' => $background->description
 		]);

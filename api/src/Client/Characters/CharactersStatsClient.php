@@ -23,15 +23,8 @@ class CharactersStatsClient extends AbstractClient {
 
 	static function create(string $charId, object $stat, mixed $token):string {
 		if (CharactersClient::canEdit(token: $token, charId: $charId)) {
-			if (!property_exists($stat, "name") || $stat->name == null) {
-				throw new InputException('Name cannot be empty');
-			} else if (trim($stat->name) == "") {
-				throw new InputException('Name cannot be empty');
-			}
-
-			if (!property_exists($stat, "value") || !is_numeric($stat->value)) {
-				throw new InputException('Value must be an integer and cannot be empty');
-			}
+			parent::assertKeys($stat, ["name"]);
+			parent::assertKeys($stat, ["value"], "number");
 
 			$statItem = parent::fetchTable(CharactersStatsClient::TABLE)->newEntity([
 				'Char_ID' => parent::decrypt($charId),

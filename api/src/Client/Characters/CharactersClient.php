@@ -42,9 +42,9 @@ class CharactersClient extends AbstractClient {
 	}
 
 	static function create(object $char, mixed $token): string {
-		if (!property_exists($char, "first_name") && !property_exists($char, "race") && !property_exists($char)) {
-			return "";
-		}
+		parent::assertKeys($char, ["first_name", "race", "stats"]);
+		$char->stats = is_string($char->stats) ? json_decode($char->stats) : $char->stats;
+		parent::assertKeys($char, ["stats"], "array");
 
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
@@ -57,59 +57,54 @@ class CharactersClient extends AbstractClient {
 			'User_Access' => $user->ID,
 		]);
 
-		if (property_exists($char, "nickname") && $char->nickname != null) {
+		if (parent::propertyExists($char, "nickname")) {
 			$charItem->Nickname = $char->nickname;
 		}
 
-		if (property_exists($char, "last_name") && $char->last_name != null) {
+		if (parent::propertyExists($char, "last_name")) {
 			$charItem->Last_Name = $char->last_name;
 		}
 
-		if (property_exists($char, "exp") && $char->exp != null) {
+		if (parent::propertyExists($char, "exp")) {
 			$charItem->Exp = $char->exp;
 		}
 
-		if (property_exists($char, "alignment") && $char->alignment != null) {
+		if (parent::propertyExists($char, "alignment")) {
 			$charItem->Alignment = $char->alignment;
 		}
 
-		if (property_exists($char, "public") && $char->public != null) {
+		if (parent::propertyExists($char, "public")) {
 			$charItem->Visibility = $char->public;
 		}
 
 		$result = parent::fetchTable('Characters')->save($charItem);
 
 		if ($result != false) {
-			if (property_exists($char, "health") && $char->health != null && $char->health != "") {
+			if (parent::propertyExists($char, "health")) {
 				if (is_string($char->health)) {
 					$char->health = json_decode($char->health);
 				}
-				CharactersHealthClient::create(parent::decrypt($result->id), (object)$char->health);
+				CharactersHealthClient::create($result->id, (object)$char->health, $token);
 			}
 
-			if (property_exists($char, "stats") && $char->stats != null && $char->stats != "") {
-				if (is_string($char->stats)) {
-					$char->stats = json_decode($char->stats);
-				}
-				foreach ($char->stats as $stat) {
-					CharactersStatsClient::create(parent::decrypt($result->id), (object)$stat);
-				}
+			foreach ($char->stats as $stat) {
+				CharactersStatsClient::create($result->id, (object)$stat, $token);
 			}
 
-			if (property_exists($char, "class") && $char->class != null && $char->class != "") {
+			if (parent::propertyExists($char, "class")) {
 				if (is_string($char->class)) {
 					$char->class = json_decode($char->class);
 				}
 				foreach ($char->class as $class) {
-					CharactersClassesClient::create(parent::decrypt($result->id), (object)$class);
+					CharactersClassesClient::create($result->id, (object)$class, $token);
 				}
 			}
 
-			if (property_exists($char, "background") && $char->background != null && $char->background != "") {
+			if (parent::propertyExists($char, "background")) {
 				if (is_string($char->background)) {
 					$char->background = json_decode($char->background, false);
 				}
-				CharactersBackgroundClient::create(parent::decrypt($result->id), (object)$char->background);
+				CharactersBackgroundClient::create($result->id, (object)$char->background, $token);
 			}
 			return $result->id;
 		}
