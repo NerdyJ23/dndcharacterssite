@@ -42,7 +42,8 @@ class CharactersClient extends AbstractClient {
 	}
 
 	static function create(object $char, mixed $token): string {
-		parent::assertKeys($char, ["first_name", "race"]);
+		parent::assertKeys($char, ["first_name", "race", "stats"]);
+		$char->stats = is_string($char->stats) ? json_decode($char->stats) : $char->stats;
 		parent::assertKeys($char, ["stats"], "array");
 
 		$user = UserClient::getByToken($token);
@@ -86,13 +87,8 @@ class CharactersClient extends AbstractClient {
 				CharactersHealthClient::create($result->id, (object)$char->health, $token);
 			}
 
-			if (parent::propertyExists($char, "stats")) {
-				if (is_string($char->stats)) {
-					$char->stats = json_decode($char->stats);
-				}
-				foreach ($char->stats as $stat) {
-					CharactersStatsClient::create($result->id, (object)$stat, $token);
-				}
+			foreach ($char->stats as $stat) {
+				CharactersStatsClient::create($result->id, (object)$stat, $token);
 			}
 
 			if (parent::propertyExists($char, "class")) {

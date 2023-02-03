@@ -25,10 +25,12 @@ class AbstractClient {
 		}
 		foreach ($key as $item) {
 			if (property_exists($obj, $item) && $obj->$item != null) {
-				if ($type == "string") {
-					if ($obj->$item == "") {
-						throw new InputException($item . " cannot be empty");
+				if (!AbstractClient::_isValid($obj->$item, $type)) {
+					$message = " cannot be empty";
+					if ($type == "number") {
+						$message = " must be an integer";
 					}
+					throw new InputException($item . $message);
 				}
 			} else {
 				throw new InputException($item . " cannot be empty");
@@ -43,15 +45,21 @@ class AbstractClient {
 		}
 
 		if (property_exists($obj, $key) && $obj->$key != null) {
-			switch ($type) {
-				case "string":
-					return trim($obj->$key) != "";
-				case "array":
-					return sizeOf($obj->$key) != 0;
-				default:
-					return trim($obj->$key) != "";
-			}
+			return AbstractClient::_isValid($obj->$key, $type);
 		}
 		return false;
+	}
+
+	static function _isValid(mixed $item, string $type) {
+		switch ($type) {
+			case "string":
+				return trim($item) != "";
+			case "array":
+				return sizeOf($item) != 0;
+			case "number":
+				return is_numeric($item);
+			default:
+				return trim($item) != "";
+		}
 	}
 }
