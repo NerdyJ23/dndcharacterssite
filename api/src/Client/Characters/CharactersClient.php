@@ -43,8 +43,9 @@ class CharactersClient extends AbstractClient {
 
 	static function create(object $char, mixed $token): string {
 		parent::assertKeys($char, ["first_name", "race"]);
-		$char->stats = property_exists($char, "stats") && is_string($char->stats) ? json_decode($char->stats) : $char->stats;
-		parent::assertKeys($char, ["stats"], "array");
+		$char->stats = parent::toObject($char, "stats");
+		$char->class = parent::toObject($char, "class");
+		parent::assertKeys($char, ["stats", "class"], "not_null");
 
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
