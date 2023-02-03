@@ -73,7 +73,7 @@ class CharactersClient extends AbstractClient {
 			$charItem->Alignment = $char->alignment;
 		}
 
-		if (parent::propertyExists($char, "public")) {
+		if (parent::propertyExists($char, "public", "boolean")) {
 			$charItem->Visibility = $char->public;
 		}
 
@@ -177,7 +177,7 @@ class CharactersClient extends AbstractClient {
 			$charItem->Alignment = $char->alignment;
 		}
 
-		if (parent::propertyExists($char, 'public')) {
+		if (parent::propertyExists($char, 'public', 'boolean')) {
 			$charItem->Visibility = $char->public;
 		}
 

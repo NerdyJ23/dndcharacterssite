@@ -58,6 +58,8 @@ class AbstractClient {
 				return is_array($item) && sizeOf($item) != 0;
 			case "number":
 				return is_numeric($item);
+			case "boolean":
+				return is_bool($item);
 			default:
 				return $item != null;
 		}
