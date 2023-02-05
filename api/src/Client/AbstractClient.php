@@ -67,12 +67,13 @@ class AbstractClient {
 
 	static function toObject(mixed $item, string $key): object {
 		if ($item != null) {
-			if (is_string($item->$key)) {
-				return (object)json_decode($item->$key);
+			if (property_exists($item, $key)) {
+				if (is_string($item->$key)) {
+					return (object)json_decode($item->$key);
+				}
+				return (object)$item->$key;
 			}
-			return (object)$item->$key;
-		} else {
-			throw new InputException("Item is not valid");
 		}
+		throw new InputException($key . " is not valid");
 	}
 }
