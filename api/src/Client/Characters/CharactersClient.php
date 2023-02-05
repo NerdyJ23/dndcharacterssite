@@ -45,8 +45,8 @@ class CharactersClient extends AbstractClient {
 		parent::assertKeys($char, ["first_name", "race"]);
 		$char->stats = parent::toObject($char, "stats");
 		$char->class = parent::toObject($char, "classes");
-		parent::assertKeys($char, ["stats", "class"], "not_null");
 
+		parent::assertKeys($char, ["stats", "class"], "not_empty");
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			throw new UserNotFoundException();
@@ -89,11 +89,8 @@ class CharactersClient extends AbstractClient {
 				CharactersStatsClient::create($result->id, (object)$stat, $token);
 			}
 
-			if (parent::propertyExists($char, "classes") || parent::propertyExists($char, "classes", "array")) {
-				$char->class = parent::toObject($char, "class");
-				foreach ($char->class as $class) {
-					CharactersClassesClient::create($result->id, (object)$class, $token);
-				}
+			foreach ($char->class as $class) {
+				CharactersClassesClient::create($result->id, (object)$class, $token);
 			}
 
 			if (parent::propertyExists($char, "background") || parent::propertyExists($char, "background", "array")) {
