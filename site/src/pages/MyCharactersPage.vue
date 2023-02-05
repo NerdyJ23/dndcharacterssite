@@ -71,7 +71,9 @@ export default {
 			loading: true
 		}
 	},
+	inject: ["needSession"],
 	mounted() {
+		this.needSession();
 		this.load();
 	},
 	methods: {

@@ -3,7 +3,7 @@
 	v-model="options.visible"
 	max-width="75vw"
 	>
-	<Login ref="login"/>
+	<Login ref="login" @loggedin="hide" :isDialog="true"/>
 	</v-dialog>
 </template>
 

@@ -19,7 +19,7 @@ import Login from './components/Login/LoginDialog';
 
 export default {
 	async mounted() {
-		// this.$vuetify.theme.dark = true;
+		this.$vuetify.theme.dark = true;
 		await this.$store.dispatch('checkValidSession');
 		this.show = true;
 	},
@@ -46,10 +46,20 @@ export default {
 		},
 		loadUser() {
 			this.$store.dispatch('loadUser');
+		},
+		needSession() {
+			if (!this.GenericStore.validSession) {
+				this.$router.push("/login");
+			}
 		}
 	},
 	computed: {
 		...mapState(["GenericStore"])
+	},
+	provide() {
+		return {
+			needSession: this.needSession
+		}
 	}
 }
 </script>
