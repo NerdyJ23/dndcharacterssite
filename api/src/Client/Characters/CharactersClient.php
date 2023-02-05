@@ -1,5 +1,6 @@
 <?php
 namespace App\Client\Characters;
+use Cake\Filesystem\File;
 
 use App\Client\AbstractClient;
 use App\Client\Characters\CharactersBackgroundClient;
@@ -256,6 +257,10 @@ class CharactersClient extends AbstractClient {
 					}
 				}
 			}
+
+			if (property_exists($delete, "profile")) {
+
+			}
 		}
 
 		//Save Character
@@ -279,6 +284,24 @@ class CharactersClient extends AbstractClient {
 			return false;
 		}
 		return true;
+	}
+
+	static function removeCharacterImage(string $charId, string $token) {
+		if (!CharactersClient::canEdit(charId: $charId, token: $token)) {
+			return false;
+		}
+
+		try {
+			$files = new File(CharactersClient::getFilePath($charId));
+			if ($files == null) {
+				return false;
+			}
+
+			$result = $files->delete();
+			return $result;
+		} catch (exception $e) {
+			return false;
+		}
 	}
 
 	static function getFilePath(string $id) {

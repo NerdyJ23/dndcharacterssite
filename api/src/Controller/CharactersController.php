@@ -203,4 +203,14 @@ class CharactersController extends ApiController {
 		}
 		return $this->response(StatusCodes::TOKEN_MISMATCH);
 	}
+
+	public function removeCharacterImage() {
+		$req = $this->request;
+		$charId = $req->getParam("character_id");
+		$token = $req->getCookie("token");
+		if (CharactersClient::removeCharacterImage(charId: $charId, token: $token)) {
+			return $this->response(StatusCodes::NO_CONTENT);
+		}
+		return $this->response(StatusCodes::SERVER_ERROR);
+	}
 }
