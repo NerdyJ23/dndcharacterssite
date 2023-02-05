@@ -4,6 +4,8 @@ namespace App\Client\Characters;
 use App\Client\AbstractClient;
 use App\Client\Characters\CharactersClient;
 use App\Error\Exceptions\InputException;
+use App\Error\Exceptions\LogicException;
+
 class CharactersClassesClient extends AbstractClient {
 	const TABLE = 'CharactersClasses';
 
