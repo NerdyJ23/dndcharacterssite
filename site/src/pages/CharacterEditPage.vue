@@ -44,7 +44,7 @@
 					<v-divider class="mr-3" vertical />
 					<CharacterEditInfo v-show="selectedTab==tabs.info" :char="char" :loading="loading"/>
 					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" :loading="loading" @delete="item => toDelete.stats.push(item)"/>
-					<CharacterEditClasses v-show="selectedTab==tabs.classes" :classes="char.classes" :loading="loading" @delete="item => toDelete.class.push(item)"/>
+					<CharacterEditClasses v-show="selectedTab==tabs.classes" :classes="char.classes" :loading="loading" @delete="item => toDelete.classes.push(item)"/>
 					<CharacterEditSettings v-show="selectedTab==tabs.settings" :char="char" :loading="loading" />
 					<CharacterEditPortrait v-show="selectedTab==tabs.portrait" :id="char.id" />
 				</v-col>
@@ -143,7 +143,8 @@ export default {
 			},
 			toDelete: {
 				stats: [],
-				skills: []
+				skills: [],
+				classes: [],
 			}
 		}
 	},
