@@ -36,6 +36,7 @@ return static function (RouteBuilder $routes) {
 				$builder->get('/', 'Characters::getCharacterImage');
 				$builder->applyMiddleware('auth');
 				$builder->post('/', 'Characters::uploadCharacterImage');
+				$builder->delete('/', 'Characters::removeCharacterImage');
 			});
 
 			$builder->scope('/classes', function (RouteBuilder $builder) {

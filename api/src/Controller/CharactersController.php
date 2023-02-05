@@ -171,25 +171,14 @@ class CharactersController extends ApiController {
 	}
 
 	public function uploadCharacterImage() {
-		$id = $this->request->getParam("character_id");
+		$charId = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
-		$valid = AuthClient::validToken($token);
-		if (!$valid) {
-			return $this->response(StatusCodes::ACCESS_DENIED);
-		}
-
-		$charId = $this->decrypt($id);
-		if ($charId == false) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$user = UserClient::getByToken($token);
-		if ($user == null) {
-			return $this->response(StatusCodes::ACCESS_DENIED);
-		}
 
 		if(CharactersClient::read($charId, $token) == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
+		}
+		if (!CharactersClient::canEdit(charId: $charId, token: $token)) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
 
 		$file = $this->request->getData('image');
@@ -202,5 +191,15 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::SERVER_ERROR);
 		}
 		return $this->response(StatusCodes::TOKEN_MISMATCH);
+	}
+
+	public function removeCharacterImage() {
+		$req = $this->request;
+		$charId = $req->getParam("character_id");
+		$token = $req->getCookie("token");
+		if (CharactersClient::removeCharacterImage(charId: $charId, token: $token)) {
+			return $this->response(StatusCodes::NO_CONTENT);
+		}
+		return $this->response(StatusCodes::SERVER_ERROR);
 	}
 }
