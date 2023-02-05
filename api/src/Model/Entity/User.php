@@ -26,7 +26,7 @@ class User extends Entity {
 	}
 	protected function _getFullName() {
 		$str = $this->first_name;
-		if($this->last_name !== null) {
+		if ($this->last_name !== null) {
 			$str .= ' ' . $this->last_name;
 		}
 		return $str;

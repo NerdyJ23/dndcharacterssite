@@ -26,11 +26,11 @@ class Character extends Entity {
 	}
 	protected function _getFull_Name() {
 		$str = $this->First_Name;
-		if($this->Nickname !== null) {
+		if ($this->Nickname !== null) {
 			$str .= ' "' . $this->Nickname . '"';
 		}
 
-		if($this->Last_Name !== null) {
+		if ($this->Last_Name !== null) {
 			$str .= ' ' . $this->Last_Name;
 		}
 		return $str;

@@ -36,19 +36,19 @@ export default {
 	},
 	methods: {
 		init() {
-			if(this.isValidStatus(this.statusP)) {
+			if (this.isValidStatus(this.statusP)) {
 				this.status = this.statusP;
 			} else {
 				this.status = this.defaults.status[0];
 			}
-			if(typeof this.statusTextP !== 'undefined') {
+			if (typeof this.statusTextP !== 'undefined') {
 				this.statusText = this.statusTextP;
 			} else {
 				this.statusText = '';
 			}
 		},
 		setStatus(status) {
-			if(!this.isValidStatus(status)) {
+			if (!this.isValidStatus(status)) {
 				return;
 			}
 			switch(status.toLowerCase()) {
@@ -64,8 +64,8 @@ export default {
 			}
 		},
 		isValidStatus(status) {
-			if(typeof status !== 'undefined') {
-				if(status.toLowerCase() === this.defaults.status[0].toLowerCase()
+			if (typeof status !== 'undefined') {
+				if (status.toLowerCase() === this.defaults.status[0].toLowerCase()
 				|| status.toLowerCase() === this.defaults.status[1].toLowerCase()
 				|| status.toLowerCase() === this.defaults.status[2].toLowerCase()) {
 					return true;

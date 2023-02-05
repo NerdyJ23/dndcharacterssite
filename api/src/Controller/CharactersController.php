@@ -174,7 +174,7 @@ class CharactersController extends ApiController {
 		$charId = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		if(CharactersClient::read($charId, $token) == null) {
+		if (CharactersClient::read($charId, $token) == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
 		if (!CharactersClient::canEdit(charId: $charId, token: $token)) {

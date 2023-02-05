@@ -15,7 +15,7 @@ class AuthenticationMiddleware implements MiddlewareInterface {
 
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
 		$token = $request->getCookie('token');
-		if($token == null || UserClient::getByToken($token) == null || !AuthClient::validToken($token)) { //and auth token correctly
+		if ($token == null || UserClient::getByToken($token) == null || !AuthClient::validToken($token)) { //and auth token correctly
 			return $this->_accessDenied();
 		}
 		return $handler->handle($request);
