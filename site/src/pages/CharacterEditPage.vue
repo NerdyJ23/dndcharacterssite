@@ -6,26 +6,32 @@
 			<v-row>
 				<v-col>
 					<v-list class="rounded-0 fill-height d-flex flex-column overflow-x-hidden">
-						<v-list-item-group v-model="selectedTab" active-class="tab-active">
-							<v-list-item>
+						<v-list-item-group active-class="tab-active">
+							<v-list-item @click="selectedTab = tabs.info">
 								<v-list-item-icon>
 									<v-icon class="pr-2">mdi-book-account</v-icon>
 								</v-list-item-icon>
 								<v-list-item-content>Info</v-list-item-content>
 							</v-list-item>
-							<v-list-item>
+							<v-list-item @click="selectedTab = tabs.portrait">
+								<v-list-item-icon>
+									<v-icon class="pr-2">mdi-image-frame</v-icon>
+								</v-list-item-icon>
+								<v-list-item-content>Portrait</v-list-item-content>
+							</v-list-item>
+							<v-list-item @click="selectedTab = tabs.stats">
 								<v-list-item-icon>
 									<v-icon class="pr-2">mdi-arm-flex</v-icon>
 								</v-list-item-icon>
 								<v-list-item-content>Stats</v-list-item-content>
 							</v-list-item>
-							<v-list-item>
+							<v-list-item @click="selectedTab = tabs.classes">
 								<v-list-item-icon>
 									<v-icon class="pr-2">mdi-school</v-icon>
 								</v-list-item-icon>
 								<v-list-item-content>Classes</v-list-item-content>
 							</v-list-item>
-							<v-list-item>
+							<v-list-item @click="selectedTab = tabs.settings">
 								<v-list-item-icon>
 									<v-icon class="pr-2">mdi-cog</v-icon>
 								</v-list-item-icon>
@@ -40,6 +46,7 @@
 					<CharacterEditStats v-show="selectedTab==tabs.stats" :stats="char.stats" :loading="loading" @delete="item => toDelete.stats.push(item)"/>
 					<CharacterEditClasses v-show="selectedTab==tabs.classes" :classes="char.classes" :loading="loading" @delete="item => toDelete.class.push(item)"/>
 					<CharacterEditSettings v-show="selectedTab==tabs.settings" :char="char" :loading="loading" />
+					<CharacterEditPortrait v-show="selectedTab==tabs.portrait" :id="char.id" />
 				</v-col>
 			</v-row>
 			<v-row class="sticky-bar">
@@ -66,6 +73,7 @@ import CharacterEditStats from '@/components/Characters/CharacterEditStats.vue';
 import CharacterEditInfo from '@/components/Characters/CharacterEditInfo.vue';
 import CharacterEditSettings from '@/components/Characters/CharacterEditSettings.vue';
 import CharacterEditClasses from '@/components/Characters/CharacterEditClasses.vue';
+import CharacterEditPortrait from '@/components/Characters/CharacterEditPortrait.vue';
 
 import OverlayLoader from '@/components/Utility/OverlayLoader.vue';
 import ErrorMessageBar from '@/components/Utility/ErrorMessageBar.vue';
@@ -78,6 +86,7 @@ export default {
 	CharacterEditInfo,
 	CharacterEditSettings,
 	CharacterEditClasses,
+	CharacterEditPortrait,
 	OverlayLoader,
 	ErrorMessageBar
 },
@@ -123,7 +132,8 @@ export default {
 				stats: 1,
 				classes: 2,
 				inventory: 3,
-				settings: 3
+				settings: 3,
+				portrait: 4
 			},
 			dirty: false,
 			loading: false,
@@ -140,10 +150,10 @@ export default {
 	computed: {
 		...mapState(["GenericStore"])
 	},
+	inject: ["needSession"],
+
 	mounted() {
-		if (!this.GenericStore.validSession) {
-			this.$router.push("/login");
-		}
+		this.needSession();
 	},
 	methods: {
 		async save() {
