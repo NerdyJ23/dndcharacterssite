@@ -120,7 +120,7 @@ class CharactersClient extends AbstractClient {
 				return StatusCodes::TOKEN_MISMATCH;
 			}
 
-			return parent::fetchTable(CharactersClient::TABLE)->find('all')
+			$char = parent::fetchTable(CharactersClient::TABLE)->find('all')
 				->where([
 					'Characters.ID =' => parent::decrypt($id),
 					'OR' => [
@@ -130,6 +130,11 @@ class CharactersClient extends AbstractClient {
 			])
 			->contain(['Classes', 'Stats', 'Health', 'Background', 'Skills', 'Skills.Linked_Stat'])
 			->first();
+
+			if ($char != null) {
+				$char->canEdit = ($user->ID == $char->User_Access);
+			}
+			return $char;
 		}
 	}
 

@@ -14,6 +14,7 @@ class CharacterSchema implements SchemaInterface{
 			'alignment' => $character->Alignment,
 			'exp' => $character->Exp,
 			'public' => $character->Visibility == 1,
+			'canEdit' => $character->canEdit
 		];
 	}
 
