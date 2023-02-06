@@ -13,7 +13,7 @@ class CharactersStatsClient extends AbstractClient {
 		if (CharactersClient::canView(token: $token, charId: $charId)) {
 			$query = parent::fetchTable(CharactersStatsClient::TABLE)->find('all')
 			->where(['Char_ID' => parent::decrypt($charId)]);
-			parent::toList($query, $pagination);
+			return parent::toList($query, $pagination);
 		}
 		return (object)['list' => [], 'total' => 0];
 	}

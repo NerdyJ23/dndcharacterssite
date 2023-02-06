@@ -27,10 +27,10 @@ class CharactersStatsController extends ApiController {
 		}
 
 		$result = CharactersStatsClient::list(token: $token, charId: $id, pagination: $pagination);
-		$this->set("result", AbstractSchema::schema($result, "CharacterStat"));
+		$this->set("result", AbstractSchema::schema($result->list, "CharacterStat"));
 		$this->set("page", $page);
 		$this->set("limit", $limit);
-		$this->set("count", sizeOf($result));
+		$this->set("total", $result->total);
 		return;
 	}
 
