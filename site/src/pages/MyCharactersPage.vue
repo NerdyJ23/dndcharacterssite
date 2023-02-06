@@ -48,12 +48,15 @@
 				</v-row>
 			</v-card-text>
 		</v-card>
+		<Pagination v-if="!loading" :total="characters.total"/>
 	</div>
 </template>
 <script>
 import characterApi from "../services/characterApi";
 import CharacterPreview from "../components/Characters/CharacterPreview.vue";
 import CharacterPreviewSkeleton from "../components/Characters/Skeletons/CharacterPreviewSkeleton";
+import Pagination from "../components/Utility/Pagination";
+
 import ExpBar from "../components/Characters/ExpBar.vue";
 
 export default {
@@ -61,12 +64,14 @@ export default {
 	components: {
 		CharacterPreview,
 		CharacterPreviewSkeleton,
-		ExpBar
+		ExpBar,
+		Pagination
 	},
 	data() {
 		return {
 			characters: {
-				list: []
+				list: [],
+				total: 0
 			},
 			loading: true
 		}
@@ -82,6 +87,7 @@ export default {
 			//Load most recent public characters from api
 			if (response.status <= 300) {
 				this.characters.list = response.data.result;
+				this.characters.total = response.data.total;
 			} else {
 				console.error("oop?");
 			}

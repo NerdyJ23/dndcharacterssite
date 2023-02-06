@@ -1,31 +1,31 @@
 <template>
 	<v-container>
-		<v-btn v-for="a in pageCount" @click="$emit('pageChanged', a)">{{ a }}</v-btn>
+		<v-btn v-for="index in pageCount" @click="$emit('pageChanged', index)">{{ index }}</v-btn>
 	</v-container>
 </template>
 <script>
 export default {
 	name: "Pagination",
 	props: {
-		page: {
-			type: Number,
-			required: false,
-			default: 1
-		},
 		limit: {
 			type: Number,
 			required: false,
 			default: 30
 		},
-		count: {
+		total: {
 			type: Number,
 			required: false,
 			default: 0
 		}
 	},
+	data() {
+		return {
+			page: 1
+		}
+	},
 	computed: {
 		pageCount() {
-			return (this.limit * this.page / this.count);
+			return Math.ceil(this.total / this.limit);
 		}
 	}
 }
