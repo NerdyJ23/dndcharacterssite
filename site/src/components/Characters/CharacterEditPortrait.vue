@@ -23,9 +23,19 @@ export default {
 	components: {
 		CharacterPortrait
 	},
+	data() {
+		return {
+			hasImage: false
+		}
+	},
+	mounted() {
+		this.$watch(
+			() => {return this.$refs.portrait.img},
+			(img) => {this.hasImage = img != null;}
+		);
+	},
 	methods: {
 		clearPortrait() {
-			console.log('clicked');
 			this.$refs.portrait.img = null;
 		},
 		uploadImage() {
@@ -35,14 +45,6 @@ export default {
 					console.error("couldnt upload image");
 				}
 			}
-		}
-	},
-	computed: {
-		hasImage() {
-			if(this.$refs.portrait) {
-				return this.$refs.portrait.img != null;
-			}
-			return false;
 		}
 	}
 }
