@@ -17,29 +17,24 @@ use App\Error\Exceptions\UserNotFoundException;
 class CharactersClient extends AbstractClient {
 	const TABLE = "Characters";
 
-	static function listPublic(Pagination $pagination): array {
-		return parent::fetchTable('Characters')->find('all')
+	static function listPublic(Pagination $pagination) {
+		$query = parent::fetchTable('Characters')->find('all')
 		->where(['Characters.Visibility = 1'])
-		->contain(['Classes'])
-		->limit($pagination->getLimit())
-		->page($pagination->getPage())
-		->all()
-		->toArray();
+		->contain(['Classes']);
+		return parent::toList($query, $pagination);
 	}
 
-	static function list(Pagination $pagination, mixed $token):array {
+	static function list(Pagination $pagination, mixed $token) {
 		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			return CharactersClient::listPublic($pagination);
 		}
 
-		return parent::fetchTable('Characters')->find('all')
+		$query = parent::fetchTable('Characters')->find('all')
 		->where(['Characters.User_Access' => $user->ID])
-		->contain(['Classes'])
-		->limit($pagination->getLimit())
-		->page($pagination->getPage())
-		->all()
-		->toArray();
+		->contain(['Classes']);
+
+		return parent::toList($query, $pagination);
 	}
 
 	static function create(object $char, mixed $token): string {
@@ -180,9 +175,8 @@ class CharactersClient extends AbstractClient {
 		if (parent::propertyExists($char, 'alignment')) {
 			$charItem->Alignment = $char->alignment;
 		}
-
-		if (parent::propertyExists($char, 'public', 'boolean')) {
-			$charItem->Visibility = $char->public;
+		if (property_exists($char, "public")) {
+			$charItem->Visibility = (int)$char->public;
 		}
 
 		//Stats

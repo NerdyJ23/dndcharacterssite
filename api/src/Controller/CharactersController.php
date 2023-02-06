@@ -19,19 +19,6 @@ class CharactersController extends ApiController {
 		parent::initialize();
 	}
 
-	public function listPublicCharacters() {
-		$pagination = new Pagination($this->request);
-		$result = CharactersClient::listPublic($pagination);
-		$resultSet = AbstractSchema::schema($result, "Character");
-
-		$this->set("result", $resultSet);
-		$this->set("count", sizeOf($resultSet));
-		$this->set("page", $pagination->getPage());
-		$this->set("limit", $pagination->getLimit());
-		$this->response = $this->response(StatusCodes::SUCCESS);
-		return;
-	}
-
 	public function list() {
 		$pagination = new Pagination($this->request);
 		$token = $this->request->getCookie('token');
@@ -40,11 +27,11 @@ class CharactersController extends ApiController {
 			AbstractSchema::schema(CharactersClient::listPublic($pagination), "Character");
 		}
 		$result = CharactersClient::list(pagination: $pagination, token: $token);
-		$resultSet = AbstractSchema::schema($result, "Character");
-		$this->set("result", $resultSet);
-		$this->set("count", sizeOf($resultSet));
+		$schema = AbstractSchema::schema($result->list, "Character");
+		$this->set("result", $schema);
 		$this->set("page", $pagination->getPage());
 		$this->set("limit", $pagination->getLimit());
+		$this->set("total", $result->total);
 	}
 
 	public function create() {
@@ -123,7 +110,6 @@ class CharactersController extends ApiController {
 		if ($char == null || $char->User_Access != $user->ID) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-
 		$char = (object)[
 			'id' => $req->getParam('character_id'),
 			'first_name' => $req->getData('first_name'),
@@ -133,7 +119,7 @@ class CharactersController extends ApiController {
 			'exp' => $req->getData('exp'),
 			'alignment' => $req->getData('alignment'),
 
-			'public' => $req->getData('public'),
+			'public' => (int)$req->getData('public'),
 			'stats' => $req->getData('stats'),
 			'background' => $req->getData('background'),
 			'classes' => $req->getData('classes'),

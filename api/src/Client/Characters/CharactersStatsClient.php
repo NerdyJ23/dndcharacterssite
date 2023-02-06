@@ -9,16 +9,13 @@ use App\Error\Exceptions\InputException;
 class CharactersStatsClient extends AbstractClient {
 	const TABLE = 'CharactersStats';
 
-	static function list(string $charId, mixed $token, Pagination $pagination):array {
+	static function list(string $charId, mixed $token, Pagination $pagination){
 		if (CharactersClient::canView(token: $token, charId: $charId)) {
-			return parent::fetchTable(CharactersStatsClient::TABLE)->find('all')
-			->where(['Char_ID' => parent::decrypt($charId)])
-			->page($pagination->getPage())
-			->limit($pagination->getLimit())
-			->all()
-			->toArray();
+			$query = parent::fetchTable(CharactersStatsClient::TABLE)->find('all')
+			->where(['Char_ID' => parent::decrypt($charId)]);
+			parent::toList($query, $pagination);
 		}
-		return [];
+		return (object)['list' => [], 'total' => 0];
 	}
 
 	static function create(string $charId, object $stat, mixed $token):string {

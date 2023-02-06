@@ -4,6 +4,7 @@ namespace App\Client;
 use Cake\ORM\TableRegistry;
 use App\Client\Security\EncryptionClient;
 use App\Error\Exceptions\InputException;
+use App\Controller\Component\Pagination;
 
 class AbstractClient {
 	static function fetchTable(string $table) {
@@ -77,5 +78,15 @@ class AbstractClient {
 			}
 		}
 		throw new InputException($key . " is not valid");
+	}
+
+	static function toList(mixed $query, Pagination $pagination): object {
+		return (object) [
+			'total' => $query->all()->count(),
+			'list' => $query->limit($pagination->getLimit())
+			->page($pagination->getPage())
+			->all()
+			->toArray()
+		];
 	}
 }
