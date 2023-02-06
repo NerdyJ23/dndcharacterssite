@@ -1,7 +1,5 @@
 <template>
 	<v-container fluid>
-		<v-btn @click="editing = !editing" v-if="char.canEdit">Edit</v-btn>
-
 		<v-row v-if="!editing">
 			<v-col cols="3">
 				<CharacterPageStats v-if="loading" :loading="loading"/>
@@ -12,6 +10,7 @@
 				<CharacterPageInfo v-else
 					:char="char"
 					:loading="loading"
+					@toggleEditing="editing = !editing"
 				/>
 			</v-col>
 		</v-row>

@@ -33,6 +33,9 @@
 						</v-card-text>
 					</v-card>
 				</v-col>
+				<v-col>
+					<v-btn v-if="char.canEdit" @click="$emit('toggleEditing')">Edit</v-btn>
+				</v-col>
 			</v-row>
 			<br />
 			<div>

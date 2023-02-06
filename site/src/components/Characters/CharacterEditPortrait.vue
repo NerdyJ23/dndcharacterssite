@@ -17,7 +17,8 @@ export default {
 	props: {
 		id: {
 			type: String,
-			required: true
+			required: false,
+			default: ""
 		}
 	},
 	components: {
@@ -38,9 +39,9 @@ export default {
 		clearPortrait() {
 			this.$refs.portrait.img = null;
 		},
-		uploadImage() {
+		uploadImage(charId) {
 			if (this.$refs.profileUpload.files.length != 0) {
-				const response = characterApi.uploadImage(this.id, this.$refs.profileUpload.files[0]);
+				const response = characterApi.uploadImage(charId, this.$refs.profileUpload.files[0]);
 				if (response.status != 204) {
 					console.error("couldnt upload image");
 				}

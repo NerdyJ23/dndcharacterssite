@@ -96,6 +96,7 @@ export default {
 			required: false,
 			default: () => {
 				return {
+					id: "",
 					first_name: "",
 					nickname: "",
 					last_name: "",
@@ -161,10 +162,10 @@ export default {
 			if (this.char.stats.length == 0 || this.char.classes.length == 0) {
 				return;
 			}
-			this.toDelete.profile = true;
+
 			this.loading = true;
 			let response = null;
-			this.$refs.characterPortrait.uploadImage();
+
 			if (this.state == 'Edit') {
 				this.char.toDelete = this.toDelete;
 				response = await characterApi.editCharacter(this.char);
@@ -172,6 +173,8 @@ export default {
 				response = await characterApi.createCharacter(this.char);
 			}
 
+			//Has to be after in case of creating character
+			await this.$refs.characterPortrait.uploadImage();
 			if (response.status === 201) {
 				this.$router.push(`/characters/${response.data.id}`);
 			} else if (response.status === 204) {
