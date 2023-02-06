@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-btn @click="editing = !editing">Edit</v-btn>
+		<v-btn @click="editing = !editing" v-if="char.canEdit">Edit</v-btn>
 
 		<v-row v-if="!editing">
 			<v-col cols="3">
