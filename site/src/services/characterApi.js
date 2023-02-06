@@ -32,6 +32,20 @@ export default {
 		});
 		return response;
 	},
+	uploadImage(id, file) {
+		console.log(file);
+		let form = new FormData();
+		form.append("image", file);
+		const response = cakeApi().post(`/characters/${id}/image`, form, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			},
+			withCredentials: true
+		}).catch((error) => {
+			return error.response;
+		});
+		return response;
+	},
 	createCharacter(char) {
 		const response = cakeApi().post(`/characters`, char, {
 			withCredentials: true

@@ -19,7 +19,7 @@ import Login from './components/Login/LoginDialog';
 
 export default {
 	async mounted() {
-		this.$vuetify.theme.dark = true;
+		// this.$vuetify.theme.dark = true;
 		await this.$store.dispatch('checkValidSession');
 		this.show = true;
 	},
