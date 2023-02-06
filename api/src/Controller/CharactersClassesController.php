@@ -15,32 +15,19 @@ class CharactersClassesController extends ApiController {
 
 	public function list() {
 		$pagination = new Pagination($this->request);
-		$limit = $pagination->getLimit();
-		$page = $pagination->getPage();
-
 		$token = $this->request->getCookie('token');
-		$id = $this->request->getParam("character_id");
-		$charId = $this->decrypt($id);
+
+		$charId = $this->request->getParam("character_id");
 
 		//Get Character, check if visible to all
-
-		if (!CharactersClient::canView(token: $token, charId: $id)) {
+		if (!CharactersClient::canView(token: $token, charId: $charId)) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-		$char = CharactersClient::read(id: $id, token: $token);
-		$classes = $this->CharactersClasses->find('all')
-			->where(['CharactersClasses.Char_ID' => $char->ID])
-			->limit($limit)
-			->page($page)
-			->all()
-			->toArray();
+		$char = CharactersClient::read(id: $charId, token: $token);
+		$result = CharactersClassesClient::list(charId: $charId, token: $token, pagination: $pagination);
 
-		if (sizeOf($classes) == 0) {
-			$this->set("result", []);
-			return;
-		}
-
-		$this->set("result", AbstractSchema::schema($classes, "CharacterClass"));
+		$this->set("result", AbstractSchema::schema($result->list, "CharacterClass"));
+		$this->set("total", $result->total);
 	}
 
 	public function get() {

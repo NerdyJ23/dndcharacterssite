@@ -3,12 +3,19 @@ namespace App\Client\Characters;
 
 use App\Client\AbstractClient;
 use App\Client\Characters\CharactersClient;
+use App\Controller\Component\Pagination;
+
 use App\Error\Exceptions\InputException;
 use App\Error\Exceptions\LogicException;
 
 class CharactersClassesClient extends AbstractClient {
 	const TABLE = 'CharactersClasses';
 
+	static function list(string $charId, mixed $token, Pagination $pagination): object {
+		$query = parent::fetchTable(CharactersClassesClient::TABLE)->find('all')
+			->where(['CharactersClasses.Char_ID' => parent::decrypt($charId)]);
+		return parent::toList($query, $pagination);
+	}
 	static function create(string $charId, object $class, mixed $token):string {
 		if (CharactersClient::canEdit(token: $token, charId: $charId)) {
 			parent::assertKeys($class, ["name"]);
