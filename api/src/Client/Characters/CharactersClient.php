@@ -259,7 +259,7 @@ class CharactersClient extends AbstractClient {
 			}
 
 			if (property_exists($delete, "profile")) {
-
+				CharactersClient::removeCharacterImage(charId: $char->id, token: $token);
 			}
 		}
 
