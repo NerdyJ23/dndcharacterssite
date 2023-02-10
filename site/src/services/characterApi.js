@@ -2,15 +2,13 @@ import { cakeApi } from "./api";
 
 export default {
 	getCharacter(id) {
-		const response = cakeApi().get(`/characters/${id}`).catch((error) => {
+		const response = cakeApi().get(`/characters/${id}`, {
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;
 	},
-	getCharacterStats(id) {
-
-	},
-
 	getCharacterList() {
 		const response = cakeApi().get(`/characters`, {
 			withCredentials: true
@@ -26,15 +24,40 @@ export default {
 		return response;
 	},
 	getPortrait(id) {
-		const response = cakeApi().get(`/characters/${id}/image`, {responseType: "blob"}).catch((error) => {
+		const response = cakeApi().get(`/characters/${id}/image`, {
+			responseType: "blob",
+			withCredentials: true
+		}).catch((error) => {
+			return error.response;
+		});
+		return response;
+	},
+	uploadImage(id, file) {
+		console.log(file);
+		let form = new FormData();
+		form.append("image", file);
+		const response = cakeApi().post(`/characters/${id}/image`, form, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			},
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;
 	},
 	createCharacter(char) {
-		const response = cakeApi().post(`/characters`, {
+		const response = cakeApi().post(`/characters`, char, {
 			withCredentials: true
-		}, char).catch((error) => {
+		}).catch((error) => {
+			return error.response;
+		});
+		return response;
+	},
+	editCharacter(char) {
+		const response = cakeApi().patch(`/characters/${char.id}`, char, {
+			withCredentials: true
+		}).catch((error) => {
 			return error.response;
 		});
 		return response;

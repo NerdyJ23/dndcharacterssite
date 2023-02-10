@@ -1,6 +1,6 @@
 <template>
-	<v-container v-if="!editing" fluid>
-		<v-row>
+	<v-container fluid>
+		<v-row v-if="!editing">
 			<v-col cols="3">
 				<CharacterPageStats v-if="loading" :loading="loading"/>
 				<CharacterPageStats v-else :loading="loading" :stats="char.stats"/>
@@ -10,12 +10,12 @@
 				<CharacterPageInfo v-else
 					:char="char"
 					:loading="loading"
+					@toggleEditing="editing = !editing"
 				/>
 			</v-col>
 		</v-row>
+		<CharacterEditPage @saved="updatePage" :char="char" v-else />
 	</v-container>
-
-	<CharacterEditPage :char="char" v-else />
 </template>
 <script>
 import characterApi from "../services/characterApi";
@@ -57,6 +57,10 @@ export default {
 				return this.char[attr];
 			}
 			return '';
+		},
+		async updatePage() {
+			await this.load();
+			this.editing = false;
 		}
 	}
 }

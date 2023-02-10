@@ -1,14 +1,12 @@
 <template>
 	<v-container fluid>
-		<v-btn @click="showStatTemplateDialog">Use template</v-btn>
-		<character-stats-template-dialog ref="statTemplates" @selected="(item) => prefillStats(item)"/>
 		<v-form v-model="valid">
-			<v-row v-for="(stat, index) in stats">
+			<v-row v-for="(item, index) in classes">
 				<v-col>
 					<v-text-field
 						:disabled="loading"
-						v-model="stat.name"
-						label="Name"
+						v-model="item.name"
+						label="Class"
 						required
 						dense
 					></v-text-field>
@@ -16,12 +14,12 @@
 				<v-col>
 					<v-text-field
 						:disabled="loading"
-						v-model="stat.value"
-						label="Value"
+						v-model="item.level"
+						label="Level"
 						type="number"
 						hide-spin-buttons
-						dense
 						required
+						dense
 					></v-text-field>
 				</v-col>
 				<v-col cols="1">
@@ -41,14 +39,10 @@
 	</v-container>
 </template>
 <script>
-import CharacterStatsTemplateDialog from './CharacterStatsTemplateDialog.vue';
 export default {
-	name: "CharacterEditStats",
-	components: {
-		CharacterStatsTemplateDialog
-	},
+	name: "CharacterEditClasses",
 	props: {
-		stats: {
+		classes: {
 			type: Array,
 			required: false,
 			default: () => {return []}
@@ -61,42 +55,25 @@ export default {
 	},
 	data() {
 		return {
-			emptyStat: {
+			emptyClass: {
 				id: "",
 				name: "",
 				value: 0
 			},
-			valid: true,
-			deleted: [],
 		}
 	},
 	methods: {
 		remove(index) {
-			if (this.stats[index].id !== "") {
-				this.$emit("delete", this.stats[index]);
+			if (this.classes[index].id !== "") {
+				this.$emit("delete", this.classes[index]);
 			}
-			this.stats.splice(index,1);
+			this.classes.splice(index,1);
 		},
 		add() {
-			let newStat = {};
-			Object.assign(newStat, this.emptyStat);
-			this.stats.push(newStat);
+			let newClass = {};
+			Object.assign(newClass, this.emptyClass);
+			this.classes.push(newClass);
 		},
-		prefillStats(stats) {
-			for(let stat of stats) {
-				this.stats.push(this.defaultStat(stat));
-			}
-		},
-		defaultStat(name) {
-			return {
-				id: "",
-				name: name,
-				value: 10
-			};
-		},
-		showStatTemplateDialog() {
-			this.$refs.statTemplates.show();
-		}
 	}
 }
 </script>

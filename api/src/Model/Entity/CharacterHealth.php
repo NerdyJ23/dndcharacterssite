@@ -11,7 +11,7 @@ class CharacterHealth extends Entity {
 	protected $_accessible = [
 		'ID' => true, //int
 		'Char_ID' => true, //varchar
-		'Max_Current' => true,
+		'Current_Health' => true,
 		'Max_Health' => true,
 		'Temporary_Health' => true,
 		'Hit_Die' => true,

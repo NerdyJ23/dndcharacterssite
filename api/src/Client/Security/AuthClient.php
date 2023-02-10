@@ -30,7 +30,7 @@ class AuthClient extends AbstractClient {
 			return false;
 		}
 
-		if($passwordHash == $dbPass[0]->Password) {
+		if ($passwordHash == $dbPass[0]->Password) {
 			return true;
 		}
 		return false;

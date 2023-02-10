@@ -12,23 +12,11 @@ use App\Client\Characters\CharactersClient;
 use App\Client\Users\UserClient;
 use App\Client\Security\AuthClient;
 use App\Schema\AbstractSchema;
+use App\Controller\Component\Enum\SuccessState;
 
 class CharactersController extends ApiController {
 	public function initialize(): void {
 		parent::initialize();
-	}
-
-	public function listPublicCharacters() {
-		$pagination = new Pagination($this->request);
-		$result = CharactersClient::listPublic($pagination);
-		$resultSet = AbstractSchema::schema($result, "Character");
-
-		$this->set("result", $resultSet);
-		$this->set("count", sizeOf($resultSet));
-		$this->set("page", $pagination->getPage());
-		$this->set("limit", $pagination->getLimit());
-		$this->response = $this->response(StatusCodes::SUCCESS);
-		return;
 	}
 
 	public function list() {
@@ -38,22 +26,22 @@ class CharactersController extends ApiController {
 		if ($token == null || !AuthClient::validToken($token)) {
 			AbstractSchema::schema(CharactersClient::listPublic($pagination), "Character");
 		}
-		$result = CharactersClient::list($pagination, $token);
-		$resultSet = AbstractSchema::schema($result, "Character");
-
-		$this->set("result", $resultSet);
-		$this->set("count", sizeOf($resultSet));
+		$result = CharactersClient::list(pagination: $pagination, token: $token);
+		$schema = AbstractSchema::schema($result->list, "Character");
+		$this->set("result", $schema);
 		$this->set("page", $pagination->getPage());
 		$this->set("limit", $pagination->getLimit());
+		$this->set("total", $result->total);
 	}
 
 	public function create() {
 		$req = $this->request;
+		$token = $req->getCookie('token');
 
-		if (!AuthClient::validToken($req->getCookie('token'))) {
+		if (!AuthClient::validToken($token)) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
 		}
-		$user = UserClient::getByToken($req->getCookie('token'));
+		$user = UserClient::getByToken($token);
 		if ($user == null) {
 			return $this->response(StatusCodes::TOKEN_MISMATCH);
 		}
@@ -75,23 +63,22 @@ class CharactersController extends ApiController {
 			'race' => $req->getData('race'),
 			'exp' => $req->getData('exp'),
 			'alignment' => $req->getData('alignment'),
-			'user_access' => $user->ID,
+			// 'user_access' => $user->ID,
 
 			'public' => $req->getData('public'),
 			'stats' => $req->getData('stats'),
 			'background' => $req->getData('background'),
-			'class' => $req->getData('class'),
+			'classes' => $req->getData('classes'),
 			'health' => $req->getData('health')
 		];
-		$result = CharactersClient::create($char);
+		$result = CharactersClient::create($char, $token);
 
-		if ($result != "") {
-			$this->response(StatusCodes::CREATED);
+		if ($result != "" && is_string($result)) {
+			$this->response = $this->response(StatusCodes::CREATED);
 			$this->set("id", $result);
 			return;
 		} else {
-			$this->response(StatusCodes::SERVER_ERROR);
-			return;
+			return $this->response(StatusCodes::SERVER_ERROR);
 		}
 	}
 
@@ -99,33 +86,69 @@ class CharactersController extends ApiController {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$charId = $this->decrypt($id);
-		if ($charId == false) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$result = (new CharactersClient)->get($charId, $token);
-		if (sizeOf($result) > 0) {
-			$this->set("result", AbstractSchema::schema($result[0], "Character"));
+		$result = CharactersClient::read($id, $token);
+		if ($result != null) {
+			$this->set("result", AbstractSchema::schema($result, "Character"));
 			return;
 		}
 		return $this->response(StatusCodes::NOT_FOUND);
+	}
+
+	public function update() {
+		$req = $this->request;
+		$token = $req->getCookie('token');
+
+		if (!AuthClient::validToken($token)) {
+			return $this->response(StatusCodes::ACCESS_DENIED);
+		}
+		$user = UserClient::getByToken($token);
+		if ($user == null) {
+			return $this->response(StatusCodes::TOKEN_MISMATCH);
+		}
+
+		$char = CharactersClient::read($req->getParam('character_id'), $token);
+		if ($char == null || $char->User_Access != $user->ID) {
+			return $this->response(StatusCodes::NOT_FOUND);
+		}
+		$char = (object)[
+			'id' => $req->getParam('character_id'),
+			'first_name' => $req->getData('first_name'),
+			'nickname' => $req->getData('nickname'),
+			'last_name' => $req->getData('last_name'),
+			'race' => $req->getData('race'),
+			'exp' => $req->getData('exp'),
+			'alignment' => $req->getData('alignment'),
+
+			'public' => (int)$req->getData('public'),
+			'stats' => $req->getData('stats'),
+			'background' => $req->getData('background'),
+			'classes' => $req->getData('classes'),
+			'health' => $req->getData('health'),
+			'toDelete' => $req->getData('toDelete')
+		];
+		$result = CharactersClient::update($char, $token);
+
+		if ($result->status == SuccessState::SUCCESS) {
+			return $this->response(StatusCodes::NO_CONTENT);
+		} else if ($result->status == SuccessState::PARTIAL) {
+			$this->response = $this->response(StatusCodes::SUCCESS);
+			$this->set('statusMessage', 'Some fields failed to save correctly');
+			$this->set('errorMessage', $result->message);
+			return;
+		} else {
+			return $this->response(StatusCodes::SERVER_ERROR);
+		}
 	}
 
 	public function getCharacterImage() {
 		$id = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
 
-		$charId = $this->decrypt($id);
-		if ($charId == false) {
-			return $this->response(StatusCodes::NOT_FOUND);
-		}
-
-		$char = CharactersClient::get($charId, $token);
+		$char = CharactersClient::read(id: $id, token: $token);
 		if ($char == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-		$filepath = CharactersClient::getFilePath($charId);
+		$filepath = CharactersClient::getFilePath($id);
 		if (is_file($filepath)) {
 			return $this->response->withFile($filepath);
 		} else {
@@ -134,25 +157,14 @@ class CharactersController extends ApiController {
 	}
 
 	public function uploadCharacterImage() {
-		$id = $this->request->getParam("character_id");
+		$charId = $this->request->getParam("character_id");
 		$token = $this->request->getCookie('token');
-		$valid = AuthClient::validToken($token);
-		if (!$valid) {
-			return $this->response(StatusCodes::ACCESS_DENIED);
-		}
 
-		$charId = $this->decrypt($id);
-		if ($charId == false) {
+		if (CharactersClient::read($charId, $token) == null) {
 			return $this->response(StatusCodes::NOT_FOUND);
 		}
-
-		$user = UserClient::getByToken($token);
-		if ($user == null) {
+		if (!CharactersClient::canEdit(charId: $charId, token: $token)) {
 			return $this->response(StatusCodes::ACCESS_DENIED);
-		}
-
-		if(CharactersClient::get($charId, $token) == null) {
-			return $this->response(StatusCodes::NOT_FOUND);
 		}
 
 		$file = $this->request->getData('image');
@@ -165,5 +177,18 @@ class CharactersController extends ApiController {
 			return $this->response(StatusCodes::SERVER_ERROR);
 		}
 		return $this->response(StatusCodes::TOKEN_MISMATCH);
+	}
+
+	public function removeCharacterImage() {
+		$req = $this->request;
+		$charId = $req->getParam("character_id");
+		$token = $req->getCookie("token");
+
+		if (CharactersClient::canEdit(charId: $charId, token: $token)) {
+			if (CharactersClient::removeCharacterImage(charId: $charId, token: $token)) {
+				return $this->response(StatusCodes::NO_CONTENT);
+			}
+		}
+		return $this->response(StatusCodes::SERVER_ERROR);
 	}
 }

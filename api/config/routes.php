@@ -24,37 +24,42 @@ return static function (RouteBuilder $routes) {
 		});
 
 		$builder->scope('/characters', function (RouteBuilder $builder) {
-			$builder->connect('/list', 'Characters::listPublicCharacters');
-			$builder->applyMiddleware('auth');
+			$builder->connect('/list', 'Characters::list');
 			$builder->get('/', 'Characters::list');
+			$builder->applyMiddleware('auth');
 			$builder->post('/', 'Characters::create');
-			$builder->patch('/', 'Characters::update');
-			$builder->delete('/', 'Characters::archive');
 		});
 		$builder->resources('Characters', function (RouteBuilder $builder) {
-			$builder->connect('/', 'Characters::get');
+			$builder->get('/', 'Characters::get');
 
 			$builder->scope('/image', function (RouteBuilder $builder) {
 				$builder->get('/', 'Characters::getCharacterImage');
+				$builder->applyMiddleware('auth');
 				$builder->post('/', 'Characters::uploadCharacterImage');
+				$builder->delete('/', 'Characters::removeCharacterImage');
 			});
 
 			$builder->scope('/classes', function (RouteBuilder $builder) {
 				$builder->get('/', 'CharactersClasses::list');
+				$builder->applyMiddleware('auth');
 				$builder->post('/', 'CharactersClasses::create');
 			});
 
 			$builder->resources('Classes', function (RouteBuilder $builder) {
+				$builder->get('/', 'CharactersClasses::get');
+				$builder->applyMiddleware('auth');
 				$builder->patch('/', 'CharactersClasses::update');
 				$builder->delete('/', 'CharactersClasses::delete');
 			});
 
 			$builder->scope('/stats', function (RouteBuilder $builder) {
 				$builder->get('/', 'CharactersStats::list');
+				$builder->applyMiddleware('auth');
 				$builder->post('/', 'CharactersStats::create');
 			});
 
 			$builder->resources('Stats', function (RouteBuilder $builder) {
+				$builder->applyMiddleware('auth');
 				$builder->patch('/', 'CharactersStats::update');
 				$builder->delete('/', 'CharactersStats::delete');
 			});
@@ -66,7 +71,15 @@ return static function (RouteBuilder $routes) {
 			// $builder->resources('Background', function (RouteBuilder $builder) {
 			// 	$builder->patch('/', 'CharactersStats::update');
 			// });
+			$builder->resources('Health', function (RouteBuilder $builder) {
+				$builder->get('/', 'CharactersHealth::get');
+				$builder->applyMiddleware('auth');
+				$builder->patch('/', 'CharactersHealth::update');
+			});
 
+			$builder->applyMiddleware('auth');
+			$builder->patch('/', 'Characters::update');
+			$builder->delete('/', 'Characters::archive');
 			$builder->connect('/', 'Characters::get')->setPass(['id']);
 		});
     });

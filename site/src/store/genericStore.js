@@ -1,4 +1,6 @@
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+import cakeApi from "../services/cakeApi";
+
 const state = {
 	api: 'https://dev-dnd.jessprogramming.com:8080',
 	site: 'http://localhost',
@@ -8,18 +10,17 @@ const state = {
   }
 
 const getters = {
-	checkValidSession() {
-		if(typeof Cookies.get('token') === 'undefined') {
-			return false;
-		}
-		return true;
-	}
+
 }
 
 const actions = {
 	logout() {
 		Cookies.remove('token', {path:'/'});
 		window.location = '/';
+	},
+	async checkValidSession() {
+		const response = await cakeApi.getUserDetails();
+		state.validSession = response.status != 403;
 	}
 }
 

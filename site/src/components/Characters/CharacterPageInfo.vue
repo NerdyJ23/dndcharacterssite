@@ -16,7 +16,7 @@
 							<span>
 								<span class="font-weight-bold">Class: </span>
 								<template v-for="a in char.classes">
-									Lv. {{ a.level }} {{ a.class }}
+									Lv. {{ a.level }} {{ a.name }}
 								</template>
 							</span>
 							<span>
@@ -32,6 +32,9 @@
 							<span class="font-italic">"{{ char.background.description }}"</span>
 						</v-card-text>
 					</v-card>
+				</v-col>
+				<v-col>
+					<v-btn v-if="char.canEdit" @click="$emit('toggleEditing')">Edit</v-btn>
 				</v-col>
 			</v-row>
 			<br />

@@ -4,7 +4,7 @@
 		<Navbar @toggleDrawer="toggleDrawer" ref="navbar" @login="showLogin" @logout="logout" />
 		<v-divider></v-divider>
 		<v-card class="d-flex" elevation="0">
-			<router-view style="width:auto" class="pl-10 col-12"></router-view>
+			<router-view v-if="show" style="width:auto" class="pl-10 col-12"></router-view>
 		</v-card>
 		<Login ref="login" @loggedin="loadUser"/>
     </v-main>
@@ -18,17 +18,14 @@ import { mapState } from "vuex";
 import Login from './components/Login/LoginDialog';
 
 export default {
-	mounted() {
-		const self = this;
-		this.calcHeight();
-		window.addEventListener('resize', () => {
-			self.calcHeight();
-		})
+	async mounted() {
 		// this.$vuetify.theme.dark = true;
+		await this.$store.dispatch('checkValidSession');
+		this.show = true;
 	},
 	data() {
 		return {
-			contentHeight: 0
+			show: false
 		}
 	},
   	name: 'App',
@@ -41,12 +38,6 @@ export default {
 		toggleDrawer() {
 			this.$refs.drawer.toggle();
 		},
-		calcHeight() {
-			const self = this;
-			this.$nextTick(() => {
-				self.contentHeight = window.innerHeight - self.$refs.navbar.$el.clientHeight - 4;
-			});
-		},
 		showLogin() {
 			this.$refs.login.show();
 		},
@@ -55,10 +46,20 @@ export default {
 		},
 		loadUser() {
 			this.$store.dispatch('loadUser');
+		},
+		needSession() {
+			if (!this.GenericStore.validSession) {
+				this.$router.push("/login");
+			}
 		}
 	},
 	computed: {
 		...mapState(["GenericStore"])
+	},
+	provide() {
+		return {
+			needSession: this.needSession
+		}
 	}
 }
 </script>

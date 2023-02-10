@@ -9,26 +9,26 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Cake\Http\Exception\ForbiddenException;
-
+use App\Client\Users\UserClient;
 use App\Client\Security\AuthClient;
 class AuthenticationMiddleware implements MiddlewareInterface {
 
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-		if(!$request->getCookie('token')) { //and auth token correctly
+		$token = $request->getCookie('token');
+		if ($token == null || UserClient::getByToken($token) == null || !AuthClient::validToken($token)) { //and auth token correctly
 			return $this->_accessDenied();
-		} else if(!AuthClient::validToken($request->getCookie('token'))) {
-			return $this->_accessDenied();
-		} else {
-			return $handler->handle($request);
 		}
+		return $handler->handle($request);
 	}
 
 	private function _accessDenied():Response {
-
+		return $this->_toResponse();
+	}
+	private function _toResponse(int $code = 403, string $message = 'Login token not found or incorrect'):Response {
 		$response = new Response();
-		$response = $response->withStatus(403, 'Not Logged In');
+		$response = $response->withStatus($code);
 		$response = $response->withType('json');
-		$response = $response->withStringBody(json_encode(['statusmessage' => 'Login token not found or incorrect']));
+		$response = $response->withStringBody(json_encode(['statusmessage' => $message]));
 
 		return $response;
 	}
