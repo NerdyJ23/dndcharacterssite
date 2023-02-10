@@ -62,7 +62,7 @@ class UsersController extends ApiController {
 					'expires' => new DateTime('+ 7 days'),
 					'httpOnly' => true,
 					'secure' => true,
-					'domain' => 'dev-dnd.jessprogramming.com'
+					'domain' => 'dnd.jessprogramming.com'
 			]);
 			$cookie = $cookie
 				->withSameSite('None');
