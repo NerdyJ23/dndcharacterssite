@@ -174,7 +174,7 @@ export default {
 			}
 
 			//Has to be after in case of creating character
-			await this.$refs.characterPortrait.uploadImage();
+			await this.$refs.characterPortrait.uploadImage(this.char.id);
 			if (response.status === 201) {
 				this.$router.push(`/characters/${response.data.id}`);
 			} else if (response.status === 204) {
