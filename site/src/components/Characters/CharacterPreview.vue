@@ -1,5 +1,5 @@
 <template>
-	<v-card outlined :to="`/characters/${id}`">
+	<v-card outlined :to="`/characters/${id}`" height="100%">
 		<v-card-text>
 			<v-row>
 				<v-col cols="4">
