@@ -26,7 +26,7 @@ export default {
 	},
 	data() {
 		return {
-			hasImage: false
+			hasImage: false,
 		}
 	},
 	mounted() {
@@ -45,6 +45,8 @@ export default {
 				if (response.status != 204) {
 					console.error("couldnt upload image");
 				}
+			} else if (!this.hasImage) {
+				const response = characterApi.deleteImage(charId);
 			}
 		}
 	}

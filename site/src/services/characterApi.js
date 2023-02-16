@@ -46,6 +46,14 @@ export default {
 		});
 		return response;
 	},
+	deleteImage(id) {
+		const response = cakeApi().delete(`characters/${id}/image`, {
+			withCredentials: true
+		}).catch((error) => {
+			return error.response;
+		});
+		return response;
+	},
 	createCharacter(char) {
 		const response = cakeApi().post(`/characters`, char, {
 			withCredentials: true

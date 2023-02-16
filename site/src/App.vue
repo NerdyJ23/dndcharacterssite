@@ -3,7 +3,7 @@
     <v-main :style="styles">
 		<Navbar @toggleDrawer="toggleDrawer" ref="navbar" @login="showLogin" @logout="logout" />
 		<v-divider></v-divider>
-		<v-card class="d-flex" elevation="0">
+		<v-card class="d-flex" elevation="0" height="100%">
 			<router-view v-if="show" style="width:auto" class="pl-10 col-12"></router-view>
 		</v-card>
 		<Login ref="login" @loggedin="loadUser"/>
