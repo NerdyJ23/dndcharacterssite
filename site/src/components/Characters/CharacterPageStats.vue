@@ -1,5 +1,5 @@
 <template>
-	<v-card outlined color="grey lighten-3">
+	<v-card outlined :style="styles">
 		<v-card-text class="mb-4">
 			<template v-if="!loading" v-for="stat in stats">
 				<v-row>
@@ -46,6 +46,13 @@ export default {
 			default: () => {
 				return [];
 			}
+		}
+	},
+	computed: {
+		styles() {
+			return {
+				"background-color": this.$vuetify.theme.dark ? "var(--v-secondary-darken1)" : "var(--v-secondary-lighten5)"
+			};
 		}
 	}
 }

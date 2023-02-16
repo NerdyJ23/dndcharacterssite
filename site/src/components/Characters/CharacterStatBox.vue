@@ -43,8 +43,8 @@ export default {
 		text-align: center;
 		position: relative;
 		border-radius: 10px !important;
-		border: 3px solid var(--v-secondary-base);
-		background-color: white;
+		border: 3px solid var(--v-secondary-lighten2);
+		background-color: var(--bg-color);
 		// border-image: url('~@/assets/images/stat-box/border.svg') 120 stretch;
 
 		&-title {
@@ -68,8 +68,8 @@ export default {
 			overflow: ellipsis;
 			margin-left: auto;
 			margin-right: auto;
-			background-color: white;
-			border: 2px solid var(--v-secondary-base);
+			background-color: var(--bg-color);
+			border: 2px solid var(--v-secondary-lighten2);
 			border-radius: 50%;
 		}
 	}

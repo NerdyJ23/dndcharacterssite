@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main :style="styles">
 		<Navbar @toggleDrawer="toggleDrawer" ref="navbar" @login="showLogin" @logout="logout" />
 		<v-divider></v-divider>
 		<v-card class="d-flex" elevation="0">
@@ -19,13 +19,14 @@ import Login from './components/Login/LoginDialog';
 
 export default {
 	async mounted() {
-		// this.$vuetify.theme.dark = true;
+		this.$vuetify.theme.dark = true;
 		await this.$store.dispatch('checkValidSession');
 		this.show = true;
 	},
 	data() {
 		return {
-			show: false
+			show: false,
+			bgColor: 'white',
 		}
 	},
   	name: 'App',
@@ -54,7 +55,16 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(["GenericStore"])
+		...mapState(["GenericStore"]),
+		styles() {
+			return {
+				'--bg-color': this.$vuetify.theme.dark ? "#1E1E1E" : "white"
+				// '--text-color': this.$vuetify.theme.themes[this.theme].base
+			};
+		},
+		theme() {
+			return this.$vuetify.theme.dark ? "dark" : "light";
+		}
 	},
 	provide() {
 		return {
