@@ -7,7 +7,7 @@
 					<CharacterPreview
 						:label="char.full_name"
 						:race="char.race"
-						:desc="char.background.description"
+						:background="char.background ? char.background.description : ''"
 						:id="char.id"
 						:exp="char.exp"
 						:classes="char.classes"

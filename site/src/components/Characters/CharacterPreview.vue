@@ -15,7 +15,7 @@
 									Lv. {{ a.level }} {{ a.name }}
 							</template>
 						</v-col>
-						<v-col cols="12">{{ desc }}</v-col>
+						<v-col cols="12">{{ background == "" ? "&nbsp;" : background }}</v-col>
 						<v-col cols="12">
 							<ExpBar :exp="exp"/>
 						</v-col>
@@ -44,10 +44,10 @@ export default {
 			type: String,
 			required: true
 		},
-		desc: {
+		background: {
 			type: String,
 			required: false,
-			default: "A character"
+			default: ""
 		},
 		id: {
 			type: String,
