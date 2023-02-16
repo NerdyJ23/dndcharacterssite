@@ -10,6 +10,11 @@
 					<v-row>
 						<v-col cols="12" class="dnd-title dnd-title-bold">{{ label }}</v-col>
 						<v-col cols="12" >{{ race }}</v-col>
+						<v-col cols="12">
+							<template v-for="a in classes">
+									Lv. {{ a.level }} {{ a.name }}
+							</template>
+						</v-col>
 						<v-col cols="12">{{ desc }}</v-col>
 						<v-col cols="12">
 							<ExpBar :exp="exp"/>
@@ -52,6 +57,10 @@ export default {
 			type: Number,
 			required: false,
 			default: 0
+		},
+		classes: {
+			type: Array,
+			required: true
 		}
 	}
 }
