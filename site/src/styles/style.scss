@@ -9,3 +9,24 @@
 		font-weight: 800;
 	}
 }
+.dnd-portrait {
+	position: relative;
+	&-image {
+		border: 1px solid var(--v-secondary-base);
+	}
+
+	&-text {
+		background-color: white;
+		border: 1px solid var(--v-secondary-base);
+		position: absolute;
+		bottom: 0;
+	}
+	.game-badge {
+		height: 24px;
+		width: 24px;
+		bottom: 0;
+		right: 0;
+		position: absolute;
+		fill:red;
+	}
+}

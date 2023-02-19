@@ -1,12 +1,15 @@
 <template>
 	<div class="dnd-portrait d-flex flex-column">
 		<v-skeleton-loader v-if="loading" class="dnd-portrait-image" type="image" loading width="100%"></v-skeleton-loader>
-		<v-img v-else :src="portrait" class="dnd-portrait-image" max-width="80%"></v-img>
+		<v-img v-else :src="portrait" class="dnd-portrait-image" max-width="80%">
+			<v-img :src="badge" class="game-badge"></v-img>
+		</v-img>
 		<span v-if="showName" class="dnd-portrait-text dnd-title dnd-title-bold px-3 rounded-tr-lg">{{ name }}</span>
 	</div>
 </template>
 <script>
 import defaultImage from "../../assets/images/characters/default.png";
+import DnD from "../../assets/images/characters/dungeons-and-dragons.png";
 
 export default {
 	name: "CharacterPortrait",
@@ -24,6 +27,11 @@ export default {
 			type: Boolean,
 			required: false,
 			default: false
+		},
+		game: {
+			type: Number,
+			required: false,
+			default: 1
 		}
 	},
 	data() {
@@ -46,22 +54,13 @@ export default {
 	computed: {
 		portrait() {
 			return this.img == null ? defaultImage : this.img;
+		},
+		badge() {
+			switch(this.game) {
+				case 1:
+					return DnD;
+			}
 		}
 	}
 }
 </script>
-<style lang="scss" scoped>
-.dnd-portrait {
-	position: relative;
-	&-image {
-		border: 1px solid var(--v-secondary-base);
-	}
-
-	&-text {
-		background-color: white;
-		border: 1px solid var(--v-secondary-base);
-		position: absolute;
-		bottom: 0;
-	}
-}
-</style>
