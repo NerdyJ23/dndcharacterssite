@@ -1,8 +1,8 @@
 <template>
 	<v-card>
-		<v-img class="home-page-image" :style="`opacity: ${slide.current == key.dnd ? 1 : 0}; position: absolute !important;`" :src="dnd" :key="key.dnd" />
-		<v-img class="home-page-image" :style="`opacity: ${slide.current == key.eclipsePhase ? 1 : 0}; position: absolute !important;` " :src="eclipsePhase" :key="key.eclipsePhase" />
-		<v-img class="home-page-image" :style="`opacity: ${slide.current == key.callOfCthulu ? 1 : 0}; position: absolute !important;` " :src="callOfCthulu" :key="key.callOfCthulu"/>
+		<v-img height="70vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.dnd ? 1 : 0}; position: absolute !important;`" :src="dnd" :key="key.dnd" />
+		<v-img height="70vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.eclipsePhase ? 1 : 0}; position: absolute !important;`" :src="eclipsePhase" :key="key.eclipsePhase" />
+		<v-img height="70vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.callOfCthulu ? 1 : 0}; position: absolute !important;`" :src="callOfCthulu" :key="key.callOfCthulu"/>
 	</v-card>
 </template>
 <script>
@@ -45,7 +45,7 @@ export default {
     },
     methods: {
         queueNextSlide() {
-            setTimeout(() => this.changeSlide(), 1500);
+            setTimeout(() => this.changeSlide(), 3500);
         },
         changeSlide() {
             if (this.slide.current == this.slide.max) {
@@ -61,6 +61,6 @@ export default {
 </script>
 <style>
 .home-page-image {
-	transition: 0.8s all ease;
+	transition: 2s all ease;
 }
 </style>
