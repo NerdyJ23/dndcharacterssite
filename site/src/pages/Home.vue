@@ -4,12 +4,14 @@
 		<v-card-text>
 			<v-card outlined height="100%">
 				<v-card-text>
-					<v-carousel cycle continuous show-arrows-on-hover hide-delimiters>
+					<!-- cycle continuous -->
+					<v-carousel
+					 show-arrows-on-hover hide-delimiters>
 						<v-carousel-item>
-							<CharacterRecentCreatedPreview />
+							<SiteBlurb />
 						</v-carousel-item>
 						<v-carousel-item>
-							test
+							<CharacterRecentCreatedPreview />
 						</v-carousel-item>
 					</v-carousel>
 				</v-card-text>
@@ -20,13 +22,15 @@
 
 <script>
 import "../styles/style.scss";
+import SiteBlurb from "@/components/Home/SiteBlurb.vue";
 import CharacterPreview from "../components/Characters/CharacterPreview";
 import CharacterRecentCreatedPreview from "../components/Characters/CharacterRecentCreatedPreview";
 export default {
 	name: "HomePage",
 	components: {
 		CharacterPreview,
-		CharacterRecentCreatedPreview
+		CharacterRecentCreatedPreview,
+		SiteBlurb
 	}
 }
 </script>

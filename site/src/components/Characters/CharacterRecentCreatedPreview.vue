@@ -1,6 +1,6 @@
 <template>
 	<v-card elevation="0">
-		<v-card-title>Recently Created:</v-card-title>
+		<v-card-title>Characters from the Community:</v-card-title>
 		<v-card-text>
 			<v-row v-if="!loading" elevation="0">
 				<v-col xs="12" sm="8" lg="6" v-for="char in characters.list" :key="char.id">
