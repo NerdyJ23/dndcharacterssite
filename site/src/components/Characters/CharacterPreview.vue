@@ -5,7 +5,6 @@
 				<v-col cols="4">
 					<CharacterPortrait :id="id" />
 				</v-col>
-
 				<v-col cols="8" class="text-center">
 					<v-row>
 						<v-col cols="12" class="dnd-title dnd-title-bold">{{ label }}</v-col>
@@ -15,11 +14,10 @@
 									Lv. {{ a.level }} {{ a.name }}
 							</template>
 						</v-col>
-						<v-col cols="12">{{ background == "" ? "&nbsp;" : background }}</v-col>
-						<v-col cols="12">
-							<ExpBar :exp="exp"/>
-						</v-col>
 					</v-row>
+				</v-col>
+				<v-col cols="12">
+					<ExpBar :exp="exp"/>
 				</v-col>
 			</v-row>
 		</v-card-text>
