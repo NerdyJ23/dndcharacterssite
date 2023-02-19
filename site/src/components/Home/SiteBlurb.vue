@@ -1,12 +1,8 @@
 <template>
 	<v-card>
-		<v-img class="home-page-image" :style="`display: ${slide.current == key.dnd ? 'flex' : 'none'}` " :src="dnd" :key="key.dnd" />
-		<v-img class="home-page-image" :style="`display: ${slide.current == key.eclipsePhase ? 'flex' : 'none'}` " :src="eclipsePhase" :key="key.eclipsePhase" />
-		<v-img class="home-page-image" :style="`display: ${slide.current == key.callOfCthulu ? 'flex' : 'none'}` " :src="callOfCthulu" :key="key.callOfCthulu"/>
-		<v-card-text>
-			Create Characters from any series or genre you want!
-			Import Stat value templates from your favourite series.
-		</v-card-text>
+		<v-img class="home-page-image" :style="`opacity: ${slide.current == key.dnd ? 1 : 0}; position: absolute !important;`" :src="dnd" :key="key.dnd" />
+		<v-img class="home-page-image" :style="`opacity: ${slide.current == key.eclipsePhase ? 1 : 0}; position: absolute !important;` " :src="eclipsePhase" :key="key.eclipsePhase" />
+		<v-img class="home-page-image" :style="`opacity: ${slide.current == key.callOfCthulu ? 1 : 0}; position: absolute !important;` " :src="callOfCthulu" :key="key.callOfCthulu"/>
 	</v-card>
 </template>
 <script>
@@ -49,7 +45,7 @@ export default {
     },
     methods: {
         queueNextSlide() {
-            setTimeout(() => this.changeSlide(), 800);
+            setTimeout(() => this.changeSlide(), 1500);
         },
         changeSlide() {
             if (this.slide.current == this.slide.max) {
