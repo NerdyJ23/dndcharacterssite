@@ -9,6 +9,7 @@
 import CallOfCthulu from "../../assets/images/home/call-of-cthulu.jpg";
 import DnD from "../../assets/images/home/dnd-splash.jpg";
 import EclipsePhase from "../../assets/images/home/eclipse-phase.jpg";
+
 import TransitionFade from "../Utility/Transitions/TransitionFade.vue";
 
 export default {
@@ -61,6 +62,6 @@ export default {
 </script>
 <style>
 .home-page-image {
-	transition: 2s all ease;
+	transition: 2s opacity ease;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<v-card style="width:100%" class="fill-height">
+	<v-card class="fill-height">
 		<v-card-text v-if="char !== undefined && char !== null" class="fill-height">
 			<v-row>
 				<v-col cols="3">
