@@ -3,6 +3,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use App\Controller\Security\EncryptionController;
+use App\Controller\Component\Enum\GameType;
 
 class Character extends Entity {
 	protected $_hidden = ['ID', 'User_Access', 'Background'];
@@ -15,7 +16,8 @@ class Character extends Entity {
 		'Exp' => true,
 		'Alignment' => true,
 		'Visibility' => true,
-		'User_Access' => true
+		'User_Access' => true,
+		'GameId' => true
 	];
 
 	protected function _getId() {
