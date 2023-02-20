@@ -1,9 +1,9 @@
 <template>
-	<v-card elevation="0" outlined>
-		<v-card-text>
-			<v-card outlined>
-				<v-card-text>
-					<v-carousel cycle continuous show-arrows-on-hover hide-delimiters>
+	<v-card elevation="0" outlined style="height: 100%">
+		<v-card-text style="height: 100%">
+			<v-card outlined style="height: 100%">
+				<v-card-text style="height: 100%">
+					<v-carousel continuous show-arrows-on-hover hide-delimiters height="100%">
 						<v-carousel-item>
 							<SiteBlurb />
 						</v-carousel-item>

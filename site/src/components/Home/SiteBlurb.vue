@@ -1,8 +1,8 @@
 <template>
-	<v-card>
-		<v-img height="70vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.dnd ? 1 : 0}; position: absolute !important;`" :src="dnd" :key="key.dnd" />
-		<v-img height="70vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.eclipsePhase ? 1 : 0}; position: absolute !important;`" :src="eclipsePhase" :key="key.eclipsePhase" />
-		<v-img height="70vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.callOfCthulu ? 1 : 0}; position: absolute !important;`" :src="callOfCthulu" :key="key.callOfCthulu"/>
+	<v-card style="height: 100%">
+		<v-img height="90vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.dnd ? 1 : 0}; position: absolute !important;`" :src="dnd" :key="key.dnd" />
+		<v-img height="90vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.eclipsePhase ? 1 : 0}; position: absolute !important;`" :src="eclipsePhase" :key="key.eclipsePhase" />
+		<v-img height="90vh" contain class="home-page-image" :style="`opacity: ${slide.current == key.callOfCthulu ? 1 : 0}; position: absolute !important;`" :src="callOfCthulu" :key="key.callOfCthulu"/>
 	</v-card>
 </template>
 <script>
