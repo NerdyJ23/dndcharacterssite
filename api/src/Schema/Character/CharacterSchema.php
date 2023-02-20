@@ -14,7 +14,8 @@ class CharacterSchema implements SchemaInterface{
 			'alignment' => $character->Alignment,
 			'exp' => $character->Exp,
 			'public' => $character->Visibility == 1,
-			'canEdit' => $character->canEdit
+			'canEdit' => $character->canEdit,
+			'game' => AbstractSchema::schemaWithoutEntity($character->GameId, "GameType")
 		];
 	}
 

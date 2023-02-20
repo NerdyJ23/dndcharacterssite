@@ -20,7 +20,7 @@ class CharactersClient extends AbstractClient {
 	static function listPublic(Pagination $pagination) {
 		$query = parent::fetchTable('Characters')->find('all')
 		->where(['Characters.Visibility = 1'])
-		->contain(['Classes']);
+		->contain(['Classes', 'Background']);
 		return parent::toList($query, $pagination);
 	}
 
@@ -32,7 +32,7 @@ class CharactersClient extends AbstractClient {
 
 		$query = parent::fetchTable('Characters')->find('all')
 		->where(['Characters.User_Access' => $user->ID])
-		->contain(['Classes']);
+		->contain(['Classes', 'Background']);
 
 		return parent::toList($query, $pagination);
 	}

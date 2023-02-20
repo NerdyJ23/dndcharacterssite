@@ -8,7 +8,8 @@ class AbstractSchema {
 		'CharacterHealth' => 'App\Schema\Character\CharacterHealthSchema',
 		'Character' => 'App\Schema\Character\CharacterSchema',
 		'CharacterSkill' => 'App\Schema\Character\CharacterSkillSchema',
-		'CharacterStat' => 'App\Schema\Character\CharacterStatSchema'
+		'CharacterStat' => 'App\Schema\Character\CharacterStatSchema',
+		'GameType' => 'App\Schema\Character\GameTypeSchema'
 	];
 
 	static function schema(mixed $item, string $schema): mixed {
@@ -26,5 +27,12 @@ class AbstractSchema {
 			return $result;
 		}
 		return null;
+	}
+
+	static function schemaWithoutEntity(mixed $item, string $schema): mixed {
+		if (is_null($item)) {
+			return null;
+		}
+		return AbstractSchema::$schemas[$schema]::toExtendedSchema($item);
 	}
 }
