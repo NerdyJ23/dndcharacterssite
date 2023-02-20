@@ -3,7 +3,7 @@
 		<v-card-text v-if="char !== undefined && char !== null" class="fill-height">
 			<v-row>
 				<v-col cols="3">
-					<CharacterPortrait :id="char.id" :name="char.full_name"/>
+					<CharacterPortrait :id="char.id" :name="char.full_name" :showBadge="false"/>
 				</v-col>
 				<v-col cols="7">
 					<v-card outlined style="height:100%">

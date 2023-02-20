@@ -33,7 +33,12 @@ const state = {
 			name: "Random",
 			list: ["A", "B", "C"]
 		}
-	]
+	],
+	gameTypes: {
+		dnd: 0,
+		callOfCthulu: 1,
+		eclipsePhase: 2
+	}
 
 }
 const actions = {
