@@ -14,7 +14,6 @@ import vuetify from './plugins/vuetify'
 import store from './store'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import '@babel/polyfill'
-import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 
 // import '@babel/polyfill'
