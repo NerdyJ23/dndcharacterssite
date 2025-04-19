@@ -199,7 +199,8 @@ if(env("DEBUG") == "true") {
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: access-control-allow-methods,content-type, set-cookie');
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 	header("HTTP/1.1 200 OK");
     exit(0);
 }
