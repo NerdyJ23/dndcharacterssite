@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import cakeApi from "../services/cakeApi";
 
 const state = {
-	api: 'https://dnd.jessprogramming.com:8080',
+	api: 'https://dnd.jessica-moolenschot.dev:8080',
 	site: 'http://localhost',
 	months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
 	weekday: ['Sunday', 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
